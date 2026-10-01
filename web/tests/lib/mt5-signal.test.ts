@@ -47,6 +47,39 @@ describe("parseMt5SignalBody", () => {
     });
     expect("error" in out).toBe(true);
   });
+
+  it("accepts a taught SMC sweep+CHoCH from the EA", () => {
+    const { rationale: _ignored, ...base } = valid;
+    const out = parseMt5SignalBody({
+      ...base,
+      timeframe: "smc",
+      indicators: {
+        strategy: "ict_smc",
+        structure: "bullish_choch",
+        sweep_level: 2642,
+        choch_level: 2655,
+      },
+    });
+    expect("error" in out).toBe(false);
+    if ("error" in out) return;
+    expect(out.timeframe).toBe("smc");
+    expect(out.indicators.strategy).toBe("ict_smc");
+    expect(out.indicators.source).toBe("mt5_ea");
+    expect(out.rationale).toContain("SMC");
+  });
+
+  it("rejects SMC strategy on the BBMA lane and BBMA strategy on SMC", () => {
+    expect("error" in parseMt5SignalBody({
+      ...valid,
+      timeframe: "bbma",
+      indicators: { strategy: "ict_smc" },
+    })).toBe(true);
+    expect("error" in parseMt5SignalBody({
+      ...valid,
+      timeframe: "smc",
+      indicators: { strategy: "bbma_reentry" },
+    })).toBe(true);
+  });
 });
 
 describe("parseMt5ChartBody", () => {

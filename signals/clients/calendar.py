@@ -50,7 +50,7 @@ def fetch_calendar_events(session=None) -> list[dict]:
     response = session.get(
         CALENDAR_URL,
         timeout=10,
-        headers={"User-Agent": "QauntifySignals/1.0"},
+        headers={"User-Agent": "KiarosSignals/1.0"},
     )
     response.raise_for_status()
     payload = response.json()

@@ -10,6 +10,7 @@ export function formatPrice(value: number): string {
 /** Display label for stored timeframe / lane ids. */
 export function formatTimeframe(timeframe: string): string {
   if (timeframe === "bbma") return "BBMA";
+  if (timeframe === "smc") return "SMC";
   if (timeframe === "floor") return "ជាន់";
   return timeframe;
 }

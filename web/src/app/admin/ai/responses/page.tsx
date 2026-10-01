@@ -13,7 +13,7 @@ import { formatDateTime } from "@/lib/format";
 import { listAiEventsPage } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
-  title: "Admin · AI responses — Qauntify",
+  title: "Admin · AI responses",
 };
 
 export const revalidate = 30;

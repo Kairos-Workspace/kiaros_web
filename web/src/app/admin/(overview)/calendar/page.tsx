@@ -6,7 +6,7 @@ import { getDailyPnLStats } from "@/lib/signals";
 import { serviceRoleToken } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
-  title: "Admin · Calendar — Qauntify",
+  title: "Admin · Calendar",
 };
 
 export const revalidate = 30;

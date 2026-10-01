@@ -11,13 +11,12 @@ import { requireAdminPage } from "@/lib/admin-guard";
 import {
   getSignalsPaginated,
   getStats,
-  getWarRoomSignalsPaginated,
 } from "@/lib/signals";
 import { ADMIN_SIGNAL_FILTER_OPTIONS } from "@/lib/signals-browse-tabs";
 import { serviceRoleToken } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
-  title: "Admin · Signals — Qauntify",
+  title: "Admin · Signals",
 };
 
 export const revalidate = 30;
@@ -25,19 +24,19 @@ export const revalidate = 30;
 type SignalsTab =
   | "all"
   | "llm"
-  | "war-room"
   | "super-scalping"
   | "scalping"
   | "swing"
-  | "bbma";
+  | "bbma"
+  | "smc";
 
 function parseTab(tab: string | undefined): SignalsTab {
   if (tab === "llm") return "llm";
-  if (tab === "war-room") return "war-room";
   if (tab === "swing") return "swing";
   if (tab === "scalping") return "scalping";
   if (tab === "super-scalping") return "super-scalping";
   if (tab === "bbma") return "bbma";
+  if (tab === "smc") return "smc";
   return "all";
 }
 
@@ -60,22 +59,21 @@ export default async function AdminSignals({
           ? "5m"
           : currentTab === "bbma"
             ? "bbma"
-            : undefined;
+            : currentTab === "smc"
+              ? "smc"
+              : undefined;
   const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
   const isLlmTab = currentTab === "llm";
-  const isWarRoomTab = currentTab === "war-room";
 
   const token = serviceRoleToken();
   const [pageData, stats] = await Promise.all([
-    isWarRoomTab
-      ? getWarRoomSignalsPaginated(page, token)
-      : getSignalsPaginated(
-          page,
-          token,
-          isBbmaTab ? undefined : timeframe,
-          undefined,
-          isBbmaTab ? "bbma" : "default",
-        ),
+    getSignalsPaginated(
+      page,
+      token,
+      isBbmaTab ? undefined : timeframe,
+      undefined,
+      isBbmaTab ? "bbma" : "default",
+    ),
     getStats(
       token,
       isBbmaTab ? "bbma" : timeframe,
@@ -89,20 +87,17 @@ export default async function AdminSignals({
     currentTab !== "all" ? { tab: currentTab } : {};
 
   const exportTab =
-    currentTab === "llm" || currentTab === "war-room" || currentTab === "bbma"
-      ? "all"
-      : currentTab;
+    currentTab === "super-scalping" ||
+    currentTab === "scalping" ||
+    currentTab === "swing" ||
+    currentTab === "smc"
+      ? currentTab
+      : "all";
 
-  const title = isWarRoomTab
-    ? "War Room Signals"
-    : isLlmTab
-      ? "LLM Signals"
-      : "Signals";
-  const subtitle = isWarRoomTab
-    ? "Trading Floor only — Structure / Momentum / Manager. Separate from strategy tabs."
-    : isLlmTab
-      ? "Every signal SEA-LION confirmed and stored. Same cards as the main list, scoped to LLM-approved setups."
-      : "Manage and view all stored signals. Export includes TP/SL hits only.";
+  const title = isLlmTab ? "LLM Signals" : "Signals";
+  const subtitle = isLlmTab
+    ? "Every signal SEA-LION confirmed and stored. Same cards as the main list, scoped to LLM-approved setups."
+    : "Manage and view all stored signals. Export includes TP/SL hits only.";
 
   return (
     <>
@@ -123,15 +118,13 @@ export default async function AdminSignals({
         />
       </div>
 
-      {isLlmTab || isWarRoomTab ? (
+      {isLlmTab ? (
         <div className="mb-5 rounded-lg border border-accent/20 bg-accent-soft/40 px-4 py-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-accent">
-            {isWarRoomTab ? "War Room" : "LLM Signal"}
+            LLM Signal
           </p>
           <p className="mt-1 text-sm text-slate">
-            {isWarRoomTab
-              ? `Showing ${total} Floor-decided War Room signal${total === 1 ? "" : "s"}.`
-              : `Showing ${total} SEA-LION-confirmed signal${total === 1 ? "" : "s"} across every timeframe.`}
+            {`Showing ${total} SEA-LION-confirmed signal${total === 1 ? "" : "s"} across every timeframe.`}
           </p>
         </div>
       ) : null}
@@ -144,7 +137,6 @@ export default async function AdminSignals({
                 key={s.id}
                 signal={s}
                 showLlmBadge={isLlmTab}
-                showWarRoomBadge={isWarRoomTab}
                 adminSlot={
                   <DeleteSignalButton
                     id={s.id}
@@ -165,11 +157,9 @@ export default async function AdminSignals({
         </>
       ) : (
         <p className="mt-8 text-sm text-slate">
-          {isWarRoomTab
-            ? "No War Room signals yet."
-            : isLlmTab
-              ? "No LLM-confirmed signals yet."
-              : "No signals found for this category."}
+          {isLlmTab
+            ? "No LLM-confirmed signals yet."
+            : "No signals found for this category."}
         </p>
       )}
     </>

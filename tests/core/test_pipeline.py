@@ -1,7 +1,6 @@
 from signals.config import Config
 from signals.models import BotSettings, Candle, CandidateSetup, ScanResult, TRADING_SESSIONS
 from signals.pipeline import dedup as dedup_module
-from signals.pipeline import deliver as deliver_module
 from signals.pipeline import engine as engine_module
 from signals.pipeline import market_data as market_data_module
 from signals.pipeline import scan as scan_module
@@ -192,41 +191,6 @@ def test_scan_symbol_log_no_setup_false_writes_no_event(monkeypatch):
     result = scan_symbol("XAUUSD", _config(), llm, log_no_setup=False)
     assert result.signal is None
     assert events == []  # quiet scan logs nothing
-
-
-def _debate_signal():
-    from signals.models import CandidateSetup, Confirmation, make_signal
-    return make_signal(
-        CandidateSetup("XAUUSD", "long", 2400.0, 2396.0, 2408.0,
-                       {"strategy": "ict_fvg"}),
-        Confirmation("confirm", 75, "ok"), [], timeframe="1m")
-
-
-def test_maybe_run_debate_saves_transcript_with_signal_id(monkeypatch):
-    signal = _debate_signal()
-    saved = []
-    monkeypatch.setattr(deliver_module, "run_debate", lambda setup, llm, **kw: {
-        "symbol": setup.symbol, "timeframe": kw["timeframe"],
-        "direction": setup.direction, "transcript": [],
-        "manager_verdict": "agree", "manager_confidence": 66,
-    })
-    monkeypatch.setattr(deliver_module, "save_debate",
-                        lambda debate, url, key, session=None: saved.append(debate))
-
-    deliver_module.maybe_run_debate(signal, _config())
-    assert len(saved) == 1
-    assert saved[0]["signal_id"] == signal.id
-    assert saved[0]["manager_verdict"] == "agree"
-
-
-def test_maybe_run_debate_is_best_effort(monkeypatch):
-    signal = _debate_signal()
-
-    def boom(*a, **k):
-        raise RuntimeError("agent down")
-
-    monkeypatch.setattr(deliver_module, "run_debate", boom)
-    deliver_module.maybe_run_debate(signal, _config())  # must not raise
 
 
 def test_scan_symbol_rejected_signal_not_stored(monkeypatch):
@@ -459,8 +423,8 @@ def test_main_scans_run_in_parallel_and_keep_symbol_order(monkeypatch):
     monkeypatch.setattr(engine_module, "track_open_signals",
                         lambda cfg, prefetched=None, session=None: [])
 
-    # 3 symbols per session; the barrier is reused across the two sessions'
-    # sequential batches since each ThreadPoolExecutor fully drains before
+    # 3 symbols per session; the barrier is reused across sequential
+    # session batches since each ThreadPoolExecutor fully drains before
     # the next session starts.
     started = threading.Barrier(3, timeout=5)
     scanned = []
@@ -668,7 +632,7 @@ def test_trading_sessions_define_all_three_streams():
     # see docs/ict-fvg-backtest-results.md -- not profitable on any
     # confirmation tier over 8.96 years. It's still declared there (checked
     # below) so an already-open 5m signal settles with the right expiry; it's
-    # just not one of the two streams the engine actively scans right now.
+    # just not one of the streams the engine actively scans right now.
     by_name = {s.name: s for s in TRADING_SESSIONS}
     assert set(by_name) == {"scalp", "swing"}
     assert by_name["scalp"].timeframe == "15m"
@@ -678,6 +642,8 @@ def test_trading_sessions_define_all_three_streams():
     assert by_name["scalp"].max_open_days < by_name["swing"].max_open_days
 
     aux_by_name = {s.name: s for s in AUXILIARY_SESSIONS}
+    assert aux_by_name["smc"].timeframe == "smc"
+    assert aux_by_name["smc"].strategy == "ict_smc"
     assert aux_by_name["super_scalp"].timeframe == "5m"
     assert aux_by_name["super_scalp"].strategy == "ict_fvg"
     assert aux_by_name["super_scalp"].confluence_timeframe == "15m"
@@ -729,6 +695,29 @@ def test_scan_symbol_uses_the_session_timeframe(monkeypatch):
     assert result.signal.timeframe == "15m"
     assert saved[0][0].timeframe == "15m"
     assert events[0][0]["timeframe"] == "15m"
+
+
+def test_scan_symbol_fetches_1h_candles_for_smc_lane(monkeypatch):
+    seen = {}
+
+    def capture_candles(symbol, interval, limit, session=None, **kwargs):
+        seen["interval"] = interval
+        return _flat_candles()
+
+    monkeypatch.setattr(market_data_module, "fetch_candles", capture_candles)
+    monkeypatch.setattr(scan_module, "detect_setup",
+                        lambda *args, **kwargs: SETUP)
+    saved = _capture_saves(monkeypatch)
+    _capture_ai_events(monkeypatch)
+    llm = FakeLLM(reply='{"verdict": "confirm", "confidence": 80, "rationale": "ok"}')
+
+    result = scan_symbol(
+        "BTCUSDT", _config(), llm, strategy="ict_smc", timeframe="smc",
+    )
+
+    assert seen["interval"] == "1h"
+    assert result.signal.timeframe == "smc"
+    assert saved[0][0].timeframe == "smc"
 
 
 def test_already_signaled_dedup_window_scales_with_timeframe(monkeypatch):
@@ -825,8 +814,8 @@ def test_main_prefetches_recent_maps_once_per_session_not_per_symbol(monkeypatch
     engine_module.main()
 
     # One batched call per scanned session, each covering all 3 symbols —
-    # not one call per symbol. Two sessions, not three: super_scalp (5m) was
-    # pulled to AUXILIARY_SESSIONS -- see docs/ict-fvg-backtest-results.md.
+    # not one call per symbol. super_scalp (5m) stays in AUXILIARY_SESSIONS
+    # -- see docs/ict-fvg-backtest-results.md.
     assert events_calls == [
         (("BTCUSDT", "ETHUSDT", "PAXGUSDT"), "15m"),
         (("BTCUSDT", "ETHUSDT", "PAXGUSDT"), "1h"),

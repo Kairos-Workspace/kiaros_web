@@ -10,7 +10,7 @@ import {
 } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
-  title: "Admin · Overview — Qauntify",
+  title: "Admin · Overview",
 };
 
 export const revalidate = 30;

@@ -7,7 +7,7 @@ real sessions' own signal delivery, which has already completed by the
 time this runs.
 """
 from signals.chart.pipeline import attach_chart
-from signals.models import CandidateSetup, Confirmation, Signal, make_signal
+from signals.models import CandidateSetup, Confirmation, Signal, broker_interval, make_signal
 from signals.persistence.signals import (
     has_open_confluence_signal,
     open_signals_same_direction,
@@ -32,7 +32,7 @@ def _build_confluence_signal(signal: Signal, other: dict) -> Signal:
     # Outcome tracking needs the real interval -- "confluence" itself is not
     # a fetchable broker interval. See track_open_signals in
     # signals/outcomes/tracker.py.
-    indicators["source_timeframe"] = signal.timeframe
+    indicators["source_timeframe"] = broker_interval(signal.timeframe)
 
     setup = CandidateSetup(
         symbol=signal.symbol, direction=signal.direction, entry=signal.entry,

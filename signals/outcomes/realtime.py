@@ -2,7 +2,7 @@
 ETHUSD) via a live WebSocket feed.
 
 XAUUSD/MT5 does NOT go through this process — the MT5 EA
-(mt5/QauntifyTickPush.mq5) pushes ticks straight to the production API
+(mt5/KiarosTickPush.mq5) pushes ticks straight to the production API
 (web/src/app/api/mt5/tick/route.ts) instead, so the VPS running MT5 only
 needs to run the EA itself, not this script too. That path is a TypeScript
 port of the same rules (web/src/lib/outcome-rules.ts /
@@ -33,7 +33,7 @@ import requests
 from signals.config import Config
 from signals.clients.market import fetch_candles
 from signals.models import Candle
-from signals.outcomes.tracker import apply_events, check_outcome_events
+from signals.outcomes.tracker import apply_events, check_outcome_events, fetch_interval_for_row
 from signals.persistence.signals import list_open_signals
 
 CACHE_REFRESH_SECONDS = 10
@@ -110,18 +110,7 @@ class RealtimeWatcher:
             if not events:
                 continue
 
-            timeframe = row.get("timeframe") or "1h"
-            # Confluence rows carry a synthetic "confluence" timeframe --
-            # fetch_candles only understands real broker intervals, so use
-            # the real interval stashed at creation time instead. Same fix
-            # as signals/outcomes/tracker.py's track_open_signals.
-            fetch_timeframe = timeframe
-            if timeframe == "confluence":
-                fetch_timeframe = (row.get("indicators") or {}).get("source_timeframe")
-                if not fetch_timeframe:
-                    print(f"[{symbol}] confluence row missing source_timeframe, "
-                          "defaulting to 1h")
-                    fetch_timeframe = "1h"
+            fetch_timeframe = fetch_interval_for_row(row)
             try:
                 # Real history for the outcome chart -- a single tick can't
                 # render one. Only fetched on an actual hit, not per tick.

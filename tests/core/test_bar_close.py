@@ -42,6 +42,7 @@ def test_sessions_due_fires_once_per_bar():
     # not part of TRADING_SESSIONS to be due here.)
     assert "scalp" in names
     assert "swing" in names
+    assert "smc" not in names
     # Second call in the same window must not re-fire
     due2 = sessions_due(now_ms, TRADING_SESSIONS, last_fired)
     assert due2 == []

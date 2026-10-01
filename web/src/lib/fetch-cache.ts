@@ -6,7 +6,7 @@ Authorization is part of the cache key, so signed-in JWTs stay isolated.
 */
 export const PUBLIC_FETCH = { next: { revalidate: 30 } } as const;
 
-/** Slightly fresher for war-room / dashboard streams. */
+/** Slightly fresher for dashboard streams. */
 export const FRESH_FETCH = { next: { revalidate: 20 } } as const;
 
 /** Track-record is heavier; 60s is enough for public browsing. */

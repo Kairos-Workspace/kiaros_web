@@ -5,7 +5,6 @@ import { memo, useCallback, useEffect, useState } from "react";
 
 import type { Signal } from "@/lib/signals";
 import { formatDateTime, formatPrice, formatRelativeTime, formatTimeframe } from "@/lib/format";
-import { SignalWarRoomSection } from "@/components/dashboard/SignalWarRoomSection";
 
 function riskReward(signal: Signal): string {
   const risk = Math.abs(signal.entry - signal.stopLoss);
@@ -189,13 +188,11 @@ export const SignalCard = memo(function SignalCard({
   onSelect,
   adminSlot,
   showLlmBadge = false,
-  showWarRoomBadge = false,
 }: {
   signal: Signal;
   onSelect?: (signal: Signal) => void;
   adminSlot?: React.ReactNode;
   showLlmBadge?: boolean;
-  showWarRoomBadge?: boolean;
 }) {
   const isLong = signal.direction === "long";
   // Pure SL only — closed TP1/TP2 wins are not losses.
@@ -242,11 +239,6 @@ export const SignalCard = memo(function SignalCard({
             {showLlmBadge ? (
               <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-accent">
                 LLM
-              </span>
-            ) : null}
-            {showWarRoomBadge ? (
-              <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-accent">
-                War Room
               </span>
             ) : null}
           </div>
@@ -457,8 +449,6 @@ function SignalDetailModal({
             <p className="mt-2 text-sm leading-relaxed text-ink">{signal.rationale}</p>
           </div>
 
-          <SignalWarRoomSection signalId={signal.id} />
-
           <div className="mt-5">
             <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate">
               សូចនាករ
@@ -501,13 +491,7 @@ function CloseIcon() {
   );
 }
 
-export function SignalsGrid({
-  signals,
-  showWarRoomBadge = false,
-}: {
-  signals: Signal[];
-  showWarRoomBadge?: boolean;
-}) {
+export function SignalsGrid({ signals }: { signals: Signal[] }) {
   const [selected, setSelected] = useState<Signal | null>(null);
 
   return (
@@ -518,7 +502,6 @@ export function SignalsGrid({
             key={signal.id}
             signal={signal}
             onSelect={setSelected}
-            showWarRoomBadge={showWarRoomBadge}
           />
         ))}
       </div>

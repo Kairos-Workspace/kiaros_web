@@ -8,7 +8,7 @@ from signals.models import Signal, TRADING_SESSIONS
 
 # The confluence pass only considers signals from the currently-scanned main
 # sessions as independent confirmation -- auxiliary sessions (xau_scalp/1m,
-# war_room/floor, bbma) are explicitly out of scope (design doc "Definition
+# legacy floor, bbma, and smc lanes are explicitly out of scope (design doc "Definition
 # of confluence" rule 4), and two of them reuse main-session strategy tags
 # (ict_fvg, cloud_mss), so excluding them requires a timeframe filter, not
 # just the strategy filter. Tied directly to TRADING_SESSIONS so a session
@@ -309,17 +309,17 @@ def open_signals_same_direction(symbol: str, direction: str, *,
     other than `exclude_strategy` -- the confluence pass's "does an
     independent strategy already agree" check.
 
-    `timeframe=in.(5m,15m,1h)` scopes the check to the three main sessions
-    only (design doc "Definition of confluence" rule 4). This also excludes
-    `"confluence"` itself, keeping an already-published confluence row from
-    ever counting toward a later confluence check (no chaining) -- and,
-    critically, excludes the auxiliary sessions (xau_scalp/1m, war_room/
-    floor, bbma), two of which reuse main-session strategy tags (ict_fvg,
-    cloud_mss) and so would otherwise slip past the `exclude_strategy` check
-    below and be miscounted as independent confirmation. The strategy filter
-    itself happens in Python: PostgREST can't easily filter JSONB
-    `indicators->>strategy` alongside these other conditions in one readable
-    query here.
+    `timeframe=in.(...)` scopes the check to the currently-scanned main
+    sessions (design doc "Definition of confluence" rule 4). This also
+    excludes `"confluence"` itself, keeping an already-published
+    confluence row from ever counting toward a later confluence check (no
+    chaining) -- and, critically, excludes the auxiliary sessions
+    (xau_scalp/1m, legacy floor, bbma, smc), two of which reuse main-session
+    strategy tags (ict_fvg, cloud_mss) and so would otherwise slip past the
+    `exclude_strategy` check below and be miscounted as independent
+    confirmation. The strategy filter itself happens in Python: PostgREST
+    can't easily filter JSONB `indicators->>strategy` alongside these other
+    conditions in one readable query here.
     """
     session = session or requests.Session()
     response = session.get(

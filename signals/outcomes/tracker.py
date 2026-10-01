@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 
 from signals.chart.outcome_pipeline import attach_outcome_chart
 from signals.clients.market import fetch_candles
-from signals.models import ALL_SESSIONS, OPEN_POLL_STATUSES, TIMEFRAME_MINUTES
+from signals.models import ALL_SESSIONS, OPEN_POLL_STATUSES, TIMEFRAME_MINUTES, broker_interval
 from signals.persistence.signals import (
     list_open_signals,
     list_signals_missing_outcome_chart,
@@ -28,6 +28,26 @@ HISTORY_LIMIT = 1000
 # Open-position candle fetches are independent reads (one per symbol/
 # timeframe/creation-time), same reasoning as engine.py's MAX_SCAN_WORKERS.
 MAX_OUTCOME_FETCH_WORKERS = 4
+
+_TP_ORDER = ("tp1_hit", "tp2_hit", "tp3_hit")
+# Terminal outcomes. tp1_hit / tp2_hit are also terminal when closed_at is set
+# (TP banked, later stop — we freeze the highest level reached as the win).
+_TERMINAL = frozenset({"tp3_hit", "sl_hit", "expired", "tp_hit"})
+
+
+def fetch_interval_for_row(row: dict) -> str:
+    """Broker interval for outcome candle fetches.
+
+    Synthetic lanes (smc/bbma/floor) and confluence rows must not be
+    passed to fetch_candles as stored ids — Kraken/MT5 only know 5m/15m/1h.
+    Missing confluence source_timeframe still logs, same as before.
+    """
+    timeframe = row.get("timeframe") or "1h"
+    indicators = row.get("indicators") or {}
+    if timeframe == "confluence" and not indicators.get("source_timeframe"):
+        print(f"[{row.get('symbol')}] confluence row missing source_timeframe, "
+              "defaulting to 1h")
+    return broker_interval(timeframe, indicators)
 
 _TP_ORDER = ("tp1_hit", "tp2_hit", "tp3_hit")
 # Terminal outcomes. tp1_hit / tp2_hit are also terminal when closed_at is set
@@ -352,22 +372,7 @@ def track_open_signals(cfg, prefetched=None, session=None) -> list:
         created = datetime.fromisoformat(row["created_at"])
         created_ms = created.timestamp() * 1000
         expires_at = created + max_open
-        # Confluence rows carry a synthetic "confluence" timeframe (so they
-        # never collide with a real session's one-open-per-symbol lock), but
-        # their entry/SL/TP came from a real interval stashed at creation
-        # time -- candle fetches must use that real interval, or every
-        # fetch_candles call raises and the row never settles (not even
-        # expiry -- see the design doc's Delivery section). Expiry itself
-        # still uses the registered `confluence` session's own max_open,
-        # from `timeframe` above, not the source interval's.
-        fetch_timeframe = timeframe
-        if timeframe == "confluence":
-            fetch_timeframe = (row.get("indicators") or {}).get(
-                "source_timeframe")
-            if not fetch_timeframe:
-                print(f"[{symbol}] confluence row missing source_timeframe, "
-                      "defaulting to 1h")
-                fetch_timeframe = "1h"
+        fetch_timeframe = fetch_interval_for_row(row)
         # A limit fill needs its own entry bar in the window. Reach back two
         # bars rather than one so the fetch lands before that bar's open
         # whatever the delay between bar close and row write; _scan_start then
@@ -452,15 +457,7 @@ def backfill_missing_outcome_charts(cfg, session=None, limit=20) -> int:
     backfilled = 0
     for row in rows:
         symbol = row["symbol"]
-        timeframe = row.get("timeframe") or "1h"
-        fetch_timeframe = timeframe
-        if timeframe == "confluence":
-            fetch_timeframe = (row.get("indicators") or {}).get(
-                "source_timeframe")
-            if not fetch_timeframe:
-                print(f"[{symbol}] confluence row missing source_timeframe, "
-                      "defaulting to 1h")
-                fetch_timeframe = "1h"
+        fetch_timeframe = fetch_interval_for_row(row)
         created_ms = datetime.fromisoformat(row["created_at"]).timestamp() * 1000
         try:
             candles = fetch_candles(symbol, fetch_timeframe, HISTORY_LIMIT,

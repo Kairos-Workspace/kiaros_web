@@ -689,7 +689,7 @@ import { relativeTime } from "@/lib/relative-time";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "Live Track Record — Qauntify",
+  title: "Live Track Record — Kiaros",
   description: "Every signal, wins and losses. Real, auto-updated performance.",
 };
 

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { getClosedOutcomeSignals, getDailyPnLStats, getSignals, getStats, getWarRoomSignalsPaginated } from "@/lib/signals";
+import { getClosedOutcomeSignals, getDailyPnLStats, getSignals, getStats } from "@/lib/signals";
 
 const ROW = {
   id: "abc-123",
@@ -95,6 +95,22 @@ describe("getSignals", () => {
     const [url] = fetchFn.mock.calls[0];
     expect(url).toContain("timeframe.eq.bbma");
     expect(url).toContain("indicators->>source.eq.mt5_ea");
+  });
+
+  it("loads the SMC lane by stored timeframe", async () => {
+    const fetchFn = mockFetch([]);
+    await getSignals(10, undefined, "smc");
+    const [url] = fetchFn.mock.calls[0];
+    expect(url).toContain("timeframe=eq.smc");
+  });
+
+  it("excludes BBMA and SMC EA lanes from the AI tab", async () => {
+    const fetchFn = mockFetch([]);
+    await getSignals(10, undefined, undefined, "ai");
+    const [url] = fetchFn.mock.calls[0];
+    expect(url).toContain("timeframe=neq.bbma");
+    expect(url).toContain("timeframe=neq.smc");
+    expect(url).toContain("indicators->>source.neq.mt5_ea");
   });
 
   it("omits the timeframe filter when no session is requested", async () => {
@@ -271,38 +287,5 @@ describe("getDailyPnLStats", () => {
     const url = String(fetchFn.mock.calls[0][0]);
     expect(url).toContain("tp1_hit_at");
     expect(url).toContain("tp1_hit,tp2_hit");
-  });
-});
-
-describe("getWarRoomSignalsPaginated", () => {
-  it("loads timeframe=floor signals newest first", async () => {
-    const fetchFn = vi.fn().mockResolvedValue({
-      ok: true,
-      headers: { get: () => "0-1/2" },
-      json: () =>
-        Promise.resolve([
-          {
-            ...ROW,
-            id: "sig-b",
-            timeframe: "floor",
-            created_at: "2026-08-02T00:00:00Z",
-          },
-          {
-            ...ROW,
-            id: "sig-a",
-            timeframe: "floor",
-            created_at: "2026-08-01T00:00:00Z",
-          },
-        ]),
-    });
-    vi.stubGlobal("fetch", fetchFn);
-
-    const page = await getWarRoomSignalsPaginated(1);
-    expect(page.total).toBe(2);
-    expect(page.signals.map((s) => s.id)).toEqual(["sig-b", "sig-a"]);
-    const url = String(fetchFn.mock.calls[0][0]);
-    expect(url).toContain("timeframe=eq.floor");
-    expect(url).not.toContain("agent_debates");
-    expect(url).not.toContain("timeframe=neq.floor");
   });
 });

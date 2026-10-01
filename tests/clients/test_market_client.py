@@ -87,6 +87,12 @@ def test_fetch_candles_sends_kraken_params():
     assert "since" not in session.last_params
 
 
+def test_fetch_candles_maps_smc_lane_to_1h():
+    session = FakeSession(OHLC_PAYLOAD)
+    fetch_candles("ETHUSD", interval="smc", session=session)
+    assert session.last_params["interval"] == 60
+
+
 def test_fetch_candles_maps_legacy_usdt_symbol():
     session = FakeSession(OHLC_PAYLOAD)
     fetch_candles("BTCUSDT", interval="5m", session=session)

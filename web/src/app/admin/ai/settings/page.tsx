@@ -6,7 +6,7 @@ import { requireAdminPage } from "@/lib/admin-guard";
 import { getBotSettings, SIGNAL_STRATEGIES } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
-  title: "Admin · AI settings — Qauntify",
+  title: "Admin · AI settings",
 };
 
 export const revalidate = 30;

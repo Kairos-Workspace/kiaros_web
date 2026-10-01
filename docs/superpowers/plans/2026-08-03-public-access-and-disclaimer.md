@@ -511,7 +511,7 @@ export function DisclaimerBody() {
 
       <Section title="What this is">
         <p>
-          Qauntify is a development project, built in the open. It is not a
+          Kiaros is a development project, built in the open. It is not a
           product, not a service, and not a business offering to manage anyone
           &apos;s money. It exists so its author can learn how automated trading
           systems behave, and to publish what happens when they do.
@@ -612,9 +612,9 @@ import { Footer } from "@/components/shared/Footer";
 import { Nav } from "@/components/shared/Nav";
 
 export const metadata: Metadata = {
-  title: "Disclaimer — Qauntify",
+  title: "Disclaimer — Kiaros",
   description:
-    "What Qauntify is, how its numbers are produced, and what they do not mean.",
+    "What Kiaros is, how its numbers are produced, and what they do not mean.",
 };
 
 export default function DisclaimerPage() {
@@ -1049,7 +1049,7 @@ Replace the closing paragraph:
 ```tsx
         <p className="mt-10 border-t border-line pt-6 text-xs leading-relaxed text-slate">
           Signals are for educational and analysis purposes only. Not financial
-          advice. Trading involves risk. © {new Date().getFullYear()} Qauntify.
+          advice. Trading involves risk. © {new Date().getFullYear()} Kiaros.
         </p>
 ```
 
@@ -1057,7 +1057,7 @@ with:
 
 ```tsx
         <p className="mt-10 border-t border-line pt-6 text-xs leading-relaxed text-slate">
-          {DISCLAIMER_FOOTER} © {new Date().getFullYear()} Qauntify.
+          {DISCLAIMER_FOOTER} © {new Date().getFullYear()} Kiaros.
         </p>
 ```
 

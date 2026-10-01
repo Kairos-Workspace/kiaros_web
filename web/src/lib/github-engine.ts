@@ -6,7 +6,6 @@ const ENGINE_WORKFLOW_FILE = "engine.yml";
 export const REPO_EVENTS = {
   engine: "run-engine",
   xauScalper: "run-xau-scalper",
-  warRoom: "run-war-room",
   healthcheck: "run-session-healthcheck",
 } as const;
 
@@ -117,10 +116,6 @@ export async function dispatchXauScalperRestart(): Promise<DispatchResult> {
   return dispatchRepositoryEvent(REPO_EVENTS.xauScalper);
 }
 
-export async function dispatchWarRoomWorkflow(): Promise<DispatchResult> {
-  return dispatchRepositoryEvent(REPO_EVENTS.warRoom);
-}
-
 export async function dispatchHealthcheckWorkflow(): Promise<DispatchResult> {
   return dispatchRepositoryEvent(REPO_EVENTS.healthcheck);
 }
@@ -132,12 +127,6 @@ export const CRON_WORKFLOWS = [
     file: "engine.yml",
     label: "Signals engine",
     trigger: "/api/cron/trigger-engine",
-  },
-  {
-    key: "war-room",
-    file: "war-room.yml",
-    label: "War Room floor",
-    trigger: "/api/cron/trigger-war-room",
   },
   {
     key: "xau-scalper",

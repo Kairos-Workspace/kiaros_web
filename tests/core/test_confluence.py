@@ -164,3 +164,14 @@ def test_detect_confluence_isolates_failures_between_signals(monkeypatch):
     assert published[0].symbol == "ETHUSD"
     assert saved == published
     assert sent == published
+
+
+def test_confluence_from_smc_stores_broker_source_timeframe(monkeypatch):
+    signal = _signal(strategy="ict_smc", timeframe="smc")
+    confluence = confluence_module._build_confluence_signal(
+        signal, {"timeframe": "15m", "indicators": {"strategy": "cloud_mss"}},
+    )
+    assert confluence.indicators["source_timeframe"] == "1h"
+    assert confluence.indicators["confluence_of"] == [
+        "ict_smc@smc", "cloud_mss@15m",
+    ]

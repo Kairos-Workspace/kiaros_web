@@ -11,8 +11,9 @@ const PERIOD_MINUTES: Record<string, number> = {
   "1m": 1,
   "5m": 5,
   "15m": 15,
-  floor: 15,
   "1h": 60,
+  smc: 60,
+  bbma: 60,
 };
 
 export async function GET(request: Request) {

@@ -14,16 +14,15 @@ export function Logo({
       className={`inline-flex items-center gap-2.5 text-lg font-bold tracking-tight ${className}`}
     >
       <Image
-        src="/logo/logo.png"
-        alt=""
-        width={32}
-        height={32}
+        src="/logo/kiaros-logo.png"
+        alt="Kiaros flower"
+        width={60}
+        height={40}
         priority
-        className="h-8 w-8"
-        aria-hidden
+        className="h-10 w-[3.75rem] object-contain dark:invert"
       />
       <span className="text-ink">
-        Qaunt<span className="text-slate">ify</span>
+        Kiar<span className="text-slate">os</span>
         {suffix ? (
           <span className="ml-1.5 text-xs font-medium text-slate">{suffix}</span>
         ) : null}

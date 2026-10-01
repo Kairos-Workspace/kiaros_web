@@ -67,6 +67,6 @@ export async function POST(request: Request) {
   invalidateOpenSignalsCache(parsed.symbol);
 
   // Telegram photo is sent from /api/mt5/chart after ChartScreenShot lands
-  // (same path as gold Scalp/Swing/War Room). Avoid a text-only duplicate.
+  // (same path as gold scalp and swing signals). Avoid a text-only duplicate.
   return NextResponse.json({ ok: true, id, telegram: false });
 }

@@ -39,8 +39,10 @@ describe("export-closed-signals helpers", () => {
     expect(timeframeForTab("super-scalping")).toBe("5m");
     expect(timeframeForTab("scalping")).toBe("15m");
     expect(timeframeForTab("swing")).toBe("1h");
+    expect(timeframeForTab("smc")).toBe("smc");
     expect(parseExportTab("super-scalping")).toBe("super-scalping");
     expect(parseExportTab("scalping")).toBe("scalping");
+    expect(parseExportTab("smc")).toBe("smc");
     expect(parseExportTab("nope")).toBe("all");
   });
 
@@ -71,7 +73,7 @@ describe("export-closed-signals helpers", () => {
 
   it("names download files with tab and date", () => {
     expect(exportFilename("xlsx", "all")).toMatch(
-      /^qauntify-closed-signals-all-\d{4}-\d{2}-\d{2}\.xlsx$/,
+      /^kiaros-closed-signals-all-\d{4}-\d{2}-\d{2}\.xlsx$/,
     );
   });
 });

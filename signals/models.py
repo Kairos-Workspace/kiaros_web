@@ -124,12 +124,31 @@ ADMIN_SELECTABLE_STRATEGIES = ("ema_cross", "ict_smc", "sr_zone",
 
 DEFAULT_SIGNAL_STRATEGY = "ema_cross"
 
-# "floor" is the War Room / Trading Floor stream — candles are 15m, but the
-# stored timeframe stays distinct so it never collides with scalp uniqueness
-# or appears in Super Scalp / Scalp / Swing tabs.
+# "floor" is a retired 15m lane retained only so historical open rows can
+# finish outcome tracking without colliding with active strategy sessions.
 TIMEFRAME_MINUTES = {
     "1m": 1, "5m": 5, "15m": 15, "1h": 60, "floor": 15, "bbma": 60,
+    "smc": 60,
 }
+
+# Stored lane id → broker OHLC interval. Synthetic lanes keep their own
+# stored timeframe so they don't share the one-open lock or browse tab
+# with the real 1h/15m sessions, but candles are still those intervals.
+BROKER_INTERVAL = {
+    "bbma": "1h",
+    "smc": "1h",
+    "floor": "15m",
+}
+
+
+def broker_interval(timeframe: str, indicators: dict | None = None) -> str:
+    """Broker interval to fetch for a stored (possibly synthetic) timeframe."""
+    if timeframe == "confluence":
+        src = (indicators or {}).get("source_timeframe")
+        if not src:
+            return "1h"
+        return broker_interval(str(src))
+    return BROKER_INTERVAL.get(timeframe, timeframe)
 
 # Terminal full wins (legacy tp_hit + multi-TP final).
 WIN_STATUSES = frozenset({"tp_hit", "tp3_hit"})
@@ -171,12 +190,13 @@ class TradingSession:
 # Sessions the main engine scans, in order, every run.
 # scalp = 15m cloud rejection + CHoCH; swing = 1h MSNR (Malaysian body-zone
 # S/R, pinned). super_scalp (5m ict_fvg) was pulled 2026-09-06 -- see
-# docs/ict-fvg-backtest-results.md: not profitable on any confirmation tier
-# over 8.96 years (net -1.253R/trade, t=-137.94), including the best-case
-# subset (choch_fvg retest only), so there is nothing here worth tuning
-# further without a different edge. Moved to AUXILIARY_SESSIONS below so
-# already-open 5m signals still settle correctly; re-add here once a
-# replacement 5m strategy is designed and backtested.
+# docs/ict-fvg-backtest-results.md: not profitable on any confirmation tier over
+# 8.96 years (net -1.253R/trade, t=-137.94), including the best-case subset
+# (choch_fvg retest only), so there is nothing here worth tuning further without
+# a different edge. Moved to AUXILIARY_SESSIONS below so already-open 5m
+# signals still settle correctly; re-add here once a replacement 5m
+# strategy is designed and backtested. SMC is the same shape as BBMA: an
+# MT5 EA publishes into timeframe=smc with no AI gate.
 TRADING_SESSIONS = (
     TradingSession(
         name="scalp", timeframe="15m", max_open_days=2,
@@ -208,14 +228,20 @@ AUXILIARY_SESSIONS = (
         strategy="ict_fvg",
     ),
     TradingSession(
-        name="war_room", timeframe="floor", max_open_days=2,
+        name="legacy_floor", timeframe="floor", max_open_days=2,
         strategy="cloud_mss",
     ),
-    # Taught BBMA live lane from QauntifyBBMA.mq5 (no AI gate). Distinct
+    # Taught BBMA live lane from KiarosBBMA.mq5 (no AI gate). Distinct
     # timeframe so it never shares the Swing (1h) tab or open-signal lock.
     TradingSession(
         name="bbma", timeframe="bbma", max_open_days=14,
         strategy="bbma_reentry",
+    ),
+    # Taught SMC live lane from KiarosSMC.mq5 (no AI gate). H1 sweep +
+    # CHoCH on XAUUSD, stored as timeframe=smc so it never shares Swing or BBMA.
+    TradingSession(
+        name="smc", timeframe="smc", max_open_days=14,
+        strategy="ict_smc",
     ),
     # Cross-strategy confirmation: fires when 2+ independent strategies from
     # the three main sessions are simultaneously open on the same
@@ -239,13 +265,17 @@ ALL_SESSIONS = TRADING_SESSIONS + AUXILIARY_SESSIONS
 def sessions_for_timeframes(timeframes) -> tuple[TradingSession, ...]:
     """Resolve TRADING_SESSIONS entries for comma-separated timeframes (5m/15m/1h).
 
-    Unknown tokens are ignored. Returns empty when nothing matches — the engine
-    then skips the run instead of scanning every session by accident.
+    Unknown tokens are ignored. Returns empty when nothing matches — the
+    engine then skips the run instead of scanning every session by accident.
+    Auxiliary lanes (bbma, smc, floor) are never returned here.
     """
     wanted = {str(raw).strip().lower() for raw in timeframes if str(raw).strip()}
     if not wanted:
         return ()
-    return tuple(s for s in TRADING_SESSIONS if s.timeframe in wanted)
+    return tuple(
+        s for s in TRADING_SESSIONS
+        if s.timeframe in wanted or broker_interval(s.timeframe) in wanted
+    )
 
 
 # Symbols the engine must never scan (even if still listed in bot_settings).

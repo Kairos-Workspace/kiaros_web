@@ -131,9 +131,9 @@ function supabaseConfig(): { url: string; anonKey: string } | null {
 // RLS already blocks them for anon and member roles — this is defence in depth,
 // applied centrally so no caller can forget it.
 const EXCLUDE_SHADOW = "&shadow=is.false";
-// War Room Floor signals use timeframe=floor — keep them out of strategy tabs.
-const EXCLUDE_WAR_ROOM = "&timeframe=neq.floor";
-const WAR_ROOM_ONLY = "&timeframe=eq.floor";
+// Retired floor signals remain in storage for historical outcome tracking but
+// must stay out of every active strategy tab.
+const EXCLUDE_RETIRED_FLOOR = "&timeframe=neq.floor";
 // Taught BBMA live lane (EA). New rows use timeframe=bbma; early publishes
 // were 1h + indicators.source=mt5_ea — include both so the tab is complete.
 const BBMA_LANE =
@@ -142,9 +142,9 @@ const BBMA_LANE =
 const EXCLUDE_BBMA_FROM_1H =
   "&or=(indicators->>source.is.null,indicators->>source.neq.mt5_ea)";
 // AI Signal lane: every SEA-LION-confirmed setup, across strategies —
-// excludes the raw, no-AI-gate BBMA EA feed (both its timeframe=bbma rows
-// and the legacy 1h rows tagged indicators.source=mt5_ea).
-const EXCLUDE_BBMA_LANE = `&timeframe=neq.bbma${EXCLUDE_BBMA_FROM_1H}`;
+// excludes the raw, no-AI-gate EA feeds (BBMA timeframe=bbma, SMC
+// timeframe=smc, and leftover 1h rows tagged indicators.source=mt5_ea).
+const EXCLUDE_EA_LANES = `&timeframe=neq.bbma&timeframe=neq.smc${EXCLUDE_BBMA_FROM_1H}`;
 // Confluence signals (timeframe=confluence) are Telegram + track-record
 // only in v1 -- no dashboard tab queries for them yet. See
 // docs/superpowers/specs/2026-08-14-strategy-confluence-signal-design.md.
@@ -157,7 +157,7 @@ function sessionQuery(timeframe?: string, lane: SignalLane = "default"): string 
     return `&timeframe=eq.1h${EXCLUDE_BBMA_FROM_1H}`;
   }
   if (timeframe) return `&timeframe=eq.${timeframe}`;
-  return lane === "ai" ? EXCLUDE_BBMA_LANE : "";
+  return lane === "ai" ? EXCLUDE_EA_LANES : "";
 }
 
 async function fetchRows(
@@ -168,7 +168,7 @@ async function fetchRows(
   if (!config) return null;
   try {
     const response = await fetch(
-      `${config.url}/rest/v1/signals?${query}${EXCLUDE_SHADOW}${EXCLUDE_WAR_ROOM}`,
+      `${config.url}/rest/v1/signals?${query}${EXCLUDE_SHADOW}${EXCLUDE_RETIRED_FLOOR}`,
       {
         headers: {
           apikey: config.anonKey,
@@ -226,7 +226,7 @@ async function fetchRowsPaginated(
   const rangeEnd = offset + pageSize - 1;
   try {
     const response = await fetch(
-      `${config.url}/rest/v1/signals?${query}${EXCLUDE_SHADOW}${EXCLUDE_WAR_ROOM}`,
+      `${config.url}/rest/v1/signals?${query}${EXCLUDE_SHADOW}${EXCLUDE_RETIRED_FLOOR}`,
       {
         headers: {
           apikey: config.anonKey,
@@ -394,7 +394,7 @@ export async function getStats(
     return statsFromSignals(await getSignals(500, accessToken, undefined, "bbma"));
   }
   if (lane === "ai") {
-    // RPC's p_timeframe filter can't express "every strategy except BBMA".
+    // RPC's p_timeframe filter can't express "every strategy except EA lanes".
     return statsFromSignals(await getSignals(500, accessToken, undefined, "ai"));
   }
   // Aggregated server-side by supabase/schema.sql's get_signal_stats() —
@@ -459,55 +459,6 @@ export async function getSignalsPaginated(
   };
 }
 
-/**
- * War Room Floor signals only (timeframe=floor) — never mixed with strategy tabs.
- */
-export async function getWarRoomSignalsPaginated(
-  page = 1,
-  accessToken?: string,
-  pageSize = SIGNALS_PAGE_SIZE,
-): Promise<SignalsPage> {
-  const safePage = Number.isInteger(page) && page > 0 ? page : 1;
-  const query = `select=*${WAR_ROOM_ONLY}&order=created_at.desc`;
-  const config = supabaseConfig();
-  const empty: SignalsPage = { signals: [], page: 1, pageSize, total: 0, totalPages: 1 };
-  if (!config) return empty;
-
-  const offset = (safePage - 1) * pageSize;
-  const rangeEnd = offset + pageSize - 1;
-  try {
-    const response = await fetch(
-      `${config.url}/rest/v1/signals?${query}${EXCLUDE_SHADOW}`,
-      {
-        headers: {
-          apikey: config.anonKey,
-          Authorization: `Bearer ${accessToken ?? config.anonKey}`,
-          Range: `${offset}-${rangeEnd}`,
-          Prefer: "count=exact",
-        },
-        ...PUBLIC_FETCH,
-      },
-    );
-    if (!response.ok) return empty;
-    const rows = (await response.json()) as SignalRow[];
-    const contentRange = response.headers.get("content-range");
-    const match = contentRange?.match(/\d+-\d+\/(\d+|\*)/);
-    const total = match && match[1] !== "*" ? Number(match[1]) : rows.length;
-    const totalPages = Math.max(1, Math.ceil(total / pageSize) || 1);
-    const signals = (Array.isArray(rows) ? rows : [])
-      .map(parseRow)
-      .filter((s): s is Signal => s !== null);
-    return {
-      signals,
-      page: Math.min(safePage, totalPages),
-      pageSize,
-      total,
-      totalPages,
-    };
-  } catch {
-    return empty;
-  }
-}
 
 /** Closed TP/SL outcomes only — open and expired are excluded from exports. */
 export async function getClosedOutcomeSignals(

@@ -7,7 +7,7 @@ import {
 } from "@/lib/signals-browse-tabs";
 
 export const metadata: Metadata = {
-  title: "Signals — Qauntify",
+  title: "Signals",
   description:
     "ការរៀបចំជួញដូរផ្ទាល់តាមវគ្គ — ចូល បញ្ឈប់ គោលដៅ និងលទ្ធផល។",
 };

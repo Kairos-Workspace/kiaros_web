@@ -5,7 +5,7 @@ from typing import NamedTuple
 
 from signals.analysis.indicators import adx, atr, ema, macd_histogram, rsi
 from signals.clients.market import fetch_candles, fetch_gold_last_price, gold_entry_live_ok
-from signals.models import CandidateSetup, take_profits_from_risk
+from signals.models import CandidateSetup, broker_interval, take_profits_from_risk
 from signals.persistence.mt5 import fetch_mt5_last_tick, mt5_tick_is_fresh
 from signals.pipeline.dedup import with_retry
 
@@ -103,6 +103,7 @@ def _load_market_data(symbol, timeframe, strategy, cfg, *,
     candle_limit = _candle_limit_for(strategy, cfg)
     needs_h1 = strategy in NEEDS_H1
     needs_htf = not needs_h1 and bool(confluence_timeframe)
+    fetch_tf = broker_interval(timeframe)
 
     with ThreadPoolExecutor(max_workers=2) as pool:
         secondary = None
@@ -115,7 +116,7 @@ def _load_market_data(symbol, timeframe, strategy, cfg, *,
         try:
             candles = with_retry(
                 lambda: fetch_candles(
-                    symbol, timeframe, candle_limit, session=session,
+                    symbol, fetch_tf, candle_limit, session=session,
                     supabase_url=cfg.supabase_url,
                     service_key=cfg.supabase_service_key,
                 )
@@ -223,6 +224,6 @@ def resolve_gold_live_price(cfg, session=None, *, require_mt5: bool = True
     if require_mt5:
         raise RuntimeError(
             "MT5 tick missing or stale — refusing gold publish "
-            "(keep QauntifyTickPush EA running on XAUUSD)"
+            "(keep KiarosTickPush EA running on XAUUSD)"
         )
     return fetch_gold_last_price(session=session), "paxg"

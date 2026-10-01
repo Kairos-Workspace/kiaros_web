@@ -7,7 +7,7 @@ each closed bar fires at most once.
 from __future__ import annotations
 
 from signals.clients.market import INTERVAL_MINUTES
-from signals.models import TradingSession
+from signals.models import TradingSession, broker_interval
 
 # How long after a bar boundary we still consider it a "fresh close".
 DEFAULT_CLOSE_WINDOW_MS = 45_000
@@ -49,9 +49,10 @@ def sessions_due(
     """
     due: list[TradingSession] = []
     for session in sessions:
-        if not just_closed(now_ms, session.timeframe, window_ms=window_ms):
+        tf = broker_interval(session.timeframe)
+        if not just_closed(now_ms, tf, window_ms=window_ms):
             continue
-        bar_open = closed_bar_open_ms(now_ms, session.timeframe)
+        bar_open = closed_bar_open_ms(now_ms, tf)
         if last_fired.get(session.name) == bar_open:
             continue
         last_fired[session.name] = bar_open

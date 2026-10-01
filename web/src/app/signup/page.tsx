@@ -9,7 +9,7 @@ import { ALLOW_SIGNUP } from "@/lib/access-mode";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "បង្កើតគណនី — Qauntify",
+  title: "បង្កើតគណនី",
 };
 
 export default async function SignupPage({

@@ -1,26 +1,22 @@
 import Link from "next/link";
 
 import { HeroAmbient } from "@/components/landing/HeroAmbient";
-import { HowAiWorks } from "@/components/landing/HowAiWorks";
-import type { Stats } from "@/lib/signals";
+import { HeroMarketCockpit } from "@/components/landing/HeroMarketCockpit";
 
 /** Paste the public Telegram group invite here. */
 const TELEGRAM_GROUP_URL = "https://t.me/quantify_chat";
 
-export function Hero({ stats }: { stats: Stats }) {
+export function Hero() {
   return (
     <section className="hero-ambient flex min-h-[calc(100dvh-4rem)] flex-col border-b border-line">
       <HeroAmbient />
 
-      <div className="page-container relative z-10 grid flex-1 items-center gap-6 py-6 md:grid-cols-[1fr_1.05fr] md:gap-8 md:py-8 lg:grid-cols-[1fr_0.95fr]">
-        <div className="flex flex-col">
+      <div className="page-container relative z-10 grid flex-1 items-center gap-8 py-8 md:grid-cols-[0.9fr_1.1fr] md:gap-10 md:py-12 lg:gap-16">
+        <div className="hero-glass-panel flex max-w-2xl flex-col rounded-2xl border p-5 md:p-8">
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-ink">
-              Qauntify
+              Kiaros
             </p>
-            <span className="rounded-full bg-long-soft px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide text-long">
-              ឥតគិតថ្លៃ · បើកចំហ · តម្លាភាព
-            </span>
           </div>
           <h1 className="mt-2 text-[1.85rem] font-extrabold leading-[1.2] tracking-tight text-ink sm:text-4xl lg:text-[2.5rem]">
             បង្កើតឡើងដោយសហគមន៍
@@ -28,12 +24,6 @@ export function Hero({ stats }: { stats: Stats }) {
               Trade រួមគ្នា រៀនរួមគ្នា រីកចម្រើនរួមគ្នា
             </span>
           </h1>
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-slate">
-            Trading signals ត្រូវបានវិភាគតាមច្បាប់ដែលបានកំណត់យ៉ាងច្បាស់ ហើយ AI
-            ជួយពិនិត្យ និងបញ្ជាក់ការរៀបចំទីផ្សារ។ រាល់ចំណុចចូល បញ្ឈប់ខាត គោលដៅ
-            និងហេតុផល ត្រូវបានកត់ត្រាទុក ដើម្បីឱ្យសហគមន៍អាចតាមដាន និងពិនិត្យលទ្ធផល
-            រួចកែរសម្រួលទាំងអស់គ្នា។
-          </p>
           <div className="mt-5 flex flex-wrap items-center gap-2.5">
             <Link href="/signals" className="btn-primary">
               មើល Signals
@@ -41,19 +31,13 @@ export function Hero({ stats }: { stats: Stats }) {
             <Link href="/track-record" className="btn-secondary">
               មើលកំណត់ត្រាលទ្ធផល
             </Link>
-            <Link
-              href="/war-room"
-              className="px-2 text-sm font-semibold text-slate hover:text-ink"
-            >
-              ចូល War Room →
-            </Link>
           </div>
 
           <a
             href={TELEGRAM_GROUP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-5 flex max-w-md items-start gap-3 rounded-lg border border-line bg-card px-3.5 py-3 transition-colors hover:border-ink/25"
+            className="hero-glass-panel-muted mt-5 flex max-w-md items-start gap-3 rounded-lg border border-line px-3.5 py-3 transition-colors hover:border-ink/25"
           >
             <span
               className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#229ED9]/15 text-[#229ED9]"
@@ -73,7 +57,7 @@ export function Hero({ stats }: { stats: Stats }) {
           </a>
         </div>
 
-        <HowAiWorks stats={stats} />
+        <HeroMarketCockpit />
       </div>
     </section>
   );

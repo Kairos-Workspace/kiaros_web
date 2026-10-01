@@ -59,9 +59,6 @@ export async function DashboardShell({
               <div className="hidden lg:block">{actions}</div>
             ) : null}
             <div className="flex items-center gap-2 lg:hidden">
-            <Link href="/dashboard/war-room" className="btn-ghost text-sm">
-              War Room
-            </Link>
             <Link href="/" className="btn-ghost text-sm">
               ទំព័រដើម
             </Link>

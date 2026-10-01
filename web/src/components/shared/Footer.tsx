@@ -19,9 +19,6 @@ export function Footer() {
             <Link href="/signals" className="font-medium text-slate hover:text-ink">
               Signals
             </Link>
-            <Link href="/war-room" className="font-medium text-slate hover:text-ink">
-              War Room
-            </Link>
             <Link href="/track-record" className="font-medium text-slate hover:text-ink">
               កំណត់ត្រាលទ្ធផល
             </Link>
@@ -32,7 +29,7 @@ export function Footer() {
         </div>
         <p className="mt-4 border-t border-line pt-3 text-xs leading-relaxed text-slate">
           Signals គឺសម្រាប់គោលបំណងអប់រំ និងវិភាគតែប៉ុណ្ណោះ។ មិនមែនដំបូន្មានហិរញ្ញវត្ថុទេ។
-          ការជួញដូរមានហានិភ័យ។ © {new Date().getFullYear()} Qauntify។
+          ការជួញដូរមានហានិភ័យ។ © {new Date().getFullYear()} Kiaros។
         </p>
       </div>
     </footer>

@@ -1,11 +1,15 @@
+"use client";
+
+import { useState } from "react";
+
 import type { Stats } from "@/lib/signals";
 
 const STEPS = [
-  { id: "scan", label: "ស្កេន" },
-  { id: "setup", label: "ការរៀបចំ" },
-  { id: "news", label: "ព័ត៌មាន" },
-  { id: "ai", label: "AI បញ្ជាក់" },
-  { id: "publish", label: "បានផ្សាយ" },
+  { id: "scan", label: "ស្កេន", detail: "ស្វែងរកទីផ្សារដែលមានចលនា និងឱកាសច្បាស់លាស់។" },
+  { id: "setup", label: "ការរៀបចំ", detail: "កំណត់តំបន់ចូល បញ្ឈប់ខាត និងគោលដៅតាមច្បាប់។" },
+  { id: "news", label: "ព័ត៌មាន", detail: "ពិនិត្យព័ត៌មានសំខាន់ៗដែលអាចប៉ះពាល់ដល់ការរៀបចំ។" },
+  { id: "ai", label: "AI បញ្ជាក់", detail: "AI ពិនិត្យហេតុផល និងកម្រិតទំនុកចិត្តរបស់ signal។" },
+  { id: "publish", label: "បានផ្សាយ", detail: "រក្សាទុក signal ដែលបានបញ្ជាក់ ដើម្បីតាមដានលទ្ធផល។" },
 ] as const;
 
 function StatBar({
@@ -42,10 +46,13 @@ function StatBar({
 }
 
 export function HowAiWorks({ stats }: { stats: Stats }) {
+  const [selectedStep, setSelectedStep] = useState(0);
+  const activeStep = STEPS[selectedStep];
+
   return (
     <div
       id="how-ai-works"
-      className="overflow-hidden rounded-lg border border-line bg-paper"
+      className="hero-glass-panel overflow-hidden rounded-lg border border-line"
     >
       <div className="flex items-center justify-between px-4 py-3">
         <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
@@ -58,25 +65,37 @@ export function HowAiWorks({ stats }: { stats: Stats }) {
       </div>
 
       <ol className="grid grid-cols-5 gap-px border-y border-line bg-line">
-        {STEPS.map((s) => (
+        {STEPS.map((s, index) => (
           <li
             key={s.id}
-            className="flex flex-col items-center gap-1.5 bg-card px-1 py-3 text-center"
+            className="bg-card"
           >
-            <span
-              className="flex h-5 w-5 items-center justify-center rounded-full bg-long-soft text-[10px] font-bold text-long"
-              aria-hidden
+            <button
+              type="button"
+              className={`hero-step-button flex w-full flex-col items-center gap-1.5 px-1 py-3 text-center ${
+                selectedStep === index ? "is-active" : ""
+              }`}
+              aria-controls="hero-step-detail"
+              aria-pressed={selectedStep === index}
+              onClick={() => setSelectedStep(index)}
             >
-              ✓
-            </span>
-            <span className="text-[10px] font-semibold leading-tight text-ink">
-              {s.label}
-            </span>
+              <span className="hero-step-index flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold">
+                {index + 1}
+              </span>
+              <span className="text-[10px] font-semibold leading-tight text-ink">{s.label}</span>
+            </button>
           </li>
         ))}
       </ol>
 
       <div className="p-4">
+        <div id="hero-step-detail" className="hero-step-detail mb-5">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-wide text-long">
+            ជំហាន {selectedStep + 1} / {STEPS.length}
+          </p>
+          <p className="mt-1 text-sm font-semibold text-ink">{activeStep.label}</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate">{activeStep.detail}</p>
+        </div>
         <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate">
           កំណត់ត្រាលទ្ធផលរហូតមកដល់ពេលនេះ
         </p>

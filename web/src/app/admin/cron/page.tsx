@@ -6,7 +6,7 @@ import { listCronStatuses, type WorkflowRunSummary } from "@/lib/github-engine";
 import { getXauScanStatus } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
-  title: "Admin · Cron — Qauntify",
+  title: "Admin · Cron",
 };
 
 export const dynamic = "force-dynamic";

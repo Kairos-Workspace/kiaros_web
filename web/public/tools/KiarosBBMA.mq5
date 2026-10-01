@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//| QauntifyBBMA.mq5                                                  |
+//| KiarosBBMA.mq5                                                  |
 //| Taught BBMA (Oma Ally) on XAUUSD — live publish, no AI gate.     |
 //|                                                                    |
 //| Doctrine:                                                          |
@@ -7,12 +7,12 @@
 //|   Primary: H1 re-entry after CSAK/CSM into MA5/10 + Mid BB        |
 //|   Secondary: Extreme (MA5 outside BB) → MHV → confirm candle      |
 //|                                                                    |
-//| Keep QauntifyTickPush.mq5 attached for ticks/candles + outcomes.  |
+//| Keep KiarosTickPush.mq5 attached for ticks/candles + outcomes.  |
 //| Allow WebRequest for SignalApiUrl + ChartApiUrl origin:            |
 //| Tools → Options → Expert Advisors                                  |
 //+------------------------------------------------------------------+
 #property strict
-#property copyright "Qauntify"
+#property copyright "Kiaros"
 #property version   "1.05"
 
 input string AppSymbol       = "XAUUSD";
@@ -59,7 +59,7 @@ void PlotAdd(const int handle)
    if(!ShowBbmaStack || handle == INVALID_HANDLE) return;
    if(!ChartIndicatorAdd(0, 0, handle))
      {
-      Print("QauntifyBBMA: ChartIndicatorAdd failed ", GetLastError());
+      Print("KiarosBBMA: ChartIndicatorAdd failed ", GetLastError());
       return;
      }
    int n = ChartIndicatorsTotal(0, 0);
@@ -198,14 +198,14 @@ bool UploadSetupChart(const string signalId)
    int h = ChartHeight > 360 ? ChartHeight : 720;
    if(!ChartScreenShot(0, fileName, w, h, ALIGN_RIGHT))
      {
-      Print("QauntifyBBMA: ChartScreenShot failed ", GetLastError());
+      Print("KiarosBBMA: ChartScreenShot failed ", GetLastError());
       return false;
      }
 
    int handle = FileOpen(fileName, FILE_READ|FILE_BIN);
    if(handle == INVALID_HANDLE)
      {
-      Print("QauntifyBBMA: open screenshot failed ", GetLastError());
+      Print("KiarosBBMA: open screenshot failed ", GetLastError());
       return false;
      }
    int size = (int)FileSize(handle);
@@ -221,7 +221,7 @@ bool UploadSetupChart(const string signalId)
      {
       FileClose(handle);
       FileDelete(fileName);
-      Print("QauntifyBBMA: read screenshot failed ", GetLastError());
+      Print("KiarosBBMA: read screenshot failed ", GetLastError());
       return false;
      }
    FileClose(handle);
@@ -231,7 +231,7 @@ bool UploadSetupChart(const string signalId)
    uchar encoded[];
    if(!CryptEncode(CRYPT_BASE64, data, key, encoded))
      {
-      Print("QauntifyBBMA: base64 encode failed ", GetLastError());
+      Print("KiarosBBMA: base64 encode failed ", GetLastError());
       return false;
      }
    string b64 = CharArrayToString(encoded, 0, WHOLE_ARRAY, CP_UTF8);
@@ -242,10 +242,10 @@ bool UploadSetupChart(const string signalId)
    int status = HttpPost(ChartApiUrl, body, resp);
    if(status == 200)
      {
-      Print("QauntifyBBMA: chart uploaded for ", signalId);
+      Print("KiarosBBMA: chart uploaded for ", signalId);
       return true;
      }
-   Print("QauntifyBBMA: chart upload HTTP ", status, " ", resp);
+   Print("KiarosBBMA: chart upload HTTP ", status, " ", resp);
    return false;
   }
 
@@ -571,7 +571,7 @@ void BackfillHistoryPins()
       pinned++;
      }
    lastStatus = StringFormat("history pins:%d (no push)", pinned);
-   Print("QauntifyBBMA: ", lastStatus);
+   Print("KiarosBBMA: ", lastStatus);
    ChartRedraw(0);
   }
 
@@ -626,14 +626,14 @@ bool Publish(const string direction, const double entry, const double stop,
       lastStatus = StringFormat("WebRequest err %d", GetLastError());
    else
       lastStatus = StringFormat("HTTP %d", lastHttp);
-   Print("QauntifyBBMA: ", lastStatus);
+   Print("KiarosBBMA: ", lastStatus);
    return false;
   }
 
 void UpdateComment()
   {
    Comment(StringFormat(
-      "QauntifyBBMA | ok:%d fail:%d skip:%d | %s | lastH1:%s",
+      "KiarosBBMA | ok:%d fail:%d skip:%d | %s | lastH1:%s",
       signalsOk, signalsFail, signalsSkip, lastStatus,
       TimeToString(lastEvaluatedBar, TIME_DATE|TIME_MINUTES)));
   }
@@ -641,7 +641,7 @@ void UpdateComment()
 int OnInit()
   {
    if(_Symbol != AppSymbol && StringFind(_Symbol, "XAU") < 0 && StringFind(_Symbol, "GOLD") < 0)
-      Print("QauntifyBBMA: attach on XAU/GOLD chart (AppSymbol=", AppSymbol, ")");
+      Print("KiarosBBMA: attach on XAU/GOLD chart (AppSymbol=", AppSymbol, ")");
 
    hBb1 = iBands(_Symbol, PERIOD_H1, 20, 0, 2.0, PRICE_CLOSE);
    hMa5h1 = iMA(_Symbol, PERIOD_H1, 5, 0, MODE_LWMA, PRICE_HIGH);
@@ -657,7 +657,7 @@ int OnInit()
       hMa10h1 == INVALID_HANDLE || hMa10l1 == INVALID_HANDLE || hEma501 == INVALID_HANDLE ||
       hAtr1 == INVALID_HANDLE || hBb4 == INVALID_HANDLE || hEma504 == INVALID_HANDLE)
      {
-      Print("QauntifyBBMA: indicator init failed");
+      Print("KiarosBBMA: indicator init failed");
       return INIT_FAILED;
      }
 

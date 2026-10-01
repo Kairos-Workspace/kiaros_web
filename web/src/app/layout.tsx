@@ -44,9 +44,15 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Qauntify — Smart signals. Calmer trading.",
+  applicationName: "Kiaros",
+  title: {
+    default: "Kiaros — Smart signals. Calmer trading.",
+    template: "%s — Kiaros",
+  },
   description:
     "ការរៀបចំបច្ចេកទេសលើ crypto មាស និង forex — បញ្ជាក់ដោយ AI ពន្យល់ជាភាសាសាមញ្ញ។ Signals សម្រាប់ការអប់រំ និងវិភាគ — មិនមែនជាដំបូន្មានហិរញ្ញវត្ថុ។",
+  creator: "Kiaros",
+  publisher: "Kiaros",
 };
 
 export default function RootLayout({

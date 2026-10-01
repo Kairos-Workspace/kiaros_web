@@ -1,4 +1,4 @@
-# Qauntify Signals Engine
+# Kiaros Signals Engine
 
 AI-confirmed crypto trading signals. Scans BTCUSD/ETHUSD/XAUUSD candles
 (Kraken; gold prefers MT5 1m when the EA buffer is warm — see
@@ -6,7 +6,7 @@ AI-confirmed crypto trading signals. Scans BTCUSD/ETHUSD/XAUUSD candles
 with SEA-LION using recent news headlines from public RSS feeds (CoinDesk,
 Decrypt, The Block), and stores confirmed signals in Supabase (Postgres).
 
-Part of the Qauntify platform rebuild (formerly FinhubKH, ThinkTrade). Spec:
+Part of the Kiaros platform rebuild (formerly FinhubKH, ThinkTrade). Spec:
 `docs/superpowers/specs/2026-07-05-signals-engine-design.md`
 
 ## Setup

@@ -18,7 +18,7 @@ import {
 } from "@/lib/tools";
 
 export const metadata: Metadata = {
-  title: "Admin · Tools — Qauntify",
+  title: "Admin · Tools",
 };
 
 export const revalidate = 30;
@@ -61,7 +61,7 @@ export default async function AdminToolsPage({
                 type="text"
                 name="title_km"
                 required
-                placeholder="Qauntify BBMA EA"
+                placeholder="Kiaros BBMA EA"
                 className="input-field w-full"
               />
             </label>

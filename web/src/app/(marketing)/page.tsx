@@ -1,29 +1,18 @@
 import { Certificates } from "@/components/landing/Certificates";
-import { Features } from "@/components/landing/Features";
 import { Hero } from "@/components/landing/Hero";
 import { SignalsPreview } from "@/components/landing/SignalsPreview";
 import { StrategyTesting } from "@/components/landing/StrategyTesting";
 import { Footer } from "@/components/shared/Footer";
-import { getDailyPnLStats, getSignals, getStats } from "@/lib/signals";
-import { serviceRoleToken } from "@/lib/supabase/admin";
+import { getSignals } from "@/lib/signals";
 
 export const revalidate = 30;
 
 export default async function Home() {
-  const token = serviceRoleToken();
-  const [signals, stats, dailyPnL] = await Promise.all([
-    getSignals(3),
-    getStats(),
-    // Locked to the current month on the homepage (no year/month nav there)
-    // -- 35 days covers this month plus the prior-month padding days the
-    // grid shows, no need for the full year /track-record fetches.
-    getDailyPnLStats(token, 35),
-  ]);
+  const signals = await getSignals(3);
   return (
     <>
       <main className="flex-1">
-        <Hero stats={stats} />
-        <Features dailyPnL={dailyPnL} />
+        <Hero />
         <Certificates />
         <StrategyTesting />
         <SignalsPreview signals={signals} />

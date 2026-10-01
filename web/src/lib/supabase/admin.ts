@@ -913,7 +913,7 @@ export async function getSignalAlertRow(
   }
 }
 
-/** Python gold scalp/swing/war-room rows waiting for an MT5 ChartScreenShot.
+/** Python gold scalp/swing rows waiting for an MT5 ChartScreenShot.
  * BBMA is excluded — that EA uploads immediately after publish. */
 export type PendingSetupChart = {
   id: string;
@@ -929,7 +929,7 @@ export type PendingSetupChart = {
   created_at: string;
 };
 
-const PENDING_CHART_TFS = ["1m", "5m", "15m", "1h", "floor"] as const;
+const PENDING_CHART_TFS = ["1m", "5m", "15m", "1h", "bbma", "smc"] as const;
 const PENDING_CHART_MAX_AGE_HOURS = 48;
 
 export async function listPendingSetupCharts(

@@ -5,9 +5,9 @@ import { getPublishedTools } from "@/lib/tools";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "ឧបករណ៍ — Qauntify",
+  title: "ឧបករណ៍",
   description:
-    "EA MT5 ឥតគិតថ្លៃ indicator TradingView និងឧបករណ៍ជួញដូរផ្សេងៗពី Qauntify។",
+    "EA MT5 ឥតគិតថ្លៃ indicator TradingView និងឧបករណ៍ជួញដូរផ្សេងៗពី Kiaros។",
 };
 
 export default async function ToolsPage() {

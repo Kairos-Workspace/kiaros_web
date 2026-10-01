@@ -124,7 +124,7 @@ def main(sessions=None):
                 return None, exc
         workers = max(1, min(len(settings.symbols), MAX_SCAN_WORKERS))
 
-        # Each session (scalp, swing) scans all symbols in parallel, one session
+        # Each scanned session runs all symbols in parallel, one session
         # at a time — so a run's outcomes group by session for a clear summary.
         for trading_session in trading_sessions:
             # Not every symbol belongs on every session — see SESSION_SYMBOLS.

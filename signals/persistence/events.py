@@ -1,40 +1,7 @@
-"""Event/run log tables: AI debates, ai_events, engine_runs, xau_scan_runs."""
-import uuid
-from datetime import datetime, timezone
+"""Event/run log tables: ai_events, engine_runs, xau_scan_runs."""
 from urllib.parse import quote
 
 import requests
-
-
-def save_debate(debate: dict, supabase_url: str, service_key: str,
-                session=None) -> None:
-    """Insert one AI War Room debate row; raises on failure so the caller can
-    decide (the hook treats it best-effort)."""
-    session = session or requests.Session()
-    payload = {
-        "id": str(uuid.uuid4()),
-        "signal_id": debate.get("signal_id"),
-        "symbol": debate["symbol"],
-        "timeframe": debate["timeframe"],
-        "direction": debate["direction"],
-        "transcript": debate["transcript"],
-        "manager_verdict": debate["manager_verdict"],
-        "manager_confidence": debate["manager_confidence"],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    response = session.post(
-        f"{supabase_url}/rest/v1/agent_debates",
-        headers={
-            "apikey": service_key,
-            "Authorization": f"Bearer {service_key}",
-            "Content-Type": "application/json",
-            "Prefer": "return=minimal",
-        },
-        json=payload,
-        timeout=15,
-    )
-    response.raise_for_status()
-
 
 def save_ai_event(event: dict, supabase_url: str, service_key: str,
                   session=None) -> None:

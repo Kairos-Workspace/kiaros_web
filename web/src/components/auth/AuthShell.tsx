@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Logo } from "@/components/shared/Logo";
 
 export function AuthShell({
   headline,
@@ -13,9 +13,7 @@ export function AuthShell({
     <div className="flex min-h-full flex-1 items-center justify-center bg-paper px-4 py-10">
       <div className="flex w-full max-w-4xl overflow-hidden rounded-xl border border-line bg-card">
         <aside className="hidden w-5/12 flex-col justify-between bg-ink p-10 text-white lg:flex">
-          <Link href="/" className="text-lg font-bold">
-            Qaunt<span className="text-white/70">ify</span>
-          </Link>
+          <Logo className="rounded-md bg-white px-2 py-1" />
           <div>
             <div className="rounded-lg border border-white/15 bg-white/5 p-4">
               <div className="flex items-center justify-between text-xs font-medium">
@@ -37,9 +35,7 @@ export function AuthShell({
         </aside>
         <main className="flex flex-1 items-center justify-center px-6 py-12 lg:px-12">
           <div className="w-full max-w-sm">
-            <Link href="/" className="text-lg font-bold lg:hidden">
-              Qaunt<span className="text-slate">ify</span>
-            </Link>
+            <Logo className="lg:hidden" />
             <div className="mt-8 lg:mt-0">{children}</div>
           </div>
         </main>

@@ -1,8 +1,8 @@
 {
-  "name": "web",
+  "name": "kiaros-web",
   "version": "0.1.0",
   "private": true,
-  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "description": "Kiaros AI-assisted trading signals and community tools.",
   "license": "ISC",
   "author": "",
   "type": "module",

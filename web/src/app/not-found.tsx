@@ -5,7 +5,7 @@ import { Footer } from "@/components/shared/Footer";
 import { Nav } from "@/components/shared/Nav";
 
 export const metadata: Metadata = {
-  title: "រកមិនឃើញទំព័រ — Qauntify",
+  title: "រកមិនឃើញទំព័រ",
   description: "ទំព័រដែលបងប្អូនស្វែងរកមិនមានទេ។",
 };
 

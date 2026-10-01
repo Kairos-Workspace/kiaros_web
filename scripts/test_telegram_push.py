@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 from signals.clients.telegram import send_message
 
 DEFAULT_MESSAGE = (
-    "✅ <b>Qauntify push notification test</b>\n"
+    "✅ <b>Kiaros push notification test</b>\n"
     "If you can see this, TELEGRAM_BOT_TOKEN and TELEGRAM_CHANNEL_ID are "
     "wired up correctly."
 )

@@ -8,7 +8,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "ផ្ទាំងគ្រប់គ្រង — Qauntify",
+  title: "ផ្ទាំងគ្រប់គ្រង",
 };
 
 export const revalidate = 30;

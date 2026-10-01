@@ -9,7 +9,7 @@ import { isAdminEmail } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "ចូលគណនី — Qauntify",
+  title: "ចូលគណនី",
 };
 
 export default async function LoginPage({

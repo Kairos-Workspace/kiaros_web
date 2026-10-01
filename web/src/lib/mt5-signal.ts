@@ -1,10 +1,20 @@
-/** Validate + normalize payloads from the MT5 BBMA EA → /api/mt5/signal
+/** Validate + normalize payloads from the MT5 BBMA / SMC EAs → /api/mt5/signal
  * and chart screenshots → /api/mt5/chart. */
 
 export const MT5_LIVE_SYMBOLS = new Set(["XAUUSD"]);
 /** Lane id for the signals page tab — not a candle interval. */
-export const MT5_LIVE_TIMEFRAMES = new Set(["bbma"]);
-export const MT5_LIVE_STRATEGIES = new Set(["bbma_reentry", "bbma_extreme"]);
+export const MT5_LIVE_TIMEFRAMES = new Set(["bbma", "smc"]);
+export const MT5_LIVE_STRATEGIES = new Set([
+  "bbma_reentry",
+  "bbma_extreme",
+  "ict_smc",
+]);
+
+const STRATEGY_LANE: Record<string, string> = {
+  bbma_reentry: "bbma",
+  bbma_extreme: "bbma",
+  ict_smc: "smc",
+};
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -181,14 +191,25 @@ export function parseMt5SignalBody(raw: unknown): Mt5SignalPayload | { error: st
       : {};
   const strategy = String(indicatorsRaw.strategy ?? "");
   if (!MT5_LIVE_STRATEGIES.has(strategy)) {
-    return { error: "indicators.strategy must be bbma_reentry or bbma_extreme" };
+    return {
+      error: `indicators.strategy must be ${[...MT5_LIVE_STRATEGIES].join(" or ")}`,
+    };
+  }
+  if (STRATEGY_LANE[strategy] !== timeframe) {
+    return {
+      error: `indicators.strategy ${strategy} does not match timeframe ${timeframe}`,
+    };
   }
 
   const barTime = num(body.bar_time);
+  const defaultRationale =
+    strategy === "ict_smc"
+      ? "Taught SMC ict_smc (MT5 EA, live, no AI gate)"
+      : `Taught BBMA ${strategy} (MT5 EA, live, no AI gate)`;
   const rationale =
     typeof body.rationale === "string" && body.rationale.trim()
       ? body.rationale.trim().slice(0, 2000)
-      : `Taught BBMA ${strategy} (MT5 EA, live, no AI gate)`;
+      : defaultRationale;
 
   return {
     symbol,

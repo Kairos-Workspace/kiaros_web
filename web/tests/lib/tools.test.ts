@@ -27,7 +27,7 @@ describe("parseToolRow", () => {
       description_km: "desc",
       category: "mt5_ea",
       file_url: "https://x/tools/a/file.mq5",
-      file_name: "QauntifyBBMA.mq5",
+      file_name: "KiarosBBMA.mq5",
       mime_type: "application/octet-stream",
       file_size: 2048,
       external_url: null,

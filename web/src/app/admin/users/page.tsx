@@ -7,7 +7,7 @@ import { formatDateTime } from "@/lib/format";
 import { isAdminEmail, listUsers } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
-  title: "Admin · Users — Qauntify",
+  title: "Admin · Users",
 };
 
 export const revalidate = 30;

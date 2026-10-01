@@ -56,9 +56,9 @@ PLAYBOOK_CHUNKS = (
     },
     {
         "strategy": "ict_smc",
-        "title": "1h ICT/SMC confirm gate",
+        "title": "1h SMC confirm gate",
         "body": (
-            "Swing ict_smc: liquidity sweep then structure shift / CHoCH. "
+            "SMC ict_smc: liquidity sweep then structure shift / CHoCH. "
             "Prefer HTF 4h trend agreement and healthy ADX when provided. "
             "Targets are 1R/2R/3R. Confirm when displacement after the sweep "
             "is clear and stop sits beyond the swept liquidity. When borderline "
@@ -67,7 +67,7 @@ PLAYBOOK_CHUNKS = (
     },
     {
         "strategy": "ict_smc",
-        "title": "1h ICT/SMC reject cues",
+        "title": "1h SMC reject cues",
         "body": (
             "Reject ict_smc on weak ADX / chop, HTF conflict, sweep without "
             "follow-through CHoCH, or calendar shocks that invalidate the "

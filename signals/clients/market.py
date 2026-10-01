@@ -5,7 +5,7 @@ pair maps stay so older DB rows can still settle outcomes; GBP is not scanned.
 
 Legacy PAXG* symbols canonicalize to XAUUSD so older rows still settle.
 
-Gold OHLC prefers closed MT5 1m bars (pushed by QauntifyTickPush) when the
+Gold OHLC prefers closed MT5 1m bars (pushed by KiarosTickPush) when the
 EA ring buffer is warm — 1m used directly, 5m/15m/1h/4h resampled from that
 same buffer — so structure matches broker entries. Falls back to Kraken
 PAXGUSD when the buffer is cold or too shallow for the requested interval.
@@ -16,7 +16,7 @@ from __future__ import annotations
 import requests
 
 from signals.analysis.candle_resample import resample_candles
-from signals.models import Candle
+from signals.models import Candle, broker_interval
 
 OHLC_URL = "https://api.kraken.com/0/public/OHLC"
 TICKER_URL = "https://api.kraken.com/0/public/Ticker"
@@ -286,6 +286,7 @@ def fetch_candles(symbol, interval="1h", limit=200, start_time=None,
     on 1m (legacy / offline).
     """
     session = session or requests.Session()
+    interval = broker_interval(interval)
     if interval not in INTERVAL_MINUTES:
         raise ValueError(f"unsupported interval: {interval}")
 

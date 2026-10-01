@@ -4,17 +4,23 @@ import autoTable from "jspdf-autotable";
 
 import type { Signal } from "@/lib/signals";
 
-export type ExportTab = "all" | "super-scalping" | "scalping" | "swing";
+export type ExportTab = "all" | "super-scalping" | "scalping" | "swing" | "smc";
 
 export function timeframeForTab(tab: ExportTab): string | undefined {
   if (tab === "super-scalping") return "5m";
   if (tab === "scalping") return "15m";
   if (tab === "swing") return "1h";
+  if (tab === "smc") return "smc";
   return undefined;
 }
 
 export function parseExportTab(value: string | null): ExportTab {
-  if (value === "super-scalping" || value === "scalping" || value === "swing") {
+  if (
+    value === "super-scalping" ||
+    value === "scalping" ||
+    value === "swing" ||
+    value === "smc"
+  ) {
     return value;
   }
   return "all";
@@ -86,10 +92,12 @@ export function buildClosedSignalsPdf(
         ? "Scalping (15m)"
         : tab === "swing"
           ? "Swing (1h)"
-          : "All timeframes";
+          : tab === "smc"
+            ? "SMC (1h)"
+            : "All timeframes";
 
   doc.setFontSize(14);
-  doc.text(`Qauntify — closed signals (${label})`, 40, 36);
+  doc.text(`Kiaros — closed signals (${label})`, 40, 36);
   doc.setFontSize(9);
   doc.setTextColor(100);
   doc.text(`TP/SL hits only · ${signals.length} row(s)`, 40, 52);
@@ -145,5 +153,5 @@ export function buildClosedSignalsPdf(
 
 export function exportFilename(format: "xlsx" | "pdf", tab: ExportTab): string {
   const stamp = new Date().toISOString().slice(0, 10);
-  return `qauntify-closed-signals-${tab}-${stamp}.${format}`;
+  return `kiaros-closed-signals-${tab}-${stamp}.${format}`;
 }

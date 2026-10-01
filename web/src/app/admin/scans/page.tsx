@@ -13,7 +13,7 @@ import { listEngineRunsPage } from "@/lib/supabase/admin";
 import { Pagination } from "@/components/shared/Pagination";
 
 export const metadata: Metadata = {
-  title: "Admin · Scans — Qauntify",
+  title: "Admin · Scans",
 };
 
 export const revalidate = 30;

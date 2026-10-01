@@ -8,7 +8,7 @@ import { relativeTime } from "@/lib/relative-time";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "កំណត់ត្រាលទ្ធផល — Qauntify",
+  title: "កំណត់ត្រាលទ្ធផល",
   description: "គ្រប់ signals ឈ្នះនិងចាញ់។ លទ្ធផលពិត ធ្វើបច្ចុប្បន្នភាពស្វ័យប្រវត្តិ។",
 };
 

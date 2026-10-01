@@ -2,7 +2,7 @@ import pytest
 
 from signals.models import BotSettings, CandidateSetup, Confirmation, make_signal
 from signals.persistence.cleanup import delete_rows_older_than
-from signals.persistence.events import save_debate, save_xau_scan_run
+from signals.persistence.events import save_xau_scan_run
 from signals.persistence.settings import fetch_bot_settings
 from signals.persistence.signals import (
     list_signals_missing_outcome_chart,
@@ -19,25 +19,6 @@ def _signal():
     )
     confirmation = Confirmation("confirm", 80, "Looks good.")
     return make_signal(setup, confirmation, ["headline one"])
-
-
-def test_save_debate_posts_row_to_agent_debates():
-    session = FakeSession()
-    debate = {
-        "signal_id": "sig-1", "symbol": "XAUUSD", "timeframe": "1h",
-        "direction": "long",
-        "transcript": [{"agent": "Manager", "avatar": "🧑‍💼", "message": "take it"}],
-        "manager_verdict": "agree", "manager_confidence": 70,
-    }
-    save_debate(debate, "https://abc.supabase.co", "service-key", session=session)
-    assert session.last_url == "https://abc.supabase.co/rest/v1/agent_debates"
-    body = session.last_json
-    assert body["symbol"] == "XAUUSD"
-    assert body["manager_verdict"] == "agree"
-    assert body["manager_confidence"] == 70
-    assert body["transcript"][0]["agent"] == "Manager"
-    assert body["signal_id"] == "sig-1"
-    assert "id" in body and "created_at" in body
 
 
 class FakeResponse:
@@ -678,8 +659,7 @@ def test_open_signals_same_direction_excludes_matching_strategy():
     assert result == [{"timeframe": "1h", "indicators": {"strategy": "msnr"}}]
     assert "symbol=eq.BTCUSD" in session.last_url
     assert "direction=eq.long" in session.last_url
-    # Tracks TRADING_SESSIONS, currently scalp (15m) + swing (1h) --
-    # super_scalp (5m) was pulled, see docs/ict-fvg-backtest-results.md.
+    # Tracks TRADING_SESSIONS: scalp (15m) + swing (1h). SMC is EA-only.
     assert "timeframe=in.(15m,1h)" in session.last_url
     assert "shadow=is.false" in session.last_url
 
@@ -688,7 +668,7 @@ def test_open_signals_same_direction_excludes_auxiliary_session_timeframes():
     from signals.persistence.signals import open_signals_same_direction
 
     # xau_scalp (1m), super_scalp (5m, paused -- docs/ict-fvg-backtest-results.md)
-    # and war_room (floor) reuse ict_fvg/cloud_mss -- the same strategy tags as
+    # and the legacy floor lane reuse ict_fvg/cloud_mss -- the same strategy tags as
     # the currently-scanned main sessions. Without excluding their timeframes
     # explicitly, an auxiliary signal could pass the "different strategy"
     # check and trigger a confluence publish the design doc scopes out
@@ -698,6 +678,7 @@ def test_open_signals_same_direction_excludes_auxiliary_session_timeframes():
         {"timeframe": "5m", "indicators": {"strategy": "ict_fvg"}},
         {"timeframe": "floor", "indicators": {"strategy": "cloud_mss"}},
         {"timeframe": "bbma", "indicators": {"strategy": "bbma_reentry"}},
+        {"timeframe": "smc", "indicators": {"strategy": "ict_smc"}},
     ])
 
     result = open_signals_same_direction(

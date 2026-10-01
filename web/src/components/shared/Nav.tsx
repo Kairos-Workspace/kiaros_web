@@ -8,7 +8,6 @@ import { isAdminEmail } from "@/lib/supabase/admin";
 
 const links = [
   { href: "/signals", label: "Signals" },
-  { href: "/war-room", label: "War Room" },
   { href: "/track-record", label: "កំណត់ត្រាលទ្ធផល" },
   { href: "/tools", label: "ឧបករណ៍" },
 ];
@@ -31,7 +30,7 @@ export async function Nav() {
               aria-hidden={copy === 1}
             >
               <span aria-hidden>⚠</span>
-              Qauntify កំពុងអភិវឌ្ឍន៍យ៉ាងសកម្ម។ Signals ត្រូវបានចែករំលែកសម្រាប់
+              Kiaros កំពុងអភិវឌ្ឍន៍យ៉ាងសកម្ម។ Signals ត្រូវបានចែករំលែកសម្រាប់
               គោលបំណងអប់រំ និងស្រាវជ្រាវតែប៉ុណ្ណោះ — នេះមិនមែនជា
               ដំបូន្មានហិរញ្ញវត្ថុទេ ហើយការជួញដូរមានហានិភ័យនៃការខាតបង់។
             </span>

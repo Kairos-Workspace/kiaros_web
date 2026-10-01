@@ -209,7 +209,7 @@ AUXILIARY_SESSIONS = (
         name="war_room", timeframe="floor", max_open_days=2,
         strategy="cloud_mss",
     ),
-    # Taught BBMA live lane from QauntifyBBMA.mq5 (no AI gate). Distinct
+    # Taught BBMA live lane from KiarosBBMA.mq5 (no AI gate). Distinct
     # timeframe so it never shares the Swing (1h) tab or open-signal lock.
     TradingSession(
         name="bbma", timeframe="bbma", max_open_days=14,
@@ -230,7 +230,7 @@ AUXILIARY_SESSIONS = (
         name="war_room", timeframe="floor", max_open_days=2,
         strategy="cloud_mss",
     ),
-    # Taught BBMA live lane from QauntifyBBMA.mq5 (no AI gate). Distinct
+    # Taught BBMA live lane from KiarosBBMA.mq5 (no AI gate). Distinct
     # timeframe so it never shares the Swing (1h) tab or open-signal lock.
     TradingSession(
         name="bbma", timeframe="bbma", max_open_days=14,

@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
-//| QauntifyTickPush.mq5                                              |
+//| KiarosTickPush.mq5                                              |
 //| 1) Pushes bid/ask ticks → /api/mt5/tick (SL/TP + live mid snap)   |
 //| 2) Pushes closed M1 OHLC → /api/mt5/candles (pattern detection)   |
 //| 3) Polls pending gold setup charts → ChartScreenShot upload      |
-//|    (Scalp 5m/15m, Swing 1h, War Room floor)                       |
+//|    (Scalp 5m/15m, Swing 1h, BBMA/SMC)                             |
 //|                                                                    |
 //| VPS: attach this EA on an XAUUSD chart. On each 5m/15m/1h close  |
 //| the candles API dispatches the GitHub signals engine.              |
@@ -84,7 +84,7 @@ int HttpGet(const string url, string &responseBody)
 void UpdateStatusComment()
   {
    Comment(StringFormat(
-      "QauntifyTickPush | ticks OK:%d fail:%d | candles OK:%d fail:%d | charts OK:%d fail:%d | mid:%.2f | lastBar:%s | %s",
+      "KiarosTickPush | ticks OK:%d fail:%d | candles OK:%d fail:%d | charts OK:%d fail:%d | mid:%.2f | lastBar:%s | %s",
       sendsOk, sendsFailed, candleSendsOk, candleFails, chartUploadsOk, chartFails,
       lastSentMid, TimeToString(lastClosedBar, TIME_DATE|TIME_MINUTES), lastChartStatus));
   }
@@ -116,9 +116,9 @@ bool PushCandlesJson(const string candlesArrayJson)
      }
    candleFails++;
    if(lastCandleHttp == -1)
-      Print("QauntifyTickPush: candle WebRequest failed, error ", GetLastError());
+      Print("KiarosTickPush: candle WebRequest failed, error ", GetLastError());
    else
-      Print("QauntifyTickPush: candle API HTTP ", lastCandleHttp);
+      Print("KiarosTickPush: candle API HTTP ", lastCandleHttp);
    return false;
   }
 
@@ -145,13 +145,13 @@ void BackfillClosedM1()
       arr += "]";
       if(!PushCandlesJson(arr))
         {
-         Print("QauntifyTickPush: backfill stopped early after ", sent, " bars");
+         Print("KiarosTickPush: backfill stopped early after ", sent, " bars");
          return;
         }
       sent += (endShift - startShift + 1);
      }
    lastClosedBar = iTime(_Symbol, PERIOD_M1, 1);
-   Print("QauntifyTickPush: backfilled ", sent, " closed M1 bars");
+   Print("KiarosTickPush: backfilled ", sent, " closed M1 bars");
   }
 
 void MaybePushClosedM1()
@@ -489,7 +489,7 @@ void ZoomToSetup(const long chartId, const ENUM_TIMEFRAMES tf,
    Sleep(150);
 
    long visible = ChartGetInteger(chartId, CHART_WIDTH_IN_BARS);
-   Print("QauntifyTickPush: zoom visible_bars=", visible,
+   Print("KiarosTickPush: zoom visible_bars=", visible,
          " win_px=", ChartGetInteger(chartId, CHART_WIDTH_IN_PIXELS),
          " scale=", ChartGetInteger(chartId, CHART_SCALE));
 
@@ -530,7 +530,7 @@ string OpenShotChart(const ENUM_TIMEFRAMES tf, long &chartId)
    chartId = ChartOpen(_Symbol, tf);
    if(chartId <= 0)
      {
-      Print("QauntifyTickPush: ChartOpen failed ", GetLastError());
+      Print("KiarosTickPush: ChartOpen failed ", GetLastError());
       return "";
      }
    ChartSetInteger(chartId, CHART_BRING_TO_TOP, true);
@@ -622,7 +622,7 @@ bool ProcessOnePending(const string block)
    ENUM_TIMEFRAMES want = PeriodFromMinutes(periodMin);
    if(want == PERIOD_CURRENT)
      {
-      Print("QauntifyTickPush: unknown period_minutes for ", id);
+      Print("KiarosTickPush: unknown period_minutes for ", id);
       return false;
      }
 
@@ -630,7 +630,7 @@ bool ProcessOnePending(const string block)
    string shotObj = OpenShotChart(want, chartId);
    if(chartId <= 0 || StringLen(shotObj) < 1)
      {
-      Print("QauntifyTickPush: shot chart open failed");
+      Print("KiarosTickPush: shot chart open failed");
       return false;
      }
    ChartPinsClearId(chartId);
@@ -817,7 +817,7 @@ bool ProcessOnePending(const string block)
    CloseShotChart(shotObj, chartId);
    if(!shot)
      {
-      Print("QauntifyTickPush: ChartScreenShot failed ", GetLastError());
+      Print("KiarosTickPush: ChartScreenShot failed ", GetLastError());
       chartFails++;
       return false;
      }
@@ -868,7 +868,7 @@ bool ProcessOnePending(const string block)
      }
    chartFails++;
    lastChartStatus = "fail " + id;
-   Print("QauntifyTickPush: chart upload HTTP ", lastChartHttp, " ", resp);
+   Print("KiarosTickPush: chart upload HTTP ", lastChartHttp, " ", resp);
    return false;
   }
 
@@ -887,7 +887,7 @@ void MaybeUploadPendingCharts()
      {
       lastChartStatus = StringFormat("poll HTTP %d", status);
       if(status == -1)
-         Print("QauntifyTickPush: pending chart WebRequest err ", GetLastError());
+         Print("KiarosTickPush: pending chart WebRequest err ", GetLastError());
       return;
      }
 
@@ -910,7 +910,7 @@ void MaybeUploadPendingCharts()
 int OnInit()
   {
    if(WebhookSecret == "")
-      Print("QauntifyTickPush: WebhookSecret is empty.");
+      Print("KiarosTickPush: WebhookSecret is empty.");
    BackfillClosedM1();
    UpdateStatusComment();
    return(INIT_SUCCEEDED);
@@ -948,12 +948,12 @@ void OnTick()
       if(lastStatus == -1)
         {
          sendsFailed++;
-         Print("QauntifyTickPush: tick WebRequest failed, error ", GetLastError());
+         Print("KiarosTickPush: tick WebRequest failed, error ", GetLastError());
         }
       else if(lastStatus != 200)
         {
          sendsFailed++;
-         Print("QauntifyTickPush: tick API HTTP ", lastStatus);
+         Print("KiarosTickPush: tick API HTTP ", lastStatus);
         }
       else
         {

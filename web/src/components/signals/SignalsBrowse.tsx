@@ -8,11 +8,10 @@ import {
   getSignals,
   getSignalsPaginated,
   getStats,
-  getWarRoomSignalsPaginated,
   type SignalLane,
 } from "@/lib/signals";
 import {
-  parseAiSignalStrategy,
+  comingSoonFilterOption,
   type AiSignalStrategy,
   type SignalsBrowseTab,
 } from "@/lib/signals-browse-tabs";
@@ -26,11 +25,6 @@ const AI_STRATEGY_META: Record<
   Exclude<AiSignalStrategy, "all">,
   { title: string; subtitle: string; emptyHint: string; timeframe?: string }
 > = {
-  "war-room": {
-    title: "War Room",
-    subtitle: "ការរៀបចំសម្រេចដោយជាន់ — ដាច់ដោយឡែកពីវគ្គយុទ្ធសាស្ត្រ",
-    emptyHint: "Signals សម្រេចដោយជាន់នឹងបង្ហាញនៅទីនេះ។",
-  },
   "super-scalping": {
     title: "Super scalping",
     subtitle: "5m ICT — sweep, CHoCH, FVG retest",
@@ -58,6 +52,39 @@ const BBMA_SESSION = {
   lane: "bbma" as SignalLane,
   emptyHint: "ការរៀបចំថ្មីបោះពុម្ពនៅពេល H1 បិទពី EA។",
 };
+
+const SMC_SESSION = {
+  title: "SMC",
+  subtitle: "XAU H1 — liquidity sweep + CHoCH, MT5 EA ផ្ទាល់ គ្មានច្រក AI",
+  timeframe: "smc",
+  lane: "default" as SignalLane,
+  emptyHint: "ការរៀបចំថ្មីបោះពុម្ពនៅពេល H1 បិទពី EA។",
+};
+
+function ComingSoonStrategy({
+  label,
+  hint,
+}: {
+  label: string;
+  hint: string;
+}) {
+  return (
+    <section className="space-y-5">
+      <div>
+        <h2 className="text-lg font-semibold tracking-tight text-ink">{label}</h2>
+        <p className="mt-1 text-sm text-slate">{hint}</p>
+      </div>
+      <div className="rounded-xl border border-dashed border-line bg-card px-6 py-14 text-center">
+        <p className="text-sm font-semibold text-ink">
+          យុទ្ធសាស្ត្រ {label} មកដល់ឆាប់ៗ
+        </p>
+        <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">
+          Signals នឹងបង្ហាញនៅទីនេះនៅពេលយុទ្ធសាស្ត្រនេះដំណើរការ។
+        </p>
+      </div>
+    </section>
+  );
+}
 
 async function SessionBlock({
   title,
@@ -87,9 +114,7 @@ async function SessionBlock({
           <p className="mt-1 text-sm text-slate">{subtitle}</p>
         </div>
         {signals.length > 0 ? (
-          <p className="text-sm text-slate">
-            {signals.length} signals
-          </p>
+          <p className="text-sm text-slate">{signals.length} signals</p>
         ) : null}
       </div>
 
@@ -122,21 +147,20 @@ export async function SignalsBrowse({
   basePath: string;
   hideFilter?: boolean;
 }) {
+  const comingSoon = comingSoonFilterOption(tab);
   const isAllTab = tab === "all";
   const isAiTab = tab === "ai";
-  const isAiWarRoom = isAiTab && strategy === "war-room";
-  const isAiStrategy = isAiTab && !isAiWarRoom;
+  const isAiStrategy = isAiTab;
   // "all" strategies within AI Signal has no timeframe filter — only a
   // specific strategy (super-scalping/scalping/swing) narrows it.
   const aiStrategyTimeframe =
     isAiStrategy && strategy !== "all" ? AI_STRATEGY_META[strategy].timeframe : undefined;
 
-  const [allPage, allStats, aiWarRoomPage, aiPage, aiStats] = await Promise.all([
+  const [allPage, allStats, aiPage, aiStats] = await Promise.all([
     isAllTab
       ? getSignalsPaginated(page, accessToken, undefined, ALL_PAGE_SIZE)
       : null,
     isAllTab ? getStats(accessToken) : null,
-    isAiWarRoom ? getWarRoomSignalsPaginated(page, accessToken) : null,
     isAiStrategy
       ? getSignalsPaginated(page, accessToken, aiStrategyTimeframe, ALL_PAGE_SIZE, "ai")
       : null,
@@ -156,41 +180,8 @@ export async function SignalsBrowse({
 
       {isAiTab ? <AiStrategyRail strategy={strategy} basePath={basePath} /> : null}
 
-      {isAiWarRoom && aiWarRoomPage ? (
-        <section className="space-y-5">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="text-lg font-semibold tracking-tight text-ink">War Room</h2>
-              <p className="mt-1 text-sm text-slate">
-                {AI_STRATEGY_META["war-room"].subtitle}
-              </p>
-            </div>
-            {aiWarRoomPage.total > 0 ? (
-              <p className="text-sm text-slate">សរុប {aiWarRoomPage.total}</p>
-            ) : null}
-          </div>
-
-          {aiWarRoomPage.signals.length > 0 ? (
-            <>
-              <SignalsGrid signals={aiWarRoomPage.signals} showWarRoomBadge />
-              <Pagination
-                page={aiWarRoomPage.page}
-                totalPages={aiWarRoomPage.totalPages}
-                total={aiWarRoomPage.total}
-                pageSize={aiWarRoomPage.pageSize}
-                basePath={basePath}
-                extraParams={aiPaginationParams}
-              />
-            </>
-          ) : (
-            <div className="rounded-xl border border-dashed border-line bg-card px-6 py-14 text-center">
-              <p className="text-sm font-semibold text-ink">មិនទាន់មាន War Room signals ទេ</p>
-              <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">
-                {AI_STRATEGY_META["war-room"].emptyHint}
-              </p>
-            </div>
-          )}
-        </section>
+      {comingSoon ? (
+        <ComingSoonStrategy label={comingSoon.label} hint={comingSoon.hint} />
       ) : isAllTab && allPage && allStats ? (
         <section className="space-y-5">
           <StatsBar stats={allStats} />
@@ -223,7 +214,7 @@ export async function SignalsBrowse({
             </h2>
             <p className="mt-1 text-sm text-slate">
               {strategy === "all"
-                ? "គ្រប់ការរៀបចំដែល SEA-LION បញ្ជាក់ — ឆ្លងយុទ្ធសាស្ត្រ គ្មានការពិភាក្សាជាន់ គ្មាន feed EA ឆៅ។"
+                ? "គ្រប់ការរៀបចំដែល SEA-LION បញ្ជាក់ — ឆ្លងយុទ្ធសាស្ត្រ និងគ្មាន feed EA ឆៅ។"
                 : AI_STRATEGY_META[strategy].subtitle}
             </p>
           </div>
@@ -253,6 +244,15 @@ export async function SignalsBrowse({
             </div>
           )}
         </section>
+      ) : tab === "smc" ? (
+        <SessionBlock
+          accessToken={accessToken}
+          title={SMC_SESSION.title}
+          subtitle={SMC_SESSION.subtitle}
+          timeframe={SMC_SESSION.timeframe}
+          lane={SMC_SESSION.lane}
+          emptyHint={SMC_SESSION.emptyHint}
+        />
       ) : (
         <SessionBlock
           accessToken={accessToken}

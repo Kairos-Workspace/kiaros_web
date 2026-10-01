@@ -1,4 +1,7 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kiaros Web
+
+The Kiaros web application for AI-assisted trading signals, transparent track
+records, and community trading tools.
 
 ## Getting Started
 

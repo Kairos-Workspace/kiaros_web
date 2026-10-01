@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 
-type ExportTab = "all" | "super-scalping" | "scalping" | "swing";
+type ExportTab = "all" | "super-scalping" | "scalping" | "swing" | "smc";
 
 export function ExportSignalsMenu({
   tab,
