@@ -6,7 +6,7 @@ export const TOOL_CATEGORIES = [
   { id: "mt5_ea", labelEn: "MT5 Expert Advisor", labelKm: "MT5 EA" },
   { id: "mt5_indicator", labelEn: "MT5 Indicator", labelKm: "MT5 Indicator" },
   { id: "tradingview", labelEn: "TradingView", labelKm: "TradingView" },
-  { id: "other", labelEn: "Other", labelKm: "ផ្សេងៗ" },
+  { id: "other", labelEn: "Other", labelKm: "Other" },
 ] as const;
 
 export type ToolCategory = (typeof TOOL_CATEGORIES)[number]["id"];
@@ -51,12 +51,25 @@ export function parseToolCategory(value: string): ToolCategory {
   return "other";
 }
 
+const SEED_DESCRIPTIONS: Record<string, string> = {
+  "f1a2b3c4-d5e6-7890-abcd-ef1111111111":
+    "BBMA (Oma Ally) Expert Advisor for XAUUSD — H4 bias, H1 re-entry, and extreme setups. Automatically publishes signals to Kiaros.",
+  "f1a2b3c4-d5e6-7890-abcd-ef2222222222":
+    "Companion EA — Pushes real-time tick and M1 candles to Kiaros for automated TP/SL tracking and pattern scanning. Pairs with BBMA EA.",
+};
+
 export function parseToolRow(row: ToolRow): Tool | null {
   if (!row?.id || typeof row.title_km !== "string") return null;
+  const rawDesc = typeof row.description_km === "string" ? row.description_km : "";
+  const description =
+    SEED_DESCRIPTIONS[row.id] && /[\u1780-\u17ff]/.test(rawDesc)
+      ? SEED_DESCRIPTIONS[row.id]
+      : rawDesc;
+
   return {
     id: row.id,
     titleKm: row.title_km,
-    descriptionKm: typeof row.description_km === "string" ? row.description_km : "",
+    descriptionKm: description,
     category: parseToolCategory(row.category ?? "other"),
     fileUrl: typeof row.file_url === "string" ? row.file_url : null,
     fileName: typeof row.file_name === "string" ? row.file_name : null,

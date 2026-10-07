@@ -1350,3 +1350,33 @@ def test_no_setup_indicators_for_cloud_mss_are_relevant():
     assert indicators["atr"] == 2.0
     assert "ema9" not in indicators
     assert "rsi" not in indicators
+
+
+def test_engine_skips_scanning_when_market_scanner_disabled_but_runs_outcome_tracking(monkeypatch):
+    _patch_engine_lock(monkeypatch)
+    scans_called = []
+    outcomes_called = []
+    backfills_called = []
+
+    cfg = Config(
+        sealion_api_key="",
+        supabase_url="https://abc.supabase.co",
+        supabase_service_key="service-key",
+        market_scanner_enabled=False,
+    )
+    monkeypatch.setattr(engine_module, "load_config", lambda: cfg)
+    monkeypatch.setattr(engine_module, "scan_symbol",
+                        lambda *a, **k: scans_called.append(True))
+    monkeypatch.setattr(engine_module, "track_open_signals",
+                        lambda *a, **k: outcomes_called.append(True) or [])
+    monkeypatch.setattr(engine_module, "backfill_missing_outcome_charts",
+                        lambda *a, **k: backfills_called.append(True))
+    monkeypatch.setattr(engine_module, "run_retention_cleanup", lambda *a, **k: None)
+    monkeypatch.setattr(engine_module, "save_engine_run", lambda *a, **k: None)
+
+    engine_module.main()
+
+    assert len(scans_called) == 0, "Market scanning should be skipped when disabled"
+    assert len(outcomes_called) == 1, "Outcome tracking should still run"
+    assert len(backfills_called) == 1, "Outcome chart backfill should still run"
+

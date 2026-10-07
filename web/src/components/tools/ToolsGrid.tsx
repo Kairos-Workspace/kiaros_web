@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import {
   formatToolFileSize,
-  getPublishedTools,
   toolCategoryLabelKm,
   toolDownloadHref,
   toolIsExternal,
@@ -15,24 +14,29 @@ function ToolCard({ tool }: { tool: Tool }) {
   const size = formatToolFileSize(tool.fileSize);
 
   return (
-    <article className="card-surface flex h-full flex-col p-5">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-md bg-paper px-2 py-0.5 text-xs font-medium text-slate">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-300 hover:border-zinc-400 hover:shadow-md hover:-translate-y-1">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="rounded-md border border-zinc-200 bg-zinc-100 px-2.5 py-0.5 font-mono text-[11px] font-bold text-zinc-900">
           {toolCategoryLabelKm(tool.category)}
         </span>
         {tool.fileName && size ? (
-          <span className="text-xs text-slate">{size}</span>
+          <span className="font-mono text-xs text-zinc-500">{size}</span>
         ) : null}
       </div>
-      <h2 className="mt-3 text-lg font-semibold text-ink">{tool.titleKm}</h2>
+
+      <h2 className="mt-4 text-xl font-extrabold tracking-tight text-zinc-950 transition-colors">
+        {tool.titleKm}
+      </h2>
+
       {tool.descriptionKm ? (
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-slate">
+        <p className="mt-2.5 flex-1 text-xs leading-relaxed text-zinc-600">
           {tool.descriptionKm}
         </p>
       ) : (
         <div className="flex-1" />
       )}
-      <div className="mt-5 border-t border-line pt-4">
+
+      <div className="mt-6 border-t border-zinc-200 pt-4">
         {href ? (
           <a
             href={href}
@@ -41,13 +45,15 @@ function ToolCard({ tool }: { tool: Tool }) {
             download={external ? undefined : tool.fileName ?? true}
             className="btn-primary inline-flex w-full justify-center sm:w-auto"
           >
-            {external ? "បើក TradingView" : "ទាញយកឥតគិតថ្លៃ"}
+            <span>{external ? "Open on TradingView ↗" : "Download Free"}</span>
           </a>
         ) : (
-          <span className="text-sm text-slate">មិនទាន់មានឯកសារទេ</span>
+          <span className="text-xs text-zinc-400">No file available</span>
         )}
         {tool.fileName && !external ? (
-          <p className="mt-2 font-mono text-xs text-slate">{tool.fileName}</p>
+          <p className="mt-2.5 font-mono text-[11px] text-zinc-500 truncate">
+            📄 {tool.fileName}
+          </p>
         ) : null}
       </div>
     </article>
@@ -57,20 +63,23 @@ function ToolCard({ tool }: { tool: Tool }) {
 export function ToolsGrid({ tools }: { tools: Tool[] }) {
   if (tools.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-line bg-card px-6 py-14 text-center">
-        <p className="text-sm font-semibold text-ink">មិនទាន់មានឧបករណ៍ទេ</p>
-        <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">
-          EA និង indicator ឥតគិតថ្លៃនឹងបង្ហាញនៅទីនេះឆាប់ៗ។
+      <div className="rounded-2xl border border-dashed border-line bg-card/60 px-6 py-16 text-center backdrop-blur-md">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-card text-ink mb-3">
+          <span className="h-4 w-4 rounded-full border-2 border-line-highlight border-t-transparent animate-spin" />
+        </div>
+        <p className="font-mono text-base font-bold text-ink">No tools available yet</p>
+        <p className="mx-auto mt-1 max-w-sm text-xs text-slate">
+          MT5 EAs, TradingView indicators, and quantitative tools will be published here shortly.
         </p>
-        <Link href="/signals" className="btn-secondary mt-5 inline-flex">
-          ទៅ Signals
+        <Link href="/signals" className="btn-secondary mt-5 inline-flex text-xs">
+          Explore Live Signals →
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
       {tools.map((tool) => (
         <ToolCard key={tool.id} tool={tool} />
       ))}

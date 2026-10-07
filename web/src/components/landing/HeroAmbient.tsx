@@ -15,19 +15,7 @@ export type MarketIconType =
   | "nasdaq";
 
 export function HeroAmbient() {
-  return (
-    <div className="hero-ambient-bg" aria-hidden>
-      {MARKETS.map((market) => (
-        <span
-          key={market.symbol}
-          className={`hero-market-orb is-${market.tone}`}
-          title={market.name}
-        >
-          <MarketIcon type={market.icon} />
-        </span>
-      ))}
-    </div>
-  );
+  return null;
 }
 
 export function MarketIcon({ type }: { type: MarketIconType }) {

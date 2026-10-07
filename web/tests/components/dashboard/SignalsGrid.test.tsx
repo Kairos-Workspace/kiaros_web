@@ -31,8 +31,8 @@ describe("SignalsGrid", () => {
   it("renders signal cards with key prices", () => {
     render(<SignalsGrid signals={[SIGNAL]} />);
     expect(screen.getByText("BTCUSDT")).toBeDefined();
-    expect(screen.getByText("ទិញ")).toBeDefined();
-    expect(screen.getByText("គ្មានគំនូសតាង")).toBeDefined();
+    expect(screen.getByText("BUY")).toBeDefined();
+    expect(screen.getByText("No Chart Available")).toBeDefined();
     expect(screen.getByText("108,240")).toBeDefined();
     expect(screen.getByText("106,900")).toBeDefined();
     expect(screen.getByText("110,920")).toBeDefined();
@@ -74,7 +74,7 @@ describe("SignalsGrid", () => {
     render(<SignalsGrid signals={[SIGNAL]} />);
     fireEvent.click(screen.getByRole("button", { name: /btcusdt/i }));
     expect(screen.getByRole("dialog")).toBeDefined();
-    expect(screen.getByText("ហេតុផល AI")).toBeDefined();
+    expect(screen.getByText("AI Rationale")).toBeDefined();
     expect(screen.getByText("Momentum aligns with news flow.")).toBeDefined();
     expect(screen.getByText("ETF inflows surge")).toBeDefined();
   });
@@ -82,13 +82,13 @@ describe("SignalsGrid", () => {
   it("closes modal when close button is clicked", () => {
     render(<SignalsGrid signals={[SIGNAL]} />);
     fireEvent.click(screen.getByRole("button", { name: /btcusdt/i }));
-    fireEvent.click(screen.getByRole("button", { name: "បិទ" }));
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
   it("shows closed status on cards", () => {
     render(<SignalsGrid signals={[{ ...SIGNAL, status: "tp_hit" }]} />);
-    expect(screen.getByText("TP ប៉ះ")).toBeDefined();
+    expect(screen.getByText("TP Hit")).toBeDefined();
   });
 
   it("shows TP1 hit when a closed partial win freezes at TP1", () => {
@@ -102,7 +102,7 @@ describe("SignalsGrid", () => {
         }]}
       />,
     );
-    expect(screen.getByText("TP1 ប៉ះ")).toBeDefined();
+    expect(screen.getByText("TP1 Hit")).toBeDefined();
     const card = screen.getByRole("button", { name: /btcusdt/i });
     expect(card.className).not.toContain("grayscale");
   });

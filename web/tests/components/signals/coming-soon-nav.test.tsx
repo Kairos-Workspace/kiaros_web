@@ -9,7 +9,7 @@ describe("coming-soon strategy navigation", () => {
   it("lets users open ICT from the session rail", () => {
     render(
       <SlidingPillNav
-        ariaLabel="វគ្គ"
+        ariaLabel="Sessions"
         activeId="all"
         options={SIGNAL_FILTER_OPTIONS}
         hrefFor={(id) => (id === "all" ? "/signals" : `/signals?tab=${id}`)}
@@ -23,7 +23,7 @@ describe("coming-soon strategy navigation", () => {
   it("lets users open ICT from the session filter", () => {
     render(<SignalsBrowseFilter tab="all" basePath="/signals" showLabel={false} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "វគ្គ" }));
+    fireEvent.click(screen.getByRole("button", { name: "Sessions" }));
 
     const ict = screen.getByRole("link", { name: /ICT/ });
     expect(ict.getAttribute("href")).toBe("/signals?tab=ict");

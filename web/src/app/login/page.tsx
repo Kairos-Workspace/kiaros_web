@@ -9,7 +9,7 @@ import { isAdminEmail } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "ចូលគណនី",
+  title: "Sign In",
 };
 
 export default async function LoginPage({
@@ -33,11 +33,11 @@ export default async function LoginPage({
 
   return (
     <AuthShell
-      headline="ស្វាគមន៍មកវិញ។"
-      sub="ប្រវត្តិ signals ពេញលេញ និងការតាមដានលទ្ធផលកំពុងរង់ចាំនៅផ្ទាំងគ្រប់គ្រង។"
+      headline="Welcome back."
+      sub="Access full signal history, performance telemetry, and verified audit logs."
     >
-      <h1 className="text-2xl font-bold">ចូលគណនី</h1>
-      <p className="mt-1 text-sm text-slate">បើកផ្ទាំងគ្រប់គ្រងការជួញដូររបស់បងប្អូន។</p>
+      <h1 className="text-2xl font-bold">Sign In</h1>
+      <p className="mt-1 text-sm text-slate">Open your trading dashboard terminal.</p>
       {error ? (
         <Notice tone="error" className="mt-6">
           {error}
@@ -45,7 +45,7 @@ export default async function LoginPage({
       ) : null}
       <form className="mt-8 flex flex-col gap-4">
         <label className="flex flex-col gap-1.5 text-sm font-medium">
-          អ៊ីមែល
+          Email
           <input
             type="email"
             name="email"
@@ -56,24 +56,24 @@ export default async function LoginPage({
           />
         </label>
         <label className="flex flex-col gap-1.5 text-sm font-medium">
-          ពាក្យសម្ងាត់
+          Password
           <input
             type="password"
             name="password"
             required
             autoComplete="current-password"
-            placeholder="ពាក្យសម្ងាត់របស់បងប្អូន"
+            placeholder="Your password"
             className="input-field"
           />
         </label>
         <button formAction={login} className="btn-primary mt-2">
-          ចូលគណនី
+          Sign In
         </button>
       </form>
       <p className="mt-6 text-sm text-slate">
-        មិនទាន់មានគណនី?{" "}
+        Don&apos;t have an account?{" "}
         <Link href="/signup" className="font-semibold text-accent hover:underline">
-          បង្កើតឥតគិតថ្លៃ
+          Create free account
         </Link>
       </p>
     </AuthShell>

@@ -69,3 +69,14 @@ def test_load_config_missing_key_exits(monkeypatch, missing):
     monkeypatch.delenv(missing)
     with pytest.raises(SystemExit):
         load_config()
+
+
+def test_load_config_when_market_scanner_disabled_allows_missing_sealion(monkeypatch):
+    _set_all_keys(monkeypatch)
+    monkeypatch.delenv("SEALION_API_KEY")
+    monkeypatch.setenv("MARKET_SCANNER_ENABLED", "false")
+    cfg = load_config()
+    assert cfg.market_scanner_enabled is False
+    assert cfg.sealion_api_key == ""
+    assert cfg.sealion_api_keys == ()
+

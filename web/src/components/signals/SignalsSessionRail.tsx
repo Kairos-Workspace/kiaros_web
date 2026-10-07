@@ -19,7 +19,7 @@ export function SignalsSessionRail({
 }) {
   return (
     <SlidingPillNav
-      ariaLabel="វគ្គ"
+      ariaLabel="Sessions"
       activeId={tab}
       options={options}
       hrefFor={(id) => (id === "all" ? basePath : `${basePath}?tab=${id}`)}

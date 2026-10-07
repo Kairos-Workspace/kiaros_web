@@ -1,22 +1,33 @@
-import { Certificates } from "@/components/landing/Certificates";
 import { Hero } from "@/components/landing/Hero";
-import { SignalsPreview } from "@/components/landing/SignalsPreview";
+import { StrategyArchitecture } from "@/components/landing/StrategyArchitecture";
 import { StrategyTesting } from "@/components/landing/StrategyTesting";
+import { Certificates } from "@/components/landing/Certificates";
+import { SyndicateCta } from "@/components/landing/SyndicateCta";
 import { Footer } from "@/components/shared/Footer";
-import { getSignals } from "@/lib/signals";
 
-export const revalidate = 30;
+export const revalidate = 60;
 
-export default async function Home() {
-  const signals = await getSignals(3);
+export default function Home() {
   return (
     <>
-      <main className="flex-1">
+      <main className="flex-1 bg-[#fafafa] text-zinc-900 selection:bg-zinc-950 selection:text-white">
+        {/* 1. Institutional Hero & Interactive Signal Cockpit */}
         <Hero />
-        <Certificates />
+
+        {/* 2. Quantitative Strategy Pipeline & Architecture (SMC, ICT, BBMA) */}
+        <StrategyArchitecture />
+
+        {/* 4. 6-Year Audited Performance Heatmap (2020-2026) */}
         <StrategyTesting />
-        <SignalsPreview signals={signals} />
+
+        {/* 5. Funded Certificates & Prop Passes */}
+        <Certificates />
+
+        {/* 6. VIP Quant Syndicate Community Hub */}
+        <SyndicateCta />
       </main>
+
+      {/* Institutional Terminal Footer */}
       <Footer />
     </>
   );

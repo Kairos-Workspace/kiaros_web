@@ -34,8 +34,12 @@ export function comingSoonFilterOption(
   return SIGNAL_FILTER_OPTIONS.find((o) => o.id === tab);
 }
 
+export const HIDE_AI_SCANNER =
+  process.env.NEXT_PUBLIC_HIDE_AI_SCANNER === "true" ||
+  process.env.HIDE_AI_SCANNER === "true";
+
 export function parseSignalsBrowseTab(tab: string | undefined): SignalsBrowseTab {
-  if (tab === "ai") return "ai";
+  if (tab === "ai") return HIDE_AI_SCANNER ? "all" : "ai";
   if (tab === "bbma") return "bbma";
   if (tab === "smc") return "smc";
   if (isComingSoonTab(tab)) return tab;
@@ -51,29 +55,33 @@ export function parseAiSignalStrategy(
   return "all";
 }
 
-export const SIGNAL_FILTER_OPTIONS: SignalFilterOption[] = [
-  { id: "all", label: "ទាំងអស់", hint: "គ្រប់វគ្គ", code: "ALL" },
-  { id: "ai", label: "AI Signal", hint: "បញ្ជាក់ដោយ SEA-LION", code: "AI" },
-  { id: "bbma", label: "BBMA", hint: "XAU EA ផ្ទាល់", code: "BBMA" },
-  { id: "ict", label: "ICT", hint: "មកដល់ឆាប់ៗ", code: "ICT", comingSoon: true },
-  { id: "smc", label: "SMC", hint: "XAU EA ផ្ទាល់", code: "SMC" },
+const BASE_SIGNAL_FILTER_OPTIONS: SignalFilterOption[] = [
+  { id: "all", label: "All", hint: "All sessions", code: "ALL" },
+  { id: "ai", label: "AI Signal", hint: "SEA-LION Confirmed", code: "AI" },
+  { id: "bbma", label: "BBMA", hint: "XAU Live EA", code: "BBMA" },
+  { id: "ict", label: "ICT", hint: "Coming Soon", code: "ICT", comingSoon: true },
+  { id: "smc", label: "SMC", hint: "XAU Live EA", code: "SMC" },
   {
     id: "supply-demand",
-    label: "Supply Demand",
-    hint: "មកដល់ឆាប់ៗ",
+    label: "Supply & Demand",
+    hint: "Coming Soon",
     code: "S/D",
     comingSoon: true,
   },
-  { id: "crt", label: "CRT", hint: "មកដល់ឆាប់ៗ", code: "CRT", comingSoon: true },
-  { id: "msnr", label: "MSNR", hint: "មកដល់ឆាប់ៗ", code: "MSNR", comingSoon: true },
+  { id: "crt", label: "CRT", hint: "Coming Soon", code: "CRT", comingSoon: true },
+  { id: "msnr", label: "MSNR", hint: "Coming Soon", code: "MSNR", comingSoon: true },
 ];
+
+export const SIGNAL_FILTER_OPTIONS: SignalFilterOption[] = HIDE_AI_SCANNER
+  ? BASE_SIGNAL_FILTER_OPTIONS.filter((o) => o.id !== "ai")
+  : BASE_SIGNAL_FILTER_OPTIONS;
 
 /** Sub-strategy pills shown inside the AI Signal tab. */
 export const AI_SIGNAL_STRATEGY_OPTIONS: SignalFilterOption[] = [
-  { id: "all", label: "ទាំងអស់", hint: "គ្រប់យុទ្ធសាស្ត្រ AI", code: "ALL" },
-  { id: "super-scalping", label: "Super scalp", hint: "5m ICT FVG", code: "5M" },
-  { id: "scalping", label: "Scalping", hint: "15m cloud + MSS", code: "15M" },
-  { id: "swing", label: "Swing", hint: "1h បញ្ជាក់ដោយ AI", code: "1H" },
+  { id: "all", label: "All", hint: "All AI Strategies", code: "ALL" },
+  { id: "super-scalping", label: "Super Scalp", hint: "5m ICT FVG", code: "5M" },
+  { id: "scalping", label: "Scalping", hint: "15m Cloud + MSS", code: "15M" },
+  { id: "swing", label: "Swing", hint: "1h AI Confirmed", code: "1H" },
 ];
 
 export const ADMIN_SIGNAL_FILTER_OPTIONS: SignalFilterOption[] = [

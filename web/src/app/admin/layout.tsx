@@ -3,7 +3,6 @@ import Link from "next/link";
 import { signout } from "@/app/auth/actions";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { Logo } from "@/components/shared/Logo";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { requireAdminPage } from "@/lib/admin-guard";
 
 export default async function AdminLayout({
@@ -32,8 +31,7 @@ export default async function AdminLayout({
             <Link href="/dashboard" className="btn-ghost text-xs text-slate justify-start px-2 py-1.5 -ml-2">
               &larr; View dashboard
             </Link>
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
+            <div className="flex items-center">
               <form action={signout}>
                 <button type="submit" className="btn-ghost text-xs">
                   Sign out
@@ -53,7 +51,6 @@ export default async function AdminLayout({
             <Link href="/dashboard" className="text-xs text-slate hover:text-ink">
               Dashboard
             </Link>
-            <ThemeToggle />
             <form action={signout}>
               <button type="submit" className="btn-ghost text-xs">
                 Sign out

@@ -4,28 +4,26 @@ import { useMemo, useState } from "react";
 
 import type { DailyPnL } from "@/lib/signals";
 
-const DAYS_OF_WEEK = ["ច", "អ", "ព", "ព្រ", "សុ", "ស", "អា"];
+const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-/** Fixed names — avoid toLocaleString("km-KH") which can SSR as Khmer
- * and hydrate as English when the browser lacks km locale data. */
-const MONTHS_KM = [
-  "មករា",
-  "កុម្ភៈ",
-  "មីនា",
-  "មេសា",
-  "ឧសភា",
-  "មិថុនា",
-  "កក្កដា",
-  "សីហា",
-  "កញ្ញា",
-  "តុលា",
-  "វិច្ឆិកា",
-  "ធ្នូ",
+const MONTHS_EN = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ] as const;
 
 const DEFAULT_DESCRIPTION =
-  "LLM signals ដែលបានបិទតាមថ្ងៃ — រួមទាំងការឈានដល់ TP ពេញលេញ និងការឈ្នះ TP1/TP2 " +
-  "(ទោះបីតម្លៃក្រោយមកប៉ះបញ្ឈប់ខាតក៏ដោយ)។ បៃតង = ឈ្នះច្រើនជាងចាញ់។";
+  "Closed signals grouped by day — including full TP hits and partial TP1/TP2 wins " +
+  "(even if price later reversed to SL). Green = net profitable day.";
 
 type Props = {
   data: DailyPnL[];
@@ -87,7 +85,7 @@ export function DailyPnLCalendar({
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  const monthName = MONTHS_KM[month];
+  const monthName = MONTHS_EN[month];
 
   const calendarGrid = useMemo(() => {
     const firstDayOfMonth = new Date(year, month, 1);
@@ -140,22 +138,23 @@ export function DailyPnLCalendar({
 
       {interactive ? (
         <div className="mb-6 flex justify-center">
-          <div className="flex overflow-hidden rounded border border-line bg-card">
+          <ul className="flex flex-wrap text-sm font-medium text-center text-zinc-600 border-b border-zinc-200">
             {availableYears.map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => setYear(y)}
-                className={`px-4 py-2 text-sm font-semibold transition-colors ${
-                  year === y
-                    ? "bg-slate/10 text-ink"
-                    : "text-slate hover:bg-slate/5"
-                }`}
-              >
-                {y}
-              </button>
+              <li key={y} className="me-2">
+                <button
+                  type="button"
+                  onClick={() => setYear(y)}
+                  className={`inline-block px-4 py-2 rounded-t-lg transition-colors cursor-pointer ${
+                    year === y
+                      ? "text-white bg-zinc-950 font-bold shadow-xs active"
+                      : "text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100"
+                  }`}
+                >
+                  {y}
+                </button>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       ) : null}
 
@@ -165,7 +164,7 @@ export function DailyPnLCalendar({
             type="button"
             onClick={prevMonth}
             className="p-1 text-slate transition-colors hover:text-ink"
-            aria-label="ខែមុន"
+            aria-label="Previous month"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
@@ -180,7 +179,7 @@ export function DailyPnLCalendar({
               type="button"
               onClick={goToToday}
               className="text-slate transition-colors hover:text-ink"
-              title="ទៅថ្ងៃនេះ"
+              title="Today"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
             </button>
@@ -192,7 +191,7 @@ export function DailyPnLCalendar({
             type="button"
             onClick={nextMonth}
             className="p-1 text-slate transition-colors hover:text-ink"
-            aria-label="ខែបន្ទាប់"
+            aria-label="Next month"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>

@@ -5,11 +5,11 @@ import { useState } from "react";
 import type { Stats } from "@/lib/signals";
 
 const STEPS = [
-  { id: "scan", label: "ស្កេន", detail: "ស្វែងរកទីផ្សារដែលមានចលនា និងឱកាសច្បាស់លាស់។" },
-  { id: "setup", label: "ការរៀបចំ", detail: "កំណត់តំបន់ចូល បញ្ឈប់ខាត និងគោលដៅតាមច្បាប់។" },
-  { id: "news", label: "ព័ត៌មាន", detail: "ពិនិត្យព័ត៌មានសំខាន់ៗដែលអាចប៉ះពាល់ដល់ការរៀបចំ។" },
-  { id: "ai", label: "AI បញ្ជាក់", detail: "AI ពិនិត្យហេតុផល និងកម្រិតទំនុកចិត្តរបស់ signal។" },
-  { id: "publish", label: "បានផ្សាយ", detail: "រក្សាទុក signal ដែលបានបញ្ជាក់ ដើម្បីតាមដានលទ្ធផល។" },
+  { id: "scan", label: "Scan", detail: "Screening active markets for structural imbalances and liquidity sweeps." },
+  { id: "setup", label: "Setup", detail: "Defining strict systematic entry, stop-loss, and multi-tier profit targets." },
+  { id: "news", label: "News", detail: "Filtering high-impact macro news headlines to prevent slippage traps." },
+  { id: "ai", label: "AI Verify", detail: "SEA-LION quant neural model evaluates multi-timeframe confluence." },
+  { id: "publish", label: "Dispatch", detail: "Instant verified dispatch to live terminal feeds and permanent audit log." },
 ] as const;
 
 function StatBar({
@@ -56,11 +56,11 @@ export function HowAiWorks({ stats }: { stats: Stats }) {
     >
       <div className="flex items-center justify-between px-4 py-3">
         <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
-          វដ្តម៉ាស៊ីន
+          ENGINE PIPELINE
         </p>
         <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-long">
           <span className="h-1.5 w-1.5 rounded-full bg-long" aria-hidden />
-          ផ្ទាល់
+          LIVE
         </span>
       </div>
 
@@ -91,13 +91,13 @@ export function HowAiWorks({ stats }: { stats: Stats }) {
       <div className="p-4">
         <div id="hero-step-detail" className="hero-step-detail mb-5">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-wide text-long">
-            ជំហាន {selectedStep + 1} / {STEPS.length}
+            STEP {selectedStep + 1} / {STEPS.length}
           </p>
           <p className="mt-1 text-sm font-semibold text-ink">{activeStep.label}</p>
           <p className="mt-1 text-xs leading-relaxed text-slate">{activeStep.detail}</p>
         </div>
         <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate">
-          កំណត់ត្រាលទ្ធផលរហូតមកដល់ពេលនេះ
+          AUDITED SYSTEM PERFORMANCE
         </p>
         <div className="mb-4 flex items-baseline gap-1.5">
           <span className="font-mono text-2xl font-bold text-ink">
@@ -106,9 +106,9 @@ export function HowAiWorks({ stats }: { stats: Stats }) {
           <span className="text-xs text-slate">signals logged</span>
         </div>
         <div className="flex flex-col gap-3">
-          <StatBar label="ទំនុកចិត្តមធ្យម" value={stats.avgConfidence} />
+          <StatBar label="Avg Confidence" value={stats.avgConfidence} />
           {stats.winRate !== null ? (
-            <StatBar label="អត្រាឈ្នះ" value={stats.winRate} tone="long" />
+            <StatBar label="Win Rate" value={stats.winRate} tone="long" />
           ) : null}
         </div>
       </div>

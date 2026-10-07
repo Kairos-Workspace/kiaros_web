@@ -31,13 +31,13 @@ describe("TradeTicket", () => {
   it("renders symbol, direction, prices, confidence, and rationale", () => {
     render(<TradeTicket signal={SIGNAL} />);
     expect(screen.getByText("BTCUSDT")).toBeDefined();
-    expect(screen.getByText("ទិញ")).toBeDefined();
+    expect(screen.getByText("BUY")).toBeDefined();
     expect(screen.getByText("108,240")).toBeDefined();
     expect(screen.getByText("106,900")).toBeDefined();
     expect(screen.getByText("110,920")).toBeDefined();
     expect(screen.getByText("82%")).toBeDefined();
     expect(screen.getByText("Momentum aligns.")).toBeDefined();
-    expect(screen.getByText("បានពិនិត្យចំណងជើង 1")).toBeDefined();
+    expect(screen.getByText("1 Headlines Checked")).toBeDefined();
   });
 
   it("marks sample signals and can hide the rationale", () => {
@@ -48,12 +48,12 @@ describe("TradeTicket", () => {
 
   it("shows a status badge only for closed signals", () => {
     const { rerender } = render(<TradeTicket signal={SIGNAL} />);
-    expect(screen.queryByText("ឈានដល់ TP")).toBeNull();
-    expect(screen.queryByText("ឈានដល់ SL")).toBeNull();
+    expect(screen.queryByText("TP Hit")).toBeNull();
+    expect(screen.queryByText("SL Hit")).toBeNull();
     rerender(<TradeTicket signal={{ ...SIGNAL, status: "tp_hit" }} />);
-    expect(screen.getByText("ឈានដល់ TP")).toBeDefined();
+    expect(screen.getByText("TP Hit")).toBeDefined();
     rerender(<TradeTicket signal={{ ...SIGNAL, status: "sl_hit" }} />);
-    expect(screen.getByText("ឈានដល់ SL")).toBeDefined();
+    expect(screen.getByText("SL Hit")).toBeDefined();
     rerender(
       <TradeTicket
         signal={{
@@ -64,9 +64,9 @@ describe("TradeTicket", () => {
         }}
       />,
     );
-    expect(screen.getByText("ឈានដល់ TP1")).toBeDefined();
+    expect(screen.getByText("TP1 Hit")).toBeDefined();
     rerender(<TradeTicket signal={{ ...SIGNAL, status: "expired" }} />);
-    expect(screen.getByText("ផុតកំណត់")).toBeDefined();
+    expect(screen.getByText("Expired")).toBeDefined();
   });
 
   it("renders TP1 TP2 and TP3 when the ladder is filled", () => {
@@ -88,6 +88,6 @@ describe("TradeTicket", () => {
 
   it("renders short direction with the short badge", () => {
     render(<TradeTicket signal={{ ...SIGNAL, direction: "short" }} />);
-    expect(screen.getByText("លក់")).toBeDefined();
+    expect(screen.getByText("SELL")).toBeDefined();
   });
 });

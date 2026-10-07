@@ -1,5 +1,4 @@
 import { SignalsGrid } from "@/components/dashboard/SignalsGrid";
-import { StatsBar } from "@/components/dashboard/StatsBar";
 import { AiStrategyRail } from "@/components/signals/AiStrategyRail";
 import { Pagination } from "@/components/shared/Pagination";
 import { SignalsBrowseFilter } from "@/components/signals/SignalsBrowseFilter";
@@ -7,7 +6,6 @@ import { SignalsSessionRail } from "@/components/signals/SignalsSessionRail";
 import {
   getSignals,
   getSignalsPaginated,
-  getStats,
   type SignalLane,
 } from "@/lib/signals";
 import {
@@ -26,39 +24,39 @@ const AI_STRATEGY_META: Record<
   { title: string; subtitle: string; emptyHint: string; timeframe?: string }
 > = {
   "super-scalping": {
-    title: "Super scalping",
+    title: "Super Scalping",
     subtitle: "5m ICT — sweep, CHoCH, FVG retest",
-    emptyHint: "ការរៀបចំបង្ហាញបន្ទាប់ពីបិទ 5m នីមួយៗ។",
+    emptyHint: "Setups appear after every 5m close.",
     timeframe: "5m",
   },
   scalping: {
     title: "Scalping",
     subtitle: "15m cloud rejection + CHoCH",
-    emptyHint: "ការរៀបចំបង្ហាញបន្ទាប់ពីបិទ 15m នីមួយៗ។",
+    emptyHint: "Setups appear after every 15m close.",
     timeframe: "15m",
   },
   swing: {
     title: "Swing",
-    subtitle: "ការរៀបចំ 1h បញ្ជាក់ដោយ AI",
-    emptyHint: "ការរៀបចំបង្ហាញបន្ទាប់ពីបិទ 1h នីមួយៗ។",
+    subtitle: "1h setups confirmed by AI",
+    emptyHint: "Setups appear after every 1h close.",
     timeframe: "1h",
   },
 };
 
 const BBMA_SESSION = {
   title: "BBMA",
-  subtitle: "XAU H1 — MT5 EA ផ្ទាល់ គ្មានច្រក AI",
+  subtitle: "XAU H1 — Direct MT5 EA, no AI filter",
   timeframe: "bbma",
   lane: "bbma" as SignalLane,
-  emptyHint: "ការរៀបចំថ្មីបោះពុម្ពនៅពេល H1 បិទពី EA។",
+  emptyHint: "New setups print when H1 bar closes from EA.",
 };
 
 const SMC_SESSION = {
   title: "SMC",
-  subtitle: "XAU H1 — liquidity sweep + CHoCH, MT5 EA ផ្ទាល់ គ្មានច្រក AI",
+  subtitle: "XAU H1 — Liquidity sweep + CHoCH, direct MT5 EA, no AI filter",
   timeframe: "smc",
   lane: "default" as SignalLane,
-  emptyHint: "ការរៀបចំថ្មីបោះពុម្ពនៅពេល H1 បិទពី EA។",
+  emptyHint: "New setups print when H1 bar closes from EA.",
 };
 
 function ComingSoonStrategy({
@@ -71,60 +69,52 @@ function ComingSoonStrategy({
   return (
     <section className="space-y-5">
       <div>
-        <h2 className="text-lg font-semibold tracking-tight text-ink">{label}</h2>
+        <h2 className="text-xl font-extrabold tracking-tight text-ink">{label}</h2>
         <p className="mt-1 text-sm text-slate">{hint}</p>
       </div>
-      <div className="rounded-xl border border-dashed border-line bg-card px-6 py-14 text-center">
-        <p className="text-sm font-semibold text-ink">
-          យុទ្ធសាស្ត្រ {label} មកដល់ឆាប់ៗ
+      <div className="rounded-2xl border border-dashed border-line bg-card/60 p-12 text-center backdrop-blur-md">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-card text-ink mb-3">
+          <span className="h-4 w-4 rounded-full border-2 border-line-highlight border-t-transparent animate-spin" />
+        </div>
+        <p className="text-sm font-bold text-ink">
+          Strategy {label} Coming Soon
         </p>
-        <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">
-          Signals នឹងបង្ហាញនៅទីនេះនៅពេលយុទ្ធសាស្ត្រនេះដំណើរការ។
+        <p className="mx-auto mt-1.5 max-w-sm text-xs text-slate">
+          Signals will appear here when this quantitative model is deployed.
         </p>
       </div>
     </section>
   );
 }
 
+
 async function SessionBlock({
   title,
-  subtitle,
   timeframe,
   lane,
   emptyHint,
   accessToken,
 }: {
   title: string;
-  subtitle: string;
   timeframe: string;
   lane: SignalLane;
   emptyHint: string;
   accessToken: string | undefined;
 }) {
-  const [signals, stats] = await Promise.all([
-    getSignals(30, accessToken, timeframe === "bbma" ? undefined : timeframe, lane),
-    getStats(accessToken, timeframe === "bbma" ? "bbma" : timeframe, lane),
-  ]);
+  const signals = await getSignals(
+    30,
+    accessToken,
+    timeframe === "bbma" ? undefined : timeframe,
+    lane,
+  );
 
   return (
     <section className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-semibold tracking-tight text-ink">{title}</h2>
-          <p className="mt-1 text-sm text-slate">{subtitle}</p>
-        </div>
-        {signals.length > 0 ? (
-          <p className="text-sm text-slate">{signals.length} signals</p>
-        ) : null}
-      </div>
-
-      <StatsBar stats={stats} />
-
       {signals.length > 0 ? (
         <SignalsGrid signals={signals} />
       ) : (
         <div className="rounded-xl border border-dashed border-line bg-card px-6 py-14 text-center">
-          <p className="text-sm font-semibold text-ink">មិនទាន់មាន signals {title} ទេ</p>
+          <p className="text-sm font-semibold text-ink">No {title} signals yet</p>
           <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">{emptyHint}</p>
         </div>
       )}
@@ -156,15 +146,13 @@ export async function SignalsBrowse({
   const aiStrategyTimeframe =
     isAiStrategy && strategy !== "all" ? AI_STRATEGY_META[strategy].timeframe : undefined;
 
-  const [allPage, allStats, aiPage, aiStats] = await Promise.all([
+  const [allPage, aiPage] = await Promise.all([
     isAllTab
       ? getSignalsPaginated(page, accessToken, undefined, ALL_PAGE_SIZE)
       : null,
-    isAllTab ? getStats(accessToken) : null,
     isAiStrategy
       ? getSignalsPaginated(page, accessToken, aiStrategyTimeframe, ALL_PAGE_SIZE, "ai")
       : null,
-    isAiStrategy ? getStats(accessToken, aiStrategyTimeframe, "ai") : null,
   ]);
 
   const aiPaginationParams: Record<string, string> =
@@ -182,10 +170,8 @@ export async function SignalsBrowse({
 
       {comingSoon ? (
         <ComingSoonStrategy label={comingSoon.label} hint={comingSoon.hint} />
-      ) : isAllTab && allPage && allStats ? (
+      ) : isAllTab && allPage ? (
         <section className="space-y-5">
-          <StatsBar stats={allStats} />
-
           {allPage.signals.length > 0 ? (
             <>
               <SignalsGrid signals={allPage.signals} />
@@ -199,28 +185,15 @@ export async function SignalsBrowse({
             </>
           ) : (
             <div className="rounded-xl border border-dashed border-line bg-card px-6 py-14 text-center">
-              <p className="text-sm font-semibold text-ink">មិនទាន់មាន signals ទេ</p>
+              <p className="text-sm font-semibold text-ink">No signals available yet</p>
               <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">
-                ការរៀបចំថ្មីនឹងបង្ហាញនៅទីនេះនៅពេលវគ្គដំណើរការ។
+                New trade setups will appear here as sessions activate.
               </p>
             </div>
           )}
         </section>
-      ) : isAiStrategy && aiPage && aiStats ? (
+      ) : isAiStrategy && aiPage ? (
         <section className="space-y-5">
-          <div>
-            <h2 className="text-lg font-semibold tracking-tight text-ink">
-              {strategy === "all" ? "AI Signal" : AI_STRATEGY_META[strategy].title}
-            </h2>
-            <p className="mt-1 text-sm text-slate">
-              {strategy === "all"
-                ? "គ្រប់ការរៀបចំដែល SEA-LION បញ្ជាក់ — ឆ្លងយុទ្ធសាស្ត្រ និងគ្មាន feed EA ឆៅ។"
-                : AI_STRATEGY_META[strategy].subtitle}
-            </p>
-          </div>
-
-          <StatsBar stats={aiStats} />
-
           {aiPage.signals.length > 0 ? (
             <>
               <SignalsGrid signals={aiPage.signals} />
@@ -235,10 +208,10 @@ export async function SignalsBrowse({
             </>
           ) : (
             <div className="rounded-xl border border-dashed border-line bg-card px-6 py-14 text-center">
-              <p className="text-sm font-semibold text-ink">មិនទាន់មាន AI signals ទេ</p>
+              <p className="text-sm font-semibold text-ink">No AI signals yet</p>
               <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">
                 {strategy === "all"
-                  ? "ការរៀបចំថ្មីនឹងបង្ហាញនៅទីនេះនៅពេល SEA-LION បញ្ជាក់មួយ។"
+                  ? "New setups will display here as SEA-LION confirms valid market conditions."
                   : AI_STRATEGY_META[strategy].emptyHint}
               </p>
             </div>
@@ -248,7 +221,6 @@ export async function SignalsBrowse({
         <SessionBlock
           accessToken={accessToken}
           title={SMC_SESSION.title}
-          subtitle={SMC_SESSION.subtitle}
           timeframe={SMC_SESSION.timeframe}
           lane={SMC_SESSION.lane}
           emptyHint={SMC_SESSION.emptyHint}
@@ -257,7 +229,6 @@ export async function SignalsBrowse({
         <SessionBlock
           accessToken={accessToken}
           title={BBMA_SESSION.title}
-          subtitle={BBMA_SESSION.subtitle}
           timeframe={BBMA_SESSION.timeframe}
           lane={BBMA_SESSION.lane}
           emptyHint={BBMA_SESSION.emptyHint}

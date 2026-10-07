@@ -50,13 +50,13 @@ export default async function AdminToolsPage({
       <section className="card-surface p-5">
         <h2 className="text-lg font-semibold">Add tool</h2>
         <p className="mt-1 text-sm text-slate">
-          Khmer title and description appear on the public page. Upload a file
+          Title and description appear on the public page. Upload a file
           (.mq5, .ex5, .zip) or paste a TradingView / external link — not both.
         </p>
         <form action={createTool} className="mt-5 flex flex-col gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1.5 text-sm font-medium">
-              Title (Khmer)
+              Title
               <input
                 type="text"
                 name="title_km"
@@ -77,11 +77,11 @@ export default async function AdminToolsPage({
             </label>
           </div>
           <label className="flex flex-col gap-1.5 text-sm font-medium">
-            Description (Khmer)
+            Description
             <textarea
               name="description_km"
               rows={3}
-              placeholder="EA BBMA ឥតគិតថ្លៃសម្រាប់ XAUUSD..."
+              placeholder="Free BBMA EA for XAUUSD algorithmic trading..."
               className="input-field w-full resize-y"
             />
           </label>

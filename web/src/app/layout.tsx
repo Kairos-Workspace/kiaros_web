@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import localFont from "next/font/local";
-import Script from "next/dist/client/script";
 
 import "./globals.css";
 
@@ -40,17 +39,23 @@ const notoSansKhmer = localFont({
 const jetbrains = JetBrains_Mono({
   variable: "--font-jetbrains",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  applicationName: "Kiaros",
+  applicationName: "Kiaros Quant Terminal",
   title: {
-    default: "Kiaros — Smart signals. Calmer trading.",
+    default: "Kiaros — Institutional AI Trading Signals & Quant Intelligence",
     template: "%s — Kiaros",
   },
   description:
-    "ការរៀបចំបច្ចេកទេសលើ crypto មាស និង forex — បញ្ជាក់ដោយ AI ពន្យល់ជាភាសាសាមញ្ញ។ Signals សម្រាប់ការអប់រំ និងវិភាគ — មិនមែនជាដំបូន្មានហិរញ្ញវត្ថុ។",
+    "Institutional-grade signal architecture across Crypto, Gold (XAUUSD), and Forex — validated by neural models and algorithmic execution (SMC, ICT, BBMA) with zero repaint.",
   creator: "Kiaros",
   publisher: "Kiaros",
 };
@@ -62,20 +67,21 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="km"
+      lang="en"
       suppressHydrationWarning
-      className={`${notoSansKhmer.variable} ${jetbrains.variable} h-full antialiased`}
+      style={{ colorScheme: "light" }}
+      className={`${notoSansKhmer.variable} ${jetbrains.variable} ${plusJakarta.variable} h-full antialiased`}
     >
       <head>
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
+        <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark")}catch(e){}`,
+            __html: `try{document.documentElement.classList.remove("dark");localStorage.setItem("theme","light");}catch(e){}`,
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-paper text-ink selection:bg-black selection:text-white transition-colors duration-200">
+        {children}
+      </body>
     </html>
   );
 }

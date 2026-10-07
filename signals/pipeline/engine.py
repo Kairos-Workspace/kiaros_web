@@ -85,143 +85,146 @@ def main(sessions=None):
         except Exception as exc:
             print(f"[XAUUSD] drift expire skipped ({type(exc).__name__})")
 
-        settings = fetch_bot_settings(cfg.supabase_url, cfg.supabase_service_key,
-                                      session=db_session)
-        keys = cfg.sealion_api_keys or (cfg.sealion_api_key,)
-        print(f"Using {len(keys)} SEA-LION API key(s) across "
-              f"{len(settings.symbols)} symbol(s) in {len(trading_sessions)} "
-              f"session(s) ({session_label}), "
-              f"swing=msnr, scalp=cloud_mss.")
+        if not getattr(cfg, "market_scanner_enabled", True):
+            print("[engine] Market scanner disabled (MARKET_SCANNER_ENABLED=false) — skipping symbol scans.")
+        else:
+            settings = fetch_bot_settings(cfg.supabase_url, cfg.supabase_service_key,
+                                          session=db_session)
+            keys = cfg.sealion_api_keys or (cfg.sealion_api_key,)
+            print(f"Using {len(keys)} SEA-LION API key(s) across "
+                  f"{len(settings.symbols)} symbol(s) in {len(trading_sessions)} "
+                  f"session(s) ({session_label}), "
+                  f"swing=msnr, scalp=cloud_mss.")
 
-        def scan_one(item):
-            """(index, symbol, TradingSession, recent_events, recent_signals, open_symbols)
-            -> (ScanResult | None, error | None)."""
-            (index, symbol, trading_session, recent_events, recent_signals,
-             open_symbols) = item
-            # Symbols round-robin across keys so a full scan never concentrates
-            # its LLM calls on a single key's rate limit.
-            llm = SeaLionClient(
-                api_key=keys[index % len(keys)],
-                model=cfg.sealion_model,
-                base_url=cfg.sealion_base_url,
-            )
-            session_strategy = (
-                trading_session.strategy or settings.signal_strategy
-            )
-            try:
-                return scan_symbol(
-                    symbol, cfg, llm, strategy=session_strategy,
-                    timeframe=trading_session.timeframe,
-                    session=requests.Session(),
-                    recent_events=recent_events, recent_signals=recent_signals,
-                    open_symbols=open_symbols,
-                    confluence_timeframe=trading_session.confluence_timeframe,
-                    min_store_confidence=effective_min_store_confidence(
-                        session_strategy, settings.min_store_confidence,
-                    ),
-                ), None
-            except Exception as exc:
-                return None, exc
-        workers = max(1, min(len(settings.symbols), MAX_SCAN_WORKERS))
+            def scan_one(item):
+                """(index, symbol, TradingSession, recent_events, recent_signals, open_symbols)
+                -> (ScanResult | None, error | None)."""
+                (index, symbol, trading_session, recent_events, recent_signals,
+                 open_symbols) = item
+                # Symbols round-robin across keys so a full scan never concentrates
+                # its LLM calls on a single key's rate limit.
+                llm = SeaLionClient(
+                    api_key=keys[index % len(keys)],
+                    model=cfg.sealion_model,
+                    base_url=cfg.sealion_base_url,
+                )
+                session_strategy = (
+                    trading_session.strategy or settings.signal_strategy
+                )
+                try:
+                    return scan_symbol(
+                        symbol, cfg, llm, strategy=session_strategy,
+                        timeframe=trading_session.timeframe,
+                        session=requests.Session(),
+                        recent_events=recent_events, recent_signals=recent_signals,
+                        open_symbols=open_symbols,
+                        confluence_timeframe=trading_session.confluence_timeframe,
+                        min_store_confidence=effective_min_store_confidence(
+                            session_strategy, settings.min_store_confidence,
+                        ),
+                    ), None
+                except Exception as exc:
+                    return None, exc
+            workers = max(1, min(len(settings.symbols), MAX_SCAN_WORKERS))
 
-        # Each scanned session runs all symbols in parallel, one session
-        # at a time — so a run's outcomes group by session for a clear summary.
-        for trading_session in trading_sessions:
-            # Not every symbol belongs on every session — see SESSION_SYMBOLS.
-            # Filtered once here so the prefetches, the scan tasks and the
-            # result pairing below all agree on the same list; querying for a
-            # symbol this session will not scan would also waste a round trip.
-            session_symbols = [
-                symbol for symbol in settings.symbols
-                if session_scans(trading_session.name, symbol)
-            ]
-            if not session_symbols:
-                continue
-            # One query each for the whole session's symbol list, instead of
-            # every symbol hitting Supabase individually before its scan even
-            # starts — collapses up to 3*len(symbols) round trips into 3.
-            recent_events = _prefetch_recent_events(
-                session_symbols, trading_session.timeframe, cfg, session=db_session)
-            recent_signals = _prefetch_recent_signals(
-                session_symbols, trading_session.timeframe, cfg, session=db_session)
-            open_symbols = _prefetch_open_symbols(
-                session_symbols, trading_session.timeframe, cfg, session=db_session)
-            tasks = [
-                (i, symbol, trading_session, recent_events, recent_signals, open_symbols)
-                for i, symbol in enumerate(session_symbols)
-            ]
-            with ThreadPoolExecutor(max_workers=workers) as pool:
-                results = list(pool.map(scan_one, tasks))
-
-            # Alerts go out from the main thread, in symbol order, after the
-            # session's scans finish.
-            for symbol, (result, error) in zip(session_symbols, results):
-                if error is not None:
-                    print(f"[{symbol}] unexpected error, skipping: "
-                          f"{type(error).__name__}: {error}")
-                    outcomes.append({
-                        "symbol": symbol,
-                        "timeframe": trading_session.timeframe,
-                        "status": "ERROR",
-                        "extra": f"{type(error).__name__}",
-                    })
+            # Each scanned session runs all symbols in parallel, one session
+            # at a time — so a run's outcomes group by session for a clear summary.
+            for trading_session in trading_sessions:
+                # Not every symbol belongs on every session — see SESSION_SYMBOLS.
+                # Filtered once here so the prefetches, the scan tasks and the
+                # result pairing below all agree on the same list; querying for a
+                # symbol this session will not scan would also waste a round trip.
+                session_symbols = [
+                    symbol for symbol in settings.symbols
+                    if session_scans(trading_session.name, symbol)
+                ]
+                if not session_symbols:
                     continue
-                if result.candles:
-                    candles_by_symbol[(symbol, trading_session.timeframe)] = result.candles
-                if result.signal is not None:
-                    stored += 1
-                    newly_confirmed_signals.append(result.signal)
-                    maybe_send_alert(result.signal, settings, cfg)
-                    outcomes.append({
-                        "symbol": symbol,
-                        "timeframe": trading_session.timeframe,
-                        "status": "CONFIRMED",
-                        "extra": f"{result.signal.direction.upper()} {result.signal.confidence}%",
-                    })
-                elif result.no_signal is not None:
-                    # No Telegram for no-setup / rejected — only confirmed
-                    # signals and SL/TP hits get pushed.
-                    if result.no_signal.kind == "rejected":
+                # One query each for the whole session's symbol list, instead of
+                # every symbol hitting Supabase individually before its scan even
+                # starts — collapses up to 3*len(symbols) round trips into 3.
+                recent_events = _prefetch_recent_events(
+                    session_symbols, trading_session.timeframe, cfg, session=db_session)
+                recent_signals = _prefetch_recent_signals(
+                    session_symbols, trading_session.timeframe, cfg, session=db_session)
+                open_symbols = _prefetch_open_symbols(
+                    session_symbols, trading_session.timeframe, cfg, session=db_session)
+                tasks = [
+                    (i, symbol, trading_session, recent_events, recent_signals, open_symbols)
+                    for i, symbol in enumerate(session_symbols)
+                ]
+                with ThreadPoolExecutor(max_workers=workers) as pool:
+                    results = list(pool.map(scan_one, tasks))
+
+                # Alerts go out from the main thread, in symbol order, after the
+                # session's scans finish.
+                for symbol, (result, error) in zip(session_symbols, results):
+                    if error is not None:
+                        print(f"[{symbol}] unexpected error, skipping: "
+                              f"{type(error).__name__}: {error}")
                         outcomes.append({
                             "symbol": symbol,
                             "timeframe": trading_session.timeframe,
-                            "status": "REJECTED",
-                            "extra": (result.no_signal.rationale or "")[:140],
+                            "status": "ERROR",
+                            "extra": f"{type(error).__name__}",
                         })
+                        continue
+                    if result.candles:
+                        candles_by_symbol[(symbol, trading_session.timeframe)] = result.candles
+                    if result.signal is not None:
+                        stored += 1
+                        newly_confirmed_signals.append(result.signal)
+                        maybe_send_alert(result.signal, settings, cfg)
+                        outcomes.append({
+                            "symbol": symbol,
+                            "timeframe": trading_session.timeframe,
+                            "status": "CONFIRMED",
+                            "extra": f"{result.signal.direction.upper()} {result.signal.confidence}%",
+                        })
+                    elif result.no_signal is not None:
+                        # No Telegram for no-setup / rejected — only confirmed
+                        # signals and SL/TP hits get pushed.
+                        if result.no_signal.kind == "rejected":
+                            outcomes.append({
+                                "symbol": symbol,
+                                "timeframe": trading_session.timeframe,
+                                "status": "REJECTED",
+                                "extra": (result.no_signal.rationale or "")[:140],
+                            })
+                        else:
+                            outcomes.append({
+                                "symbol": symbol,
+                                "timeframe": trading_session.timeframe,
+                                "status": "NO SIGNAL",
+                                "extra": (result.no_signal.rationale or "")[:140],
+                            })
                     else:
                         outcomes.append({
                             "symbol": symbol,
                             "timeframe": trading_session.timeframe,
-                            "status": "NO SIGNAL",
-                            "extra": (result.no_signal.rationale or "")[:140],
+                            "status": "SKIPPED",
+                            "extra": "No change (dedup) or missing indicators/data",
                         })
-                else:
-                    outcomes.append({
-                        "symbol": symbol,
-                        "timeframe": trading_session.timeframe,
-                        "status": "SKIPPED",
-                        "extra": "No change (dedup) or missing indicators/data",
-                    })
 
-        # Cross-strategy confirmation: runs once, after every session has
-        # scanned, so it sees the full picture of what just got confirmed.
-        # Never allowed to block the three real sessions' delivery, which
-        # has already completed by this point.
-        try:
-            for confluence_signal in detect_confluence(
-                newly_confirmed_signals, candles_by_symbol, settings, cfg,
-                session=db_session,
-            ):
-                stored += 1
-                outcomes.append({
-                    "symbol": confluence_signal.symbol,
-                    "timeframe": "confluence",
-                    "status": "CONFIRMED",
-                    "extra": f"{confluence_signal.direction.upper()} "
-                             f"{confluence_signal.confidence}% (confluence)",
-                })
-        except Exception as exc:
-            print(f"confluence detection failed ({type(exc).__name__}), continuing")
+            # Cross-strategy confirmation: runs once, after every session has
+            # scanned, so it sees the full picture of what just got confirmed.
+            # Never allowed to block the three real sessions' delivery, which
+            # has already completed by this point.
+            try:
+                for confluence_signal in detect_confluence(
+                    newly_confirmed_signals, candles_by_symbol, settings, cfg,
+                    session=db_session,
+                ):
+                    stored += 1
+                    outcomes.append({
+                        "symbol": confluence_signal.symbol,
+                        "timeframe": "confluence",
+                        "status": "CONFIRMED",
+                        "extra": f"{confluence_signal.direction.upper()} "
+                                 f"{confluence_signal.confidence}% (confluence)",
+                    })
+            except Exception as exc:
+                print(f"confluence detection failed ({type(exc).__name__}), continuing")
 
         # After scanning both sessions, settle open signals whose TP or SL has
         # been hit and expire stale ones (per-session window), reusing this

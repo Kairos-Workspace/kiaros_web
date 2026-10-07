@@ -56,6 +56,9 @@ def _pick_key(keys, minute=None):
 def scan_once(cfg, settings, session=None) -> "object":
     """Run one XAUUSD 1m scan; store + alert on a confirmed signal."""
     session = session or requests.Session()
+    if not getattr(cfg, "market_scanner_enabled", True):
+        print("[XAUUSD] Market scanner disabled (MARKET_SCANNER_ENABLED=false)")
+        return ScanResult()
 
     if XAU_SCALPER_PAUSED:
         print("[XAUUSD] 1m scalp paused -- ict_fvg has no measured edge "

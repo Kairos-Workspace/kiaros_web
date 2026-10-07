@@ -16,18 +16,18 @@ describe("formatRelativeTime", () => {
   const now = new Date("2026-07-06T12:00:00Z");
 
   it("renders minutes", () => {
-    expect(formatRelativeTime("2026-07-06T11:45:00Z", now)).toBe("15 នាទីមុន");
+    expect(formatRelativeTime("2026-07-06T11:45:00Z", now)).toBe("15m ago");
   });
 
   it("renders hours", () => {
-    expect(formatRelativeTime("2026-07-06T09:00:00Z", now)).toBe("3 ម៉ោងមុន");
+    expect(formatRelativeTime("2026-07-06T09:00:00Z", now)).toBe("3h ago");
   });
 
   it("renders days", () => {
-    expect(formatRelativeTime("2026-07-04T09:00:00Z", now)).toBe("2 ថ្ងៃមុន");
+    expect(formatRelativeTime("2026-07-04T09:00:00Z", now)).toBe("2d ago");
   });
 
   it("handles invalid dates gracefully", () => {
-    expect(formatRelativeTime("garbage", now)).toBe("ឥឡូវនេះ");
+    expect(formatRelativeTime("garbage", now)).toBe("just now");
   });
 });

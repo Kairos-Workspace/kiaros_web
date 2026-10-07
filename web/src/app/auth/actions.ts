@@ -18,7 +18,7 @@ function credentials(formData: FormData): { email: string; password: string } {
 export async function login(formData: FormData) {
   const { email, password } = credentials(formData);
   if (!email || !password) {
-    redirect(`/login?error=${encodeURIComponent("បញ្ចូលអ៊ីមែល និងពាក្យសម្ងាត់របស់បងប្អូន។")}`);
+    redirect(`/login?error=${encodeURIComponent("Please enter your email and password.")}`);
   }
 
   const supabase = await createClient();
@@ -37,12 +37,12 @@ export async function login(formData: FormData) {
 
 export async function signup(formData: FormData) {
   if (!ALLOW_SIGNUP) {
-    redirect(`/signup?error=${encodeURIComponent("ការចុះឈ្មោះបច្ចុប្បន្នបានបិទ។")}`);
+    redirect(`/signup?error=${encodeURIComponent("Registration is currently closed.")}`);
   }
 
   const { email, password } = credentials(formData);
   if (!email || !password) {
-    redirect(`/signup?error=${encodeURIComponent("បញ្ចូលអ៊ីមែល និងពាក្យសម្ងាត់។")}`);
+    redirect(`/signup?error=${encodeURIComponent("Please enter your email and password.")}`);
   }
 
   const headerStore = await headers();

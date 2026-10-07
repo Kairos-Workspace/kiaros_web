@@ -1,7 +1,7 @@
 // Prices: thousands separators; fewer decimals for large numbers.
 export function formatPrice(value: number): string {
   const decimals = Math.abs(value) >= 1000 ? 0 : 2;
-  return value.toLocaleString("km-KH", {
+  return value.toLocaleString("en-US", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });
@@ -11,14 +11,14 @@ export function formatPrice(value: number): string {
 export function formatTimeframe(timeframe: string): string {
   if (timeframe === "bbma") return "BBMA";
   if (timeframe === "smc") return "SMC";
-  if (timeframe === "floor") return "ជាន់";
+  if (timeframe === "floor") return "Floor";
   return timeframe;
 }
 
 // Absolute timestamp; "never" for null.
 export function formatDateTime(iso: string | null): string {
-  if (!iso) return "មិនដែល";
-  return new Date(iso).toLocaleString("km-KH", {
+  if (!iso) return "never";
+  return new Date(iso).toLocaleString("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -31,13 +31,13 @@ export function formatDateTime(iso: string | null): string {
 export function formatRelativeTime(iso: string, now: Date = new Date()): string {
   const then = new Date(iso);
   const seconds = Math.floor((now.getTime() - then.getTime()) / 1000);
-  if (Number.isNaN(seconds) || seconds < 0) return "ឥឡូវនេះ";
-  if (seconds < 60) return "ឥឡូវនេះ";
+  if (Number.isNaN(seconds) || seconds < 0) return "just now";
+  if (seconds < 60) return "just now";
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} នាទីមុន`;
+  if (minutes < 60) return `${minutes}m ago`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} ម៉ោងមុន`;
+  if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} ថ្ងៃមុន`;
-  return then.toLocaleDateString("km-KH", { month: "short", day: "numeric", year: "numeric" });
+  if (days < 30) return `${days}d ago`;
+  return then.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }

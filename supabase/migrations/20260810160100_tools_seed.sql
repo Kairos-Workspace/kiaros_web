@@ -16,7 +16,7 @@ values
     (
         'f1a2b3c4-d5e6-7890-abcd-ef1111111111',
         'Kiaros BBMA EA',
-        'EA BBMA (Oma Ally) សម្រាប់ XAUUSD — H4 bias, H1 re-entry និង extreme setup។ បោះផ្សាយ signal ទៅ Kiaros ដោយស្វ័យប្រវត្តិ។',
+        'BBMA (Oma Ally) Expert Advisor for XAUUSD — H4 bias, H1 re-entry, and extreme setups. Automatically publishes signals to Kiaros.',
         'mt5_ea',
         '/tools/KiarosBBMA.mq5',
         'KiarosBBMA.mq5',
@@ -29,7 +29,7 @@ values
     (
         'f1a2b3c4-d5e6-7890-abcd-ef2222222222',
         'Kiaros Tick Push EA',
-        'EA companion — រុញ tick និង M1 candles ទៅ Kiaros សម្រាប់ TP/SL outcome និង pattern scan។ ភ្ជាប់ជាមួយ BBMA EA។',
+        'Companion EA — Pushes real-time tick and M1 candles to Kiaros for automated TP/SL tracking and pattern scanning. Pairs with BBMA EA.',
         'mt5_ea',
         '/tools/KiarosTickPush.mq5',
         'KiarosTickPush.mq5',

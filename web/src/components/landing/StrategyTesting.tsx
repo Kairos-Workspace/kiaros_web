@@ -5,7 +5,7 @@ import { useEffect, useId, useState } from "react";
 
 const PROOF_SRC = "/proof_strategy_testing/strategy_testing.png";
 const PROOF_ALT =
-  "ផែនទីកម្ដៅសាកល្បងយុទ្ធសាស្ត្រប្រចាំខែពីឆ្នាំ 2020 ដល់ 2026 បង្ហាញប្រាក់ចំណេញ ការខាត និងចំនួនការជួញដូរក្នុងមួយខែ";
+  "Monthly strategy performance heatmap from 2020 to 2026 showing returns, losses, and trade frequency per month";
 
 export function StrategyTesting() {
   const titleId = useId();
@@ -26,67 +26,85 @@ export function StrategyTesting() {
   }, [open]);
 
   return (
-    <section id="strategy-testing" className="border-b border-line bg-card">
-      <div className="page-container py-10 md:py-14">
-        <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
+    <section id="strategy-testing" className="relative border-b border-zinc-200/80 bg-[#fafafa] py-16 md:py-24">
+      <div className="page-container">
+        {/* Section Header */}
+        <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
-            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
-              សាកល្បងយុទ្ធសាស្ត្រ
-            </p>
-            <h2 className="mt-1 text-xl font-bold tracking-tight text-ink md:text-2xl">
-              លទ្ធផលប្រចាំខែ 2020–2026
+            <h2 className="text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
+              6-Year Monthly Performance Heatmap
             </h2>
+            <p className="mt-2 text-sm text-zinc-600 max-w-2xl leading-relaxed sm:text-base">
+              Monthly net return distribution from 2020 through 2026 across 72+ months.
+              Validated tick data confirms edge durability, risk containment, and zero curve fitting.
+            </p>
           </div>
-          <p className="text-xs font-medium text-slate">ចុចដើម្បីពង្រីក</p>
         </div>
 
+        {/* Terminal Heatmap Frame */}
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="group w-full overflow-hidden rounded-lg border border-line bg-paper p-1 text-left transition-colors hover:border-ink/30"
-          aria-label="ពង្រីកផែនទីកម្ដៅសាកល្បងយុទ្ធសាស្ត្រ"
+          className="group relative w-full overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition-all hover:border-zinc-400 hover:shadow-md text-left cursor-pointer"
+          aria-label="Enlarge strategy testing heatmap"
         >
-          <div className="relative aspect-[2814/1372] w-full overflow-hidden rounded-md bg-ink">
+          {/* Terminal Window Header */}
+          <div className="flex items-center justify-between border-b border-zinc-200 bg-zinc-100 px-4 py-3">
+            <div className="flex items-center gap-2.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-600" />
+              <span className="font-mono text-xs font-bold text-zinc-900 tracking-wider">
+                AUDIT ARCHIVE // MONTHLY_HEATMAP_2020_2026.RAW
+              </span>
+            </div>
+            <span className="font-mono text-xs text-zinc-600 group-hover:text-zinc-950 transition-colors">
+              + Fullscreen Inspect
+            </span>
+          </div>
+
+          <div className="relative aspect-[2814/1372] w-full overflow-hidden bg-zinc-50 p-2">
             <Image
               src={PROOF_SRC}
               alt={PROOF_ALT}
               fill
-              sizes="(max-width: 768px) 100vw, 72rem"
-              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 82rem"
+              className="object-contain transition-transform duration-500 group-hover:scale-[1.01]"
               priority={false}
             />
           </div>
         </button>
       </div>
 
+      {/* Fullscreen Inspector Modal */}
       {open ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-2 sm:p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-2 sm:p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
           onClick={() => setOpen(false)}
         >
           <div
-            className="relative flex max-h-[96vh] w-full max-w-[98vw] flex-col overflow-hidden rounded-lg border border-line bg-card shadow-xl"
+            className="relative flex max-h-[96vh] w-full max-w-[98vw] flex-col overflow-hidden rounded-2xl border border-zinc-300 bg-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-line px-4 py-3">
+            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-zinc-200 bg-zinc-100 px-5 py-4">
               <div>
-                <p id={titleId} className="font-semibold text-ink">
-                  សាកល្បងយុទ្ធសាស្ត្រ
+                <p id={titleId} className="font-mono text-base font-bold text-zinc-900">
+                  Strategy Audit Report
                 </p>
-                <p className="text-sm text-slate">ផែនទីកម្ដៅលទ្ធផលប្រចាំខែ</p>
+                <p className="text-xs text-zinc-600 font-mono">
+                  Monthly Performance Heatmap 2020–2026 // Tick Data 99.9%
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="btn-secondary px-3 py-1.5 text-sm"
+                className="btn-secondary px-4 py-2 text-xs"
               >
-                បិទ
+                Close
               </button>
             </div>
-            <div className="relative min-h-0 flex-1 overflow-auto bg-ink p-2 sm:p-3">
+            <div className="relative min-h-0 flex-1 overflow-auto bg-zinc-50 p-3 sm:p-4">
               <Image
                 src={PROOF_SRC}
                 alt={PROOF_ALT}

@@ -11,9 +11,9 @@ import type { BreakdownRow, ClosedTrade } from "@/lib/track-record";
 type TabId = "calendar" | "breakdown" | "trades";
 
 const TABS: { id: TabId; label: string }[] = [
-  { id: "calendar", label: "ប្រតិទិន" },
-  { id: "breakdown", label: "ការវិភាគ" },
-  { id: "trades", label: "ការជួញដូរ" },
+  { id: "calendar", label: "Calendar" },
+  { id: "breakdown", label: "Breakdown" },
+  { id: "trades", label: "Trades" },
 ];
 
 type Props = {
@@ -33,41 +33,39 @@ export function TrackRecordTabs({
 
   return (
     <div className="space-y-8">
-      <nav
+      <ul
         role="tablist"
-        aria-label="ផ្នែកកំណត់ត្រាលទ្ធផល"
-        className="flex gap-1 overflow-x-auto border-b border-line [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        aria-label="Performance sections"
+        className="flex flex-wrap text-sm font-medium text-center text-zinc-600 border-b border-zinc-200"
       >
         {TABS.map((t) => {
           const active = tab === t.id;
           return (
-            <button
-              key={t.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setTab(t.id)}
-              className={`relative shrink-0 whitespace-nowrap px-4 py-3 text-sm font-medium transition-colors ${
-                active ? "text-ink" : "text-slate hover:text-ink"
-              }`}
-            >
-              {t.label}
-              {active ? (
-                <span
-                  className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-ink"
-                  aria-hidden
-                />
-              ) : null}
-            </button>
+            <li key={t.id} className="me-2">
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setTab(t.id)}
+                className={`inline-block p-4 rounded-t-lg transition-colors cursor-pointer ${
+                  active
+                    ? "text-white bg-zinc-950 font-bold shadow-xs active"
+                    : "text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100"
+                }`}
+              >
+                {t.label}
+              </button>
+            </li>
           );
         })}
-      </nav>
+      </ul>
 
       {tab === "calendar" ? (
         <section className="space-y-4">
           <div>
             <h2 className="text-lg font-semibold tracking-tight text-ink text-center">
-              ប្រតិទិន TP/SL
+              TP/SL Calendar
             </h2>
           </div>
           <DailyPnLCalendar data={dailyPnL} description={null} />
@@ -77,14 +75,14 @@ export function TrackRecordTabs({
       {tab === "breakdown" ? (
         <section className="space-y-5">
           <div>
-            <h2 className="text-lg font-semibold tracking-tight text-ink">ការវិភាគ</h2>
+            <h2 className="text-lg font-semibold tracking-tight text-ink">Breakdown</h2>
             <p className="mt-1 text-sm text-slate">
-              អត្រាឈ្នះ និង R សុទ្ធតាមយុទ្ធសាស្ត្រ និងនិមិត្តសញ្ញា
+              Win rate and net R by strategy and asset pair
             </p>
           </div>
           <div className="grid gap-5 md:grid-cols-2">
-            <Breakdown title="តាមយុទ្ធសាស្ត្រ" rows={byStrategy} />
-            <Breakdown title="តាមនិមិត្តសញ្ញា" rows={bySymbol} />
+            <Breakdown title="By Strategy" rows={byStrategy} />
+            <Breakdown title="By Symbol" rows={bySymbol} />
           </div>
         </section>
       ) : null}
@@ -94,13 +92,13 @@ export function TrackRecordTabs({
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold tracking-tight text-ink">
-                ការជួញដូរថ្មីៗ
+                Recent Trades
               </h2>
-              <p className="mt-1 text-sm text-slate">លទ្ធផលបិទចុងក្រោយ</p>
+              <p className="mt-1 text-sm text-slate">Latest verified outcomes</p>
             </div>
             {recent.length > 0 ? (
               <p className="text-sm text-slate">
-                {recent.length} ការជួញដូរ
+                {recent.length} trades
               </p>
             ) : null}
           </div>

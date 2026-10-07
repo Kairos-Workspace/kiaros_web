@@ -52,14 +52,18 @@ class Config:
     candle_limit: int = 201  # one extra: the last fetched candle is still forming and gets dropped
     sealion_base_url: str = "https://api.sea-lion.ai/v1"
     sealion_model: str = "aisingapore/Qwen-SEA-LION-v4.5-27B-IT"
+    market_scanner_enabled: bool = True
 
 
 def load_config() -> Config:
     load_dotenv()
+    market_scanner_enabled = os.environ.get("MARKET_SCANNER_ENABLED", "true").strip().lower() not in (
+        "0", "false", "no", "off",
+    )
     keys = _sealion_keys()
     supabase_url = os.environ.get("SUPABASE_URL", "")
     supabase_service_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
-    if not keys:
+    if market_scanner_enabled and not keys:
         raise SystemExit(
             "No SEA-LION key set: use SEALION_API_KEY1..4, SEALION_API_KEYS, "
             "or SEALION_API_KEY (copy .env.example to .env)"
@@ -71,7 +75,7 @@ def load_config() -> Config:
             "SUPABASE_SERVICE_ROLE_KEY is not set (copy .env.example to .env)"
         )
     return Config(
-        sealion_api_key=keys[0],
+        sealion_api_key=keys[0] if keys else "",
         sealion_api_keys=keys,
         supabase_url=supabase_url.rstrip("/"),
         supabase_service_key=supabase_service_key,
@@ -82,4 +86,5 @@ def load_config() -> Config:
             or os.environ.get("TELEGRAM_CHAT_ID", "").strip()
         ),
         telegram_alerts_chat_id=os.environ.get("TELEGRAM_ALERTS_CHAT_ID", "").strip(),
+        market_scanner_enabled=market_scanner_enabled,
     )

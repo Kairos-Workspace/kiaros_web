@@ -3,7 +3,6 @@ import Link from "next/link";
 import { signout } from "@/app/auth/actions";
 import { DashboardNav } from "@/components/dashboard/DashboardNav";
 import { Logo } from "@/components/shared/Logo";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { getSessionEmail } from "@/lib/auth-session";
 import { isAdminEmail } from "@/lib/supabase/admin";
 
@@ -33,11 +32,10 @@ export async function DashboardShell({
           <p className="truncate text-xs text-slate" title={email}>
             {email}
           </p>
-          <div className="mt-3 flex items-center gap-2">
-            <ThemeToggle />
+          <div className="mt-3 flex items-center justify-between">
             <form action={signout}>
               <button type="submit" className="btn-ghost text-xs">
-                ចាកចេញ
+                Sign Out
               </button>
             </form>
           </div>
@@ -60,7 +58,7 @@ export async function DashboardShell({
             ) : null}
             <div className="flex items-center gap-2 lg:hidden">
             <Link href="/" className="btn-ghost text-sm">
-              ទំព័រដើម
+              Home
             </Link>
             </div>
           </div>
