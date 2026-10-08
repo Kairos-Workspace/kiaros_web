@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AnalysisView } from "@/components/analysis/AnalysisView";
+import { listPublishedAnalyses } from "@/lib/analysis";
 
 export const metadata: Metadata = {
   title: "Daily Technical Analysis · Kiaros Quant",
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 
 export const revalidate = 60;
 
-export default function TechnicalAnalysisPage() {
+export default async function TechnicalAnalysisPage() {
+  const analyses = await listPublishedAnalyses();
+
   return (
     <main className="flex min-h-[calc(100svh-4rem)] flex-1 flex-col bg-[#fafafa] relative text-zinc-900">
       <div className="w-full flex-1 px-4 py-8 sm:px-6 lg:px-8 xl:px-12 page-container relative z-10">
@@ -25,7 +28,7 @@ export default function TechnicalAnalysisPage() {
         </div>
 
         {/* Interactive Asset Analysis Workspace */}
-        <AnalysisView />
+        <AnalysisView analyses={analyses} />
       </div>
     </main>
   );

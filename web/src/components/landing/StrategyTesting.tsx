@@ -45,22 +45,9 @@ export function StrategyTesting() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="group relative w-full overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition-all hover:border-zinc-400 hover:shadow-md text-left cursor-pointer"
+          className="group relative w-full overflow-hidden rounded-2xl bg-white shadow-sm transition-all hover:shadow-md text-left cursor-pointer"
           aria-label="Enlarge strategy testing heatmap"
-        >
-          {/* Terminal Window Header */}
-          <div className="flex items-center justify-between border-b border-zinc-200 bg-zinc-100 px-4 py-3">
-            <div className="flex items-center gap-2.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-600" />
-              <span className="font-mono text-xs font-bold text-zinc-900 tracking-wider">
-                AUDIT ARCHIVE // MONTHLY_HEATMAP_2020_2026.RAW
-              </span>
-            </div>
-            <span className="font-mono text-xs text-zinc-600 group-hover:text-zinc-950 transition-colors">
-              + Fullscreen Inspect
-            </span>
-          </div>
-
+        >   
           <div className="relative aspect-[2814/1372] w-full overflow-hidden bg-zinc-50 p-2">
             <Image
               src={PROOF_SRC}

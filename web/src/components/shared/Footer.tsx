@@ -6,25 +6,6 @@ const TELEGRAM_GROUP_URL = "https://t.me/kairoscommunity";
 export function Footer() {
   return (
     <footer className="border-t border-zinc-200 bg-zinc-50 text-zinc-600">
-      {/* Institutional Telemetry Ribbon */}
-      <div className="border-b border-zinc-200 bg-zinc-100/80 py-2.5 font-mono text-[11px]">
-        <div className="page-container flex flex-wrap items-center justify-between gap-3 text-zinc-600">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
-              <span>SYSTEMS 100% OPERATIONAL</span>
-            </span>
-            <span className="hidden text-zinc-300 sm:inline">|</span>
-            <span className="hidden sm:inline">STP/ECN TICK PIPELINE: CONNECTED (12ms)</span>
-            <span className="hidden text-zinc-300 md:inline">|</span>
-            <span className="hidden md:inline">CORE: KIAROS ALPHA V4.2</span>
-          </div>
-          <div className="flex items-center gap-4 text-[10px] text-zinc-500">
-            <span>DISPATCH REGION: GLOBAL / MT5 SYNC</span>
-          </div>
-        </div>
-      </div>
-
       <div className="page-container py-12 md:py-16">
         <div className="grid gap-10 md:grid-cols-12 md:gap-12">
           {/* Brand Info */}
@@ -42,7 +23,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3.5 py-2 font-mono text-xs font-bold text-zinc-900 hover:bg-zinc-100 hover:border-zinc-300 transition-all shadow-2xs"
               >
-                <span>Telegram Quant VIP</span>
+                <span>Telegram Community</span>
                 <span>→</span>
               </a>
             </div>

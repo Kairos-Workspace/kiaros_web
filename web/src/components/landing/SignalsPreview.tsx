@@ -252,7 +252,7 @@ export function SignalsPreview({ signals = [] }: { signals: Signal[] }) {
             rel="noopener noreferrer"
             className="btn-telegram py-2.5 px-6 font-mono text-xs font-bold text-white shrink-0 shadow-sm"
           >
-            <span>JOIN FREE TELEGRAM VIP</span>
+            <span>JOIN FREE TELEGRAM</span>
             <span>→</span>
           </a>
         </div>

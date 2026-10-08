@@ -21,6 +21,12 @@ import {
 import { canonicalMarketSymbol } from "@/lib/markets/kraken";
 import { parseToolCategory, TOOL_CATEGORIES } from "@/lib/tools";
 import { createClient } from "@/lib/supabase/server";
+import { uploadAnalysisImage } from "@/lib/r2";
+import {
+  createDailyAnalysis,
+  toggleDailyAnalysisPublished,
+  deleteDailyAnalysis,
+} from "@/lib/analysis";
 
 const SYMBOL_PATTERN = /^[A-Z0-9]{3,20}$/;
 const TOOL_MAX_BYTES = 25 * 1024 * 1024;
@@ -251,3 +257,96 @@ export async function removeTool(formData: FormData) {
       : `/admin/tools?error=${encodeURIComponent("Could not delete tool.")}`,
   );
 }
+
+function revalidateAnalysisPaths() {
+  revalidatePath("/admin/analysis");
+  revalidatePath("/analysis");
+  revalidatePath("/");
+}
+
+export async function createDailyAnalysisAction(formData: FormData) {
+  await requireAdmin();
+
+  const title = String(formData.get("title") ?? "").trim();
+  const symbol = String(formData.get("symbol") ?? "XAUUSD").trim().toUpperCase();
+  const timeframe = String(formData.get("timeframe") ?? "H1").trim();
+  const biasRaw = String(formData.get("bias") ?? "BULLISH").trim().toUpperCase();
+  const bias = (biasRaw === "BEARISH" ? "BEARISH" : biasRaw === "NEUTRAL" ? "NEUTRAL" : "BULLISH") as "BULLISH" | "BEARISH" | "NEUTRAL";
+  const session = String(formData.get("session") ?? "London / New York").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const file = formData.get("image") as File | null;
+
+  if (!title) {
+    redirect(`/admin/analysis?error=${encodeURIComponent("Analysis title is required.")}`);
+  }
+
+  if (!file || file.size === 0) {
+    redirect(`/admin/analysis?error=${encodeURIComponent("Please upload a graph/chart image.")}`);
+  }
+
+  if (file.size > 15 * 1024 * 1024) {
+    redirect(`/admin/analysis?error=${encodeURIComponent("Image must be smaller than 15MB.")}`);
+  }
+
+  let imageUrl = "";
+  let imageKey = "";
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const res = await uploadAnalysisImage({
+      buffer,
+      originalName: file.name,
+      contentType: file.type || "image/png",
+    });
+    imageUrl = res.url;
+    imageKey = res.key;
+  } catch (err) {
+    console.error("Failed to upload analysis chart:", err);
+    redirect(`/admin/analysis?error=${encodeURIComponent("Failed to process chart image upload.")}`);
+  }
+
+  try {
+    await createDailyAnalysis({
+      title,
+      symbol,
+      timeframe,
+      bias,
+      imageUrl,
+      imageKey,
+      description,
+      session,
+      published: true,
+    });
+  } catch (err) {
+    console.error("Failed to save analysis record:", err);
+    redirect(`/admin/analysis?error=${encodeURIComponent("Failed to save daily analysis record.")}`);
+  }
+
+  revalidateAnalysisPaths();
+  redirect("/admin/analysis?saved=1");
+}
+
+export async function toggleDailyAnalysisPublishedAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  const published = String(formData.get("published") ?? "") === "true";
+  if (!id) redirect("/admin/analysis");
+
+  await toggleDailyAnalysisPublished(id, published);
+  revalidateAnalysisPaths();
+  redirect("/admin/analysis?saved=1");
+}
+
+export async function deleteDailyAnalysisAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) redirect("/admin/analysis");
+
+  await deleteDailyAnalysis(id);
+  revalidateAnalysisPaths();
+  redirect("/admin/analysis?deleted=1");
+}
+

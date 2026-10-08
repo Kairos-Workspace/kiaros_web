@@ -75,7 +75,7 @@ export async function Nav() {
               className="inline-flex items-center gap-2 rounded-lg bg-zinc-950 px-3.5 py-1.5 font-mono text-xs font-bold text-white transition-all hover:bg-zinc-800 shadow-sm"
             >
               <TelegramNavIcon />
-              <span className="hidden sm:inline">JOIN TELEGRAM VIP</span>
+              <span className="hidden sm:inline">JOIN TELEGRAM</span>
               <span className="sm:hidden">TELEGRAM</span>
               <span className="rounded bg-zinc-800 px-1 py-0.2 font-mono text-[9px] text-zinc-200">
                 FREE

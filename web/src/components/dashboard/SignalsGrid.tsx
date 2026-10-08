@@ -285,7 +285,7 @@ export const SignalCard = memo(function SignalCard({
       </div>
 
       <div className="relative flex items-center justify-between border-t border-line/60 bg-card/60 px-4 py-2.5 font-mono text-xs text-slate">
-        <span className="flex items-center gap-1.5 text-[11px] text-slate/80">
+        <span className="flex items-center gap-1.5 text-[11px] text-slate/80" suppressHydrationWarning>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           {formatRelativeTime(signal.createdAt)}
         </span>

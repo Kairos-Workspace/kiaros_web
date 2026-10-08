@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { TrackRecordTabs } from "@/components/track-record/TrackRecordTabs";
@@ -35,22 +35,12 @@ function setup() {
 }
 
 describe("TrackRecordTabs", () => {
-  it("defaults to Calendar as the first tab", () => {
+  it("renders the performance calendar directly without tabs or recent trades", () => {
     setup();
     expect(screen.queryByText("Overview")).toBeNull();
-    expect(screen.getByText("Calendar")).toBeDefined();
-    expect(screen.getByText("Breakdown")).toBeDefined();
-    expect(screen.getByText("Trades")).toBeDefined();
-    expect(screen.getByText("TP/SL Calendar")).toBeDefined();
+    expect(screen.queryByText("Trades")).toBeNull();
+    expect(screen.queryByText("Recent Trades")).toBeNull();
     expect(screen.getByText("2 TP")).toBeDefined();
     expect(screen.getByText("1 SL")).toBeDefined();
-    expect(screen.queryByText("Recent Trades")).toBeNull();
-  });
-
-  it("switches to the Trades panel when the Trades tab is clicked", () => {
-    setup();
-    fireEvent.click(screen.getByText("Trades"));
-    expect(screen.getByText("Recent Trades")).toBeDefined();
-    expect(screen.queryByText("TP/SL Calendar")).toBeNull();
   });
 });

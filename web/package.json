@@ -8,13 +8,14 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "NODE_OPTIONS='--max-http-header-size=65536' next dev --webpack",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_OPTIONS='--max-http-header-size=65536' next start",
     "lint": "eslint",
     "test": "vitest run"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1147.0",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.0",
     "exceljs": "^4.4.0",
