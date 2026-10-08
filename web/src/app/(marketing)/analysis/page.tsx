@@ -22,8 +22,8 @@ export default async function TechnicalAnalysisPage() {
             Daily Technical Analysis
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600 mx-auto">
-            Institutional multi-timeframe orderflow blueprints, liquidity map targets, and 
-            daily session execution playbooks across Gold (XAUUSD), Forex, and Crypto.
+            Institutional multi-timeframe orderflow blueprints, liquidity maps, and daily session 
+            execution playbooks verified by our hybrid Algo + LLM quantitative framework across Gold (XAUUSD), Forex, and Crypto.
           </p>
         </div>
 

@@ -177,7 +177,7 @@ export function HeroMarketCockpit() {
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-600" />
             </span>
             <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900">
-              LIVE SIGNAL COCKPIT // STP-ECN
+              ALGO + LLM ENGINE // STP-ECN
             </span>
             <span className="hidden sm:inline-block rounded bg-zinc-200/80 px-1.5 py-0.5 font-mono text-[10px] text-zinc-700">
               {selected.session}
@@ -250,7 +250,7 @@ export function HeroMarketCockpit() {
           {/* Setup Strategy Tag & Outcome */}
           <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-xs font-mono">
             <div className="flex items-center gap-2 text-zinc-700">
-              <span className="text-zinc-900 font-bold">⚡ Engine:</span>
+              <span className="text-zinc-900 font-bold">⚡ Algo + LLM Setup:</span>
               <span className="font-semibold text-zinc-950">{selected.strategy}</span>
             </div>
             <div className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-800 border border-emerald-200">
@@ -313,7 +313,7 @@ export function HeroMarketCockpit() {
           <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
             <div className="w-full sm:w-auto">
               <div className="flex items-center gap-2 mb-1.5">
-                <span className="font-mono text-xs font-bold text-zinc-900">Neural Confluence:</span>
+                <span className="font-mono text-xs font-bold text-zinc-900">Algo + LLM Confluence:</span>
                 <span className="font-mono text-xs font-black text-emerald-700">{selected.confidence}%</span>
               </div>
               <div className="h-1.5 w-full sm:w-48 rounded-full bg-zinc-200 overflow-hidden">
@@ -325,9 +325,9 @@ export function HeroMarketCockpit() {
               <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-mono text-zinc-600">
                 <span className="text-emerald-700 font-bold">✓ Bar-Close Locked</span>
                 <span>•</span>
-                <span className="font-bold text-zinc-800">✓ Zero Repaint</span>
+                <span className="font-bold text-zinc-800">✓ Algo + LLM Verified</span>
                 <span>•</span>
-                <span>✓ News Filter Safe</span>
+                <span>✓ Zero Repaint</span>
               </div>
             </div>
 

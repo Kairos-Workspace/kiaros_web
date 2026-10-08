@@ -5,11 +5,11 @@ import { useState } from "react";
 import type { Stats } from "@/lib/signals";
 
 const STEPS = [
-  { id: "scan", label: "Scan", detail: "Screening active markets for structural imbalances and liquidity sweeps." },
+  { id: "scan", label: "Algo Scan", detail: "Algorithmic screening of active markets for microstructure imbalances and liquidity sweeps." },
   { id: "setup", label: "Setup", detail: "Defining strict systematic entry, stop-loss, and multi-tier profit targets." },
-  { id: "news", label: "News", detail: "Filtering high-impact macro news headlines to prevent slippage traps." },
-  { id: "ai", label: "AI Verify", detail: "SEA-LION quant neural model evaluates multi-timeframe confluence." },
-  { id: "publish", label: "Dispatch", detail: "Instant verified dispatch to live terminal feeds and permanent audit log." },
+  { id: "news", label: "Macro Guard", detail: "Filtering high-impact macro news events to eliminate slippage and false breakouts." },
+  { id: "ai", label: "LLM Verify", detail: "Large Language Model (LLM) evaluates multi-timeframe confluence and structural sentiment." },
+  { id: "publish", label: "Dispatch", detail: "Dual-engine approved dispatch to live terminal feeds and Telegram syndicate." },
 ] as const;
 
 function StatBar({
@@ -56,7 +56,7 @@ export function HowAiWorks({ stats }: { stats: Stats }) {
     >
       <div className="flex items-center justify-between px-4 py-3">
         <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
-          ENGINE PIPELINE
+          ALGO + LLM PIPELINE
         </p>
         <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-long">
           <span className="h-1.5 w-1.5 rounded-full bg-long" aria-hidden />

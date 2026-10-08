@@ -199,11 +199,11 @@ export function StrategyArchitecture() {
         {/* Section Header */}
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl md:text-5xl">
-            Algorithmic Trading Strategies
+            Algo + LLM Trading Strategies
           </h2>
           <p className="mt-3 text-sm text-zinc-600 sm:text-base leading-relaxed">
-            Systematic quantitative models engineered to exploit institutional order flow, 
-            market imbalances, and volatility across all active market sessions.
+            Sub-millisecond quantitative algorithms identify microstructure liquidity sweeps and volatility patterns, 
+            while our Large Language Model (LLM) validation layer verifies macroeconomic context to eliminate false breakouts.
           </p>
         </div>
 

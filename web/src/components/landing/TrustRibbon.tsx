@@ -31,9 +31,9 @@ export function TrustRibbon() {
       tone: "text-zinc-950",
     },
     {
-      metric: "3 Engines",
-      label: "Multi-Model Confluence",
-      sub: "SMC • ICT • BBMA Algorithmic",
+      metric: "Algo + LLM",
+      label: "Dual-Engine Confluence",
+      sub: "Quant Execution + LLM Reasoner",
       tone: "text-zinc-950",
     },
     {

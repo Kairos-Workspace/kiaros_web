@@ -151,7 +151,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
               <span>•</span>
               <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                ACTIVE BLUEPRINT
+                ACTIVE BLUEPRINT // ALGO + LLM CONFLUENCE
               </span>
             </div>
           </div>
@@ -341,7 +341,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
             Get Instant Alerts When {selected.symbol} Triggers
           </h4>
           <p className="mt-1 text-xs text-zinc-600 max-w-xl leading-relaxed">
-            Every daily analysis blueprint is monitored live by our quantitative execution engine. 
+            Every daily analysis blueprint is monitored live by our Algo + LLM quantitative execution engine. 
             Receive real-time entry and take-profit notifications directly via Telegram.
           </p>
         </div>

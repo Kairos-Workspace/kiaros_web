@@ -178,7 +178,7 @@ export function SignalsPreview({ signals = [] }: { signals: Signal[] }) {
             </h2>
 
             <p className="mt-3 text-sm text-zinc-600 max-w-2xl leading-relaxed sm:text-base">
-              Mathematically validated setups across active trading sessions. Precise entry, 
+              Mathematically validated by our Algo + LLM dual-engine across active trading sessions. Precise entry, 
               risk-managed stop-loss, and multi-tier profit targets with zero repaint.
             </p>
           </div>

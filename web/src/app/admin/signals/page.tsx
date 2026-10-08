@@ -100,16 +100,16 @@ export default async function AdminSignals({
     : "Manage and view all stored signals. Export includes TP/SL hits only.";
 
   return (
-    <>
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <div className="flex w-full flex-col gap-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">{title}</h1>
-          <p className="mt-1 text-sm text-slate">{subtitle}</p>
+          <h1 className="text-2xl font-black tracking-tight text-zinc-950">{title} ({total})</h1>
+          <p className="mt-1 text-xs text-zinc-500">{subtitle}</p>
         </div>
         <ExportSignalsMenu tab={exportTab} disabled={exportableCount === 0} />
       </div>
 
-      <div className="mb-6">
+      <div>
         <SignalsBrowseFilter
           tab={currentTab}
           basePath="/admin/signals"
@@ -119,12 +119,15 @@ export default async function AdminSignals({
       </div>
 
       {isLlmTab ? (
-        <div className="mb-5 rounded-lg border border-accent/20 bg-accent-soft/40 px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-accent">
-            LLM Signal
-          </p>
-          <p className="mt-1 text-sm text-slate">
-            {`Showing ${total} SEA-LION-confirmed signal${total === 1 ? "" : "s"} across every timeframe.`}
+        <div className="rounded-xl border border-zinc-200 bg-zinc-950 p-4 text-white shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <p className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-400">
+              NEURAL CONFLUENCE VALIDATION ACTIVE
+            </p>
+          </div>
+          <p className="mt-1.5 font-mono text-xs text-zinc-300">
+            {`Showing ${total} SEA-LION confirmed signal${total === 1 ? "" : "s"} across institutional timeframes.`}
           </p>
         </div>
       ) : null}
@@ -162,6 +165,6 @@ export default async function AdminSignals({
             : "No signals found for this category."}
         </p>
       )}
-    </>
+    </div>
   );
 }

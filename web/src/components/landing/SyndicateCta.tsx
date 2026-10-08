@@ -18,7 +18,7 @@ export function SyndicateCta() {
 
             <p className="mt-4 text-sm leading-relaxed text-zinc-300 sm:text-base">
               Receive instant real-time signal dispatches straight to your phone the millisecond our 
-              quantitative engines confirm an orderflow setup. Free forever — zero monthly subscriptions, 
+              Algo + LLM dual-engine confirms an orderflow setup. Free forever — zero monthly subscriptions, 
               zero paywalled alpha.
             </p>
 

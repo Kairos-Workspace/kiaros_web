@@ -67,20 +67,18 @@ export default async function AdminScansPage({
   const { runs, pageSize, total, totalPages } = result;
 
   return (
-    <div className="w-full">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <div className="flex w-full flex-col gap-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Scans</h1>
-          <p className="mt-1 text-sm text-slate">
-            Every engine run and per-symbol outcome (confirmed, rejected, no
-            signal, skipped). Open a run for details, or jump to AI responses
-            for full rationales.
+          <h1 className="text-2xl font-black tracking-tight text-zinc-950">Engine Runs & Outcomes</h1>
+          <p className="mt-1 text-xs text-zinc-500">
+            Audit candidate setups and individual symbol verdicts (confirmed, rejected, no signal, skipped) recorded during execution passes.
           </p>
         </div>
         {total > 0 ? (
-          <p className="text-sm text-slate">
-            Page {result.page} of {totalPages}
-          </p>
+          <div className="rounded-lg border border-zinc-200 bg-white px-3 py-1 font-mono text-xs font-bold text-zinc-600 shadow-xs">
+            Page {result.page} of {totalPages} ({total} total)
+          </div>
         ) : null}
       </div>
 

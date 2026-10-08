@@ -29,16 +29,14 @@ export function StrategyTesting() {
     <section id="strategy-testing" className="relative border-b border-zinc-200/80 bg-[#fafafa] py-16 md:py-24">
       <div className="page-container">
         {/* Section Header */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
-              6-Year Monthly Performance Heatmap
-            </h2>
-            <p className="mt-2 text-sm text-zinc-600 max-w-2xl leading-relaxed sm:text-base">
-              Monthly net return distribution from 2020 through 2026 across 72+ months.
-              Validated tick data confirms edge durability, risk containment, and zero curve fitting.
-            </p>
-          </div>
+        <div className="mb-10 mx-auto max-w-3xl text-center">
+          <h2 className="text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
+            6-Year Monthly Performance Heatmap
+          </h2>
+          <p className="mt-3 text-sm text-zinc-600 max-w-2xl mx-auto leading-relaxed sm:text-base">
+            Monthly net return distribution from 2020 through 2026 across 72+ months.
+            Validated tick data confirms edge durability, risk containment, and zero curve fitting.
+          </p>
         </div>
 
         {/* Terminal Heatmap Frame */}

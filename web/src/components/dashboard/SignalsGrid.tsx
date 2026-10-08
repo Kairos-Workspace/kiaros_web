@@ -242,7 +242,7 @@ export const SignalCard = memo(function SignalCard({
             <DirectionPill direction={signal.direction} />
             {showLlmBadge ? (
               <span className="rounded border border-zinc-300 bg-zinc-100 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-zinc-900">
-                LLM
+                Algo + LLM
               </span>
             ) : null}
           </div>
@@ -400,7 +400,7 @@ function SignalDetailModal({
         <div className="overflow-y-auto px-6 py-5">
           <div className="mb-5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 font-mono">
             <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-              AI CONFIDENCE SCORE
+              ALGO + LLM CONFIDENCE SCORE
             </p>
             <ConfidenceBar value={signal.confidence} />
           </div>

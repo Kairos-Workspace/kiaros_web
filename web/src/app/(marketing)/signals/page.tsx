@@ -34,7 +34,7 @@ export default async function SignalsPage({
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600 mx-auto">
             Real-time systematic setups across active trading sessions — precise entry levels, 
-            stop loss (SL), multi-target profit ladders (TP), and quantitative neural validation.
+            stop loss (SL), multi-target profit ladders (TP), and quantitative Algo + LLM neural validation.
           </p>
         </div>
 
