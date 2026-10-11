@@ -17,3 +17,9 @@ export const getSessionEmail = cache(async (): Promise<string | null> => {
   const user = await getSessionUser();
   return user?.email ?? null;
 });
+
+export const getSessionToken = cache(async (): Promise<string | undefined> => {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? undefined;
+});

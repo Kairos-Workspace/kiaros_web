@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 
 import {
   createDailyAnalysisAction,
@@ -26,7 +26,6 @@ export function AdminAnalysisSections({
   const [selectedSymbolFilter, setSelectedSymbolFilter] = useState<string>("ALL");
   const [selectedBiasFilter, setSelectedBiasFilter] = useState<string>("ALL");
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
   const [lightboxImage, setLightboxImage] = useState<{
     url: string;
     title: string;

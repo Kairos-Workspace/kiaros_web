@@ -140,18 +140,20 @@ export function StrategyArchitecture() {
   }, []);
 
   const maxIndex = Math.max(0, STRATEGIES.length - itemsPerPage);
-
-  // Clamp current index when itemsPerPage changes on window resize
-  useEffect(() => {
-    setCurrentIndex((prev) => Math.min(prev, maxIndex));
-  }, [maxIndex]);
+  const safeIndex = Math.min(currentIndex, maxIndex);
 
   const handlePrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+    setCurrentIndex((prev) => {
+      const clamped = Math.min(prev, maxIndex);
+      return clamped <= 0 ? maxIndex : clamped - 1;
+    });
   }, [maxIndex]);
 
   const handleNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    setCurrentIndex((prev) => {
+      const clamped = Math.min(prev, maxIndex);
+      return clamped >= maxIndex ? 0 : clamped + 1;
+    });
   }, [maxIndex]);
 
   // Automatic slide interval (pauses on user hover or touch)
@@ -260,17 +262,17 @@ export function StrategyArchitecture() {
             <div
               className="flex items-center transition-transform duration-500 ease-out will-change-transform"
               style={{
-                transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)`,
+                transform: `translateX(-${safeIndex * (100 / itemsPerPage)}%)`,
               }}
             >
               {STRATEGIES.map((s, idx) => {
                 // Determine whether this card is the middle/focal card
                 const isMiddle =
                   itemsPerPage === 3
-                    ? idx === currentIndex + 1
+                    ? idx === safeIndex + 1
                     : itemsPerPage === 1
-                      ? idx === currentIndex
-                      : idx === currentIndex;
+                      ? idx === safeIndex
+                      : idx === safeIndex;
 
                 return (
                   <div
@@ -371,7 +373,7 @@ export function StrategyArchitecture() {
                 onClick={() => setCurrentIndex(idx)}
                 aria-label={`Go to slide ${idx + 1}`}
                 className={`h-2 transition-all duration-300 rounded-full ${
-                  currentIndex === idx
+                  safeIndex === idx
                     ? "w-6 bg-zinc-950"
                     : "w-2 bg-zinc-300 hover:bg-zinc-400"
                 }`}

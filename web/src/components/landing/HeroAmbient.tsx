@@ -1,11 +1,3 @@
-const MARKETS = [
-  { symbol: "BTC", name: "Bitcoin", tone: "bitcoin", icon: "bitcoin" },
-  { symbol: "XAU", name: "Gold", tone: "gold", icon: "gold" },
-  { symbol: "EUR/USD", name: "Euro Dollar", tone: "euro", icon: "forex" },
-  { symbol: "ETH", name: "Ethereum", tone: "ethereum", icon: "ethereum" },
-  { symbol: "GBP/USD", name: "Pound Dollar", tone: "pound", icon: "forex" },
-  { symbol: "NAS100", name: "Nasdaq 100", tone: "nasdaq", icon: "nasdaq" },
-] as const;
 
 export type MarketIconType =
   | "bitcoin"

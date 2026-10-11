@@ -49,7 +49,8 @@ describe("parseMt5SignalBody", () => {
   });
 
   it("accepts a taught SMC sweep+CHoCH from the EA", () => {
-    const { rationale: _ignored, ...base } = valid;
+    const base = { ...valid };
+    delete (base as Record<string, unknown>).rationale;
     const out = parseMt5SignalBody({
       ...base,
       timeframe: "smc",

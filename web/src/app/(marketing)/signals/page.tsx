@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SignalsBrowse } from "@/components/signals/SignalsBrowse";
+import { getSessionToken } from "@/lib/auth-session";
 import {
   parseAiSignalStrategy,
   parseSignalsBrowseTab,
@@ -20,7 +21,10 @@ export default async function SignalsPage({
 }: {
   searchParams: Promise<{ tab?: string; strategy?: string; page?: string }>;
 }) {
-  const { tab, strategy, page: pageParam } = await searchParams;
+  const [{ tab, strategy, page: pageParam }, accessToken] = await Promise.all([
+    searchParams,
+    getSessionToken(),
+  ]);
   const currentTab = parseSignalsBrowseTab(tab);
   const currentStrategy = parseAiSignalStrategy(strategy);
   const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
@@ -39,6 +43,7 @@ export default async function SignalsPage({
           strategy={currentStrategy}
           page={page}
           basePath="/signals"
+          accessToken={accessToken}
           hideFilter
         />
       </div>

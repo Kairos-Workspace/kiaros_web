@@ -99,9 +99,29 @@ export function AnimatedHeaderBackground() {
     const resizeObserver = new ResizeObserver(() => handleResize());
     resizeObserver.observe(container);
 
+    let isRunning = false;
+
+    const startLoop = () => {
+      if (!isRunning && isVisible) {
+        isRunning = true;
+        lastTime = performance.now();
+        animId = requestAnimationFrame(render);
+      }
+    };
+
+    const stopLoop = () => {
+      isRunning = false;
+      cancelAnimationFrame(animId);
+    };
+
     const intersectionObserver = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
+        if (isVisible) {
+          startLoop();
+        } else {
+          stopLoop();
+        }
       },
       { threshold: 0.05 }
     );
@@ -139,7 +159,7 @@ export function AnimatedHeaderBackground() {
 
     const render = (time: number) => {
       if (!isVisible) {
-        animId = requestAnimationFrame(render);
+        isRunning = false;
         return;
       }
 
@@ -253,10 +273,10 @@ export function AnimatedHeaderBackground() {
       animId = requestAnimationFrame(render);
     };
 
-    animId = requestAnimationFrame(render);
+    startLoop();
 
     return () => {
-      cancelAnimationFrame(animId);
+      stopLoop();
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       container.removeEventListener("pointermove", onPointerMove);
@@ -268,7 +288,7 @@ export function AnimatedHeaderBackground() {
   return (
     <div
       ref={containerRef}
-      className="pointer-events-auto absolute inset-0 overflow-hidden"
+      className="pointer-events-auto absolute inset-0 overflow-hidden touch-pan-y"
       aria-hidden
     >
       {/* Floating Animated Ambient Glow Orbs */}

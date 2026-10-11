@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import type { DailyAnalysis } from "@/lib/analysis";
 
 interface AnalysisViewProps {
@@ -15,13 +14,6 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
   );
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-
-  // If selectedId is invalid or analyses changed, default to first item
-  useEffect(() => {
-    if (analyses.length > 0 && (!selectedId || !analyses.some((a) => a.id === selectedId))) {
-      setSelectedId(analyses[0].id);
-    }
-  }, [analyses, selectedId]);
 
   // Handle escape key to close lightbox
   useEffect(() => {

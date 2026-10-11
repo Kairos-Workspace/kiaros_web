@@ -50,7 +50,6 @@ interface DayCellData {
 
 export function DailyPnLCalendar({
   data = [],
-  description,
   interactive = true,
   compact = false,
 }: Props) {
@@ -68,6 +67,7 @@ export function DailyPnLCalendar({
 
   const [currentDate, setCurrentDate] = useState<Date>(() => defaultDate);
   const [selectedDay, setSelectedDay] = useState<DayCellData | null>(null);
+  const [mobileView, setMobileView] = useState<"grid" | "list">("grid");
 
   const availableYears = useMemo(() => {
     const years = new Set<number>();
@@ -242,6 +242,12 @@ export function DailyPnLCalendar({
     return rows;
   }, [calendarGrid]);
 
+  const activeTradingDays = useMemo(() => {
+    return calendarGrid
+      .filter((d) => d.isCurrentMonth && d.totalTrades > 0)
+      .sort((a, b) => b.dateStr.localeCompare(a.dateStr));
+  }, [calendarGrid]);
+
   return (
     <div className="w-full space-y-6">
       {/* Main Studio Calendar Card */}
@@ -362,8 +368,124 @@ export function DailyPnLCalendar({
           </div>
         </div>
 
+        {/* Mobile View Mode Switcher (Grid vs Feed) */}
+        <div className="flex sm:hidden items-center justify-between border-b border-zinc-100 pb-3 mb-4">
+          <span className="font-mono text-xs font-bold text-zinc-500 uppercase tracking-wider">
+            View Mode
+          </span>
+          <div className="inline-flex rounded-xl bg-zinc-100 p-0.5 border border-zinc-200/80 font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => setMobileView("grid")}
+              className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                mobileView === "grid"
+                  ? "bg-white text-zinc-950 shadow-2xs"
+                  : "text-zinc-600 hover:text-zinc-950"
+              }`}
+            >
+              Calendar
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileView("list")}
+              className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                mobileView === "list"
+                  ? "bg-white text-zinc-950 shadow-2xs"
+                  : "text-zinc-600 hover:text-zinc-950"
+              }`}
+            >
+              Feed ({activeTradingDays.length})
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Session Feed View */}
+        {mobileView === "list" && (
+          <div className="block sm:hidden space-y-2.5 pb-2">
+            {activeTradingDays.length > 0 ? (
+              activeTradingDays.map((day) => {
+                const isPositive = day.net > 0;
+                const isNegative = day.net < 0;
+                const dayFormatted = day.dateObj.toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                });
+
+                return (
+                  <button
+                    key={day.dateStr}
+                    type="button"
+                    onClick={() => setSelectedDay(day)}
+                    className={`w-full flex items-center justify-between p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                      isPositive
+                        ? "bg-emerald-50/60 border-emerald-200/90 hover:border-emerald-400"
+                        : isNegative
+                        ? "bg-rose-50/60 border-rose-200/90 hover:border-rose-400"
+                        : "bg-zinc-50 border-zinc-200 hover:border-zinc-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 font-mono">
+                      <span
+                        className={`flex h-8 w-8 items-center justify-center text-xs font-black rounded-xl ${
+                          isPositive
+                            ? "bg-emerald-600 text-white"
+                            : isNegative
+                            ? "bg-rose-600 text-white"
+                            : "bg-zinc-200 text-zinc-800"
+                        }`}
+                      >
+                        {day.dayNum}
+                      </span>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-zinc-900">
+                            {dayFormatted}
+                          </span>
+                          {day.isToday && (
+                            <span className="bg-zinc-950 text-white text-[9px] font-black px-1.5 py-0.2 rounded-md">
+                              TODAY
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] font-semibold text-zinc-500 mt-0.5">
+                          {day.wins} TP · {day.losses} SL · {day.winRate}% WR
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 font-mono">
+                      <span
+                        className={`px-2.5 py-1 rounded-xl text-xs font-black shadow-2xs ${
+                          isPositive
+                            ? "bg-emerald-100 text-emerald-950 border border-emerald-300"
+                            : isNegative
+                            ? "bg-rose-100 text-rose-950 border border-rose-300"
+                            : "bg-zinc-100 text-zinc-800 border border-zinc-200"
+                        }`}
+                      >
+                        {isPositive ? `+${day.net} TP` : isNegative ? `${day.net} SL` : "0 TP"}
+                      </span>
+                      <span className="text-zinc-400 text-xs">→</span>
+                    </div>
+                  </button>
+                );
+              })
+            ) : (
+              <div className="rounded-2xl border border-dashed border-zinc-200 bg-zinc-50/50 p-8 text-center font-mono">
+                <p className="text-xs font-bold text-zinc-600">
+                  No trade executions in {monthName} {year}
+                </p>
+                <p className="text-[11px] text-zinc-400 mt-1">
+                  Use the month navigation controls to view verified history.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* 3. Calendar Day Matrix Grid */}
-        <div className="w-full overflow-x-auto pb-2 custom-scrollbar">
+        <div className={`w-full overflow-x-auto pb-2 custom-scrollbar ${mobileView === "list" ? "hidden sm:block" : "block"}`}>
           <div className={compact ? "min-w-[680px]" : "min-w-[860px]"}>
             {/* Weekday Column Headers */}
             <div className="mb-2.5 grid grid-cols-8 gap-2 font-mono text-[11px] font-bold tracking-wider">
