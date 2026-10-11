@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { PageHeader } from "@/components/shared/PageHeader";
 import { SignalsBrowse } from "@/components/signals/SignalsBrowse";
 import {
   parseAiSignalStrategy,
@@ -26,17 +27,12 @@ export default async function SignalsPage({
 
   return (
     <main className="flex min-h-[calc(100svh-4rem)] flex-1 flex-col bg-[#fafafa] relative text-zinc-900">
+      <PageHeader
+        title="Live Signals Terminal"
+        subtitle="Real-time systematic setups across active trading sessions — precise entry levels, stop loss (SL), multi-target profit ladders (TP), and quantitative Algo + LLM neural validation."
+      />
+
       <div className="w-full flex-1 px-4 py-8 sm:px-6 lg:px-8 xl:px-12 page-container relative z-10">
-        {/* Institutional Terminal Header */}
-        <div className="mb-8 flex flex-col items-center text-center">
-          <h1 className="text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
-            Live Signals Terminal
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-600 mx-auto">
-            Real-time systematic setups across active trading sessions — precise entry levels, 
-            stop loss (SL), multi-target profit ladders (TP), and quantitative Algo + LLM neural validation.
-          </p>
-        </div>
 
         <SignalsBrowse
           tab={currentTab}

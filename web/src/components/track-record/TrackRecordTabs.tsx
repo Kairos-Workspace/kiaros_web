@@ -2,16 +2,19 @@
 
 import { DailyPnLCalendar } from "@/components/shared/DailyPnLCalendar";
 import type { DailyPnL } from "@/lib/signals";
-import type { BreakdownRow, ClosedTrade } from "@/lib/track-record";
+import type { BreakdownRow, ClosedTrade, EquityPoint, Summary } from "@/lib/track-record";
 
-type Props = {
+export type TrackRecordTabsProps = {
+  summary?: Summary;
+  equity?: EquityPoint[];
   byStrategy?: BreakdownRow[];
   bySymbol?: BreakdownRow[];
+  byTimeframe?: BreakdownRow[];
   dailyPnL: DailyPnL[];
   recent?: ClosedTrade[];
 };
 
-export function TrackRecordTabs({ dailyPnL }: Props) {
+export function TrackRecordTabs({ dailyPnL = [] }: TrackRecordTabsProps) {
   return (
     <div className="w-full">
       <DailyPnLCalendar data={dailyPnL} description={null} />

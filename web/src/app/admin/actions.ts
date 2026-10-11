@@ -19,7 +19,7 @@ import {
   uploadToolFile,
 } from "@/lib/supabase/admin";
 import { canonicalMarketSymbol } from "@/lib/markets/kraken";
-import { parseToolCategory, TOOL_CATEGORIES } from "@/lib/tools";
+import { parseToolCategory } from "@/lib/tools";
 import { createClient } from "@/lib/supabase/server";
 import { uploadAnalysisImage } from "@/lib/r2";
 import {
@@ -27,6 +27,8 @@ import {
   toggleDailyAnalysisPublished,
   deleteDailyAnalysis,
 } from "@/lib/analysis";
+import { generateGeminiPrediction } from "@/lib/gemini";
+import { savePrediction, deletePrediction } from "@/lib/economic-calendar";
 
 const SYMBOL_PATTERN = /^[A-Z0-9]{3,20}$/;
 const TOOL_MAX_BYTES = 25 * 1024 * 1024;
@@ -349,4 +351,79 @@ export async function deleteDailyAnalysisAction(formData: FormData) {
   revalidateAnalysisPaths();
   redirect("/admin/analysis?deleted=1");
 }
+
+export async function predictEconomicEventAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const currency = String(formData.get("currency") ?? "").trim().toUpperCase();
+  const date = String(formData.get("date") ?? "").trim();
+  const forecast = String(formData.get("forecast") ?? "").trim();
+  const previous = String(formData.get("previous") ?? "").trim();
+  const actual = formData.get("actual") ? String(formData.get("actual")).trim() : null;
+  const impact = String(formData.get("impact") ?? "HIGH").trim();
+
+  if (!id || !title || !currency) {
+    redirect(`/admin/calendar?error=${encodeURIComponent("Missing required event data.")}`);
+  }
+
+  try {
+    const aiResult = await generateGeminiPrediction({
+      id,
+      title,
+      currency,
+      date,
+      forecast,
+      previous,
+      actual,
+      impact,
+    });
+
+    await savePrediction({
+      id,
+      eventTitle: title,
+      currency,
+      eventDate: date,
+      forecast,
+      previous,
+      actual,
+      bias: aiResult.bias,
+      goldImpact: aiResult.goldImpact,
+      predictedOutcome: aiResult.predictedOutcome,
+      confidence: aiResult.confidence,
+      summary: aiResult.summary,
+      macroAnalysis: aiResult.macroAnalysis,
+      tradingPlaybook: aiResult.tradingPlaybook,
+      modelName: aiResult.modelName,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error("Failed to generate Gemini prediction:", err);
+    redirect(`/admin/calendar?error=${encodeURIComponent("Failed to run Gemini AI prediction.")}`);
+  }
+
+  revalidatePath("/admin/calendar");
+  revalidatePath("/calendar");
+  redirect("/admin/calendar?predicted=1");
+}
+
+export async function deleteEconomicPredictionAction(formData: FormData) {
+  await requireAdmin();
+
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) redirect("/admin/calendar");
+
+  try {
+    await deletePrediction(id);
+  } catch (err) {
+    console.error("Failed to delete prediction:", err);
+  }
+
+  revalidatePath("/admin/calendar");
+  revalidatePath("/calendar");
+  redirect("/admin/calendar?deleted=1");
+}
+
 
