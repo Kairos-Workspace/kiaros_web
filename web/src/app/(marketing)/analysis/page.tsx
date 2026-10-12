@@ -17,6 +17,8 @@ export default async function TechnicalAnalysisPage() {
   return (
     <main className="flex min-h-[calc(100svh-4rem)] flex-1 flex-col bg-[#fafafa] relative text-zinc-900">
       <PageHeader
+        badge="DAILY ORDERFLOW BLUEPRINTS"
+        badgeDotColor="bg-emerald-400"
         title="Daily Technical Analysis"
         subtitle="Institutional multi-timeframe orderflow blueprints, liquidity maps, and daily session execution playbooks verified by our hybrid Algo + LLM quantitative framework across Gold (XAUUSD), Forex, and Crypto."
       />

@@ -1,20 +1,10 @@
-"use client";
-
 import Image from "next/image";
-import { useId, useState } from "react";
-
-import { useModalDismiss } from "@/lib/use-modal-dismiss";
 
 const PROOF_SRC = "/proof_strategy_testing/strategy_testing.png";
 const PROOF_ALT =
   "Monthly strategy performance heatmap from 2020 to 2026 showing returns, losses, and trade frequency per month";
 
 export function StrategyTesting() {
-  const titleId = useId();
-  const [open, setOpen] = useState(false);
-
-  useModalDismiss(open, () => setOpen(false));
-
   return (
     <section id="strategy-testing" className="relative border-b border-zinc-200/80 bg-[#fafafa] py-16 md:py-24">
       <div className="page-container">
@@ -30,69 +20,19 @@ export function StrategyTesting() {
         </div>
 
         {/* Terminal Heatmap Frame */}
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="group relative w-full overflow-hidden rounded-2xl bg-white shadow-sm transition-all hover:shadow-md text-left cursor-pointer"
-          aria-label="Enlarge strategy testing heatmap"
-        >   
+        <div className="relative w-full overflow-hidden bg-white shadow-sm border border-zinc-200/80">
           <div className="relative aspect-[2814/1372] w-full overflow-hidden bg-zinc-50 p-2">
             <Image
               src={PROOF_SRC}
               alt={PROOF_ALT}
               fill
               sizes="(max-width: 768px) 100vw, 82rem"
-              className="object-contain transition-transform duration-500 group-hover:scale-[1.01]"
+              className="object-contain"
               priority={false}
             />
           </div>
-        </button>
-      </div>
-
-      {/* Fullscreen Inspector Modal */}
-      {open ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-2 sm:p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="relative flex max-h-[96vh] w-full max-w-[98vw] flex-col overflow-hidden rounded-2xl border border-zinc-300 bg-white shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex shrink-0 items-center justify-between gap-4 border-b border-zinc-200 bg-zinc-100 px-5 py-4">
-              <div>
-                <p id={titleId} className="font-mono text-base font-bold text-zinc-900">
-                  Strategy Audit Report
-                </p>
-                <p className="text-xs text-zinc-600 font-mono">
-                  Monthly Performance Heatmap 2020–2026 // Tick Data 99.9%
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="btn-secondary px-4 py-2 text-xs"
-              >
-                Close
-              </button>
-            </div>
-            <div className="relative min-h-0 flex-1 overflow-auto bg-zinc-50 p-3 sm:p-4">
-              <Image
-                src={PROOF_SRC}
-                alt={PROOF_ALT}
-                width={2814}
-                height={1372}
-                sizes="98vw"
-                className="mx-auto h-auto w-full max-w-none"
-                priority
-              />
-            </div>
-          </div>
         </div>
-      ) : null}
+      </div>
     </section>
   );
 }
