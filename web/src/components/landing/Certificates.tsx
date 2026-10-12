@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
+
+import { useModalDismiss } from "@/lib/use-modal-dismiss";
 
 type Certificate = {
   id: string;
@@ -89,19 +91,7 @@ export function Certificates() {
   const titleId = useId();
   const [active, setActive] = useState<Certificate | null>(null);
 
-  useEffect(() => {
-    if (!active) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setActive(null);
-    };
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [active]);
+  useModalDismiss(Boolean(active), () => setActive(null));
 
   return (
     <section id="proof" className="relative border-b border-zinc-200/80 bg-white py-12 md:py-16">

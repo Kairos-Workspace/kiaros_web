@@ -164,18 +164,7 @@ export type CronWorkflowStatus = {
   error?: string;
 };
 
-type GhWorkflowRun = {
-  id: number;
-  name: string;
-  status: string | null;
-  conclusion: string | null;
-  html_url: string;
-  created_at: string;
-  updated_at: string;
-  run_number: number;
-  event: string;
-  head_branch: string | null;
-};
+type GhWorkflowRun = WorkflowRunSummary;
 
 async function listWorkflowRuns(
   workflowFile: string,

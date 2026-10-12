@@ -2,6 +2,7 @@
  * only. Text-only: the photo-caption branch (send_photo) is never reached
  * from the realtime MT5 path, since outcome_chart_url is always null at the
  * moment of a live hit (see docs/plan — charts are backfilled separately). */
+import { escapeHtml } from "./format";
 import type { SignalRow } from "./outcome-rules";
 
 const DIVIDER = "━━━━━━━━━━━━━━━━━━━━";
@@ -14,12 +15,7 @@ const OUTCOME_META: Record<string, [emoji: string, title: string, nextHint: stri
   tp_hit: ["🏆", "TAKE PROFIT", "Target reached 🎉"],
 };
 
-function esc(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
+const esc = escapeHtml;
 
 function price(value: number): string {
   return `<code>${value}</code>`;

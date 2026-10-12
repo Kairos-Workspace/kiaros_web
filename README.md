@@ -2,7 +2,7 @@
 
 AI-confirmed crypto trading signals. Scans BTCUSD/ETHUSD/XAUUSD candles
 (Kraken; gold prefers MT5 1m when the EA buffer is warm — see
-`signals/market_client.py`), derives technical setups, confirms each candidate
+`signals/clients/market.py`), derives technical setups, confirms each candidate
 with SEA-LION using recent news headlines from public RSS feeds (CoinDesk,
 Decrypt, The Block), and stores confirmed signals in Supabase (Postgres).
 

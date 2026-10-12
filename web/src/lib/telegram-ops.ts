@@ -1,5 +1,7 @@
 /** Ops Telegram — same bot as signals, different chat (TELEGRAM_ALERTS_CHAT_ID). */
 
+import { escapeHtml } from "@/lib/format";
+
 export async function sendOpsTelegram(text: string): Promise<boolean> {
   const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
   const chatId = process.env.TELEGRAM_ALERTS_CHAT_ID?.trim();
@@ -45,12 +47,4 @@ export function formatCronFailAlert(opts: {
     lines.push(`<a href="${escapeHtml(opts.href)}">Open run</a>`);
   }
   return lines.join("\n");
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }

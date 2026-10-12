@@ -1,4 +1,4 @@
-const TELEGRAM_GROUP_URL = "https://t.me/kairoscommunity";
+import { TELEGRAM_GROUP_URL } from "@/lib/constants";
 
 export function SyndicateCta() {
   return (

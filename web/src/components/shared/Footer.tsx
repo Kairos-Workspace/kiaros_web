@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/shared/Logo";
-
-const TELEGRAM_GROUP_URL = "https://t.me/kairoscommunity";
+import { TELEGRAM_GROUP_URL } from "@/lib/constants";
 
 export function Footer() {
   return (

@@ -6,7 +6,6 @@ import {
   krakenPairForSymbol,
   parseKrakenOhlcPayload,
   parseMarketInterval,
-  parseYahooChartPayload,
 } from "@/lib/markets/kraken";
 
 describe("canonicalMarketSymbol", () => {
@@ -71,37 +70,3 @@ describe("parseKrakenOhlcPayload", () => {
   });
 });
 
-describe("parseYahooChartPayload", () => {
-  it("parses gold futures bars", () => {
-    const candles = parseYahooChartPayload({
-      chart: {
-        result: [
-          {
-            timestamp: [1720000000],
-            indicators: {
-              quote: [
-                {
-                  open: [2300],
-                  high: [2310],
-                  low: [2290],
-                  close: [2305],
-                  volume: [12],
-                },
-              ],
-            },
-          },
-        ],
-      },
-    });
-    expect(candles).toEqual([
-      {
-        time: 1720000000,
-        open: 2300,
-        high: 2310,
-        low: 2290,
-        close: 2305,
-        volume: 12,
-      },
-    ]);
-  });
-});

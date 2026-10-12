@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
+
+import { useModalDismiss } from "@/lib/use-modal-dismiss";
 
 const PROOF_SRC = "/proof_strategy_testing/strategy_testing.png";
 const PROOF_ALT =
@@ -11,19 +13,7 @@ export function StrategyTesting() {
   const titleId = useId();
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
+  useModalDismiss(open, () => setOpen(false));
 
   return (
     <section id="strategy-testing" className="relative border-b border-zinc-200/80 bg-[#fafafa] py-16 md:py-24">

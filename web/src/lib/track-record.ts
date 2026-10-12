@@ -1,4 +1,5 @@
 import { SLOW_FETCH } from "@/lib/fetch-cache";
+import { canonicalMarketSymbol } from "@/lib/markets/kraken";
 
 // Pure, browser-side derivation of the public track record from closed-signal
 // rows. Every exported function below is pure (no network) so it is unit-tested
@@ -92,13 +93,8 @@ const COST_BPS: Record<string, number> = {
 };
 const DEFAULT_COST_BPS = 20;
 
-/** Mirror of signals.market_client.canonical_symbol for legacy stored rows. */
-export function canonicalSymbol(symbol: string): string {
-  const s = (symbol ?? "").trim().toUpperCase();
-  if (s.startsWith("PAXG") || s.startsWith("XAU")) return "XAUUSD";
-  if (s.endsWith("USDT") && s.length > 4) return `${s.slice(0, -4)}USD`;
-  return s;
-}
+/** Mirror of signals.clients.market.canonical_symbol for legacy stored rows. */
+export const canonicalSymbol = canonicalMarketSymbol;
 
 /**
  * Round-trip cost expressed in R. Cost is a fraction of PRICE while R is a

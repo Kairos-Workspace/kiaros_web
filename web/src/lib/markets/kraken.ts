@@ -41,7 +41,7 @@ export type MarketCandle = {
 };
 
 export function canonicalMarketSymbol(symbol: string): string {
-  const s = symbol.trim().toUpperCase();
+  const s = (symbol ?? "").trim().toUpperCase();
   if (GOLD_SYMBOLS.has(s) || s.startsWith("PAXG") || s.startsWith("XAU")) {
     return "XAUUSD";
   }
@@ -101,49 +101,6 @@ export function parseKrakenOhlcPayload(payload: unknown): MarketCandle[] {
       },
     ];
   });
-}
-
-export function parseYahooChartPayload(payload: unknown): MarketCandle[] {
-  if (!payload || typeof payload !== "object") return [];
-  const chart = (payload as { chart?: { result?: unknown[]; error?: unknown } })
-    .chart;
-  const results = chart?.result;
-  if (!Array.isArray(results) || results.length === 0) {
-    throw new Error(
-      typeof chart?.error === "object" && chart?.error
-        ? JSON.stringify(chart.error)
-        : "Yahoo gold chart returned no data",
-    );
-  }
-  const result = results[0] as {
-    timestamp?: number[];
-    indicators?: { quote?: Array<Record<string, Array<number | null>>> };
-  };
-  const timestamps = result.timestamp ?? [];
-  const quote = result.indicators?.quote?.[0] ?? {};
-  const opens = quote.open ?? [];
-  const highs = quote.high ?? [];
-  const lows = quote.low ?? [];
-  const closes = quote.close ?? [];
-  const volumes = quote.volume ?? [];
-
-  const candles: MarketCandle[] = [];
-  for (let i = 0; i < timestamps.length; i += 1) {
-    const o = opens[i];
-    const h = highs[i];
-    const l = lows[i];
-    const c = closes[i];
-    if (o == null || h == null || l == null || c == null) continue;
-    candles.push({
-      time: Number(timestamps[i]),
-      open: Number(o),
-      high: Number(h),
-      low: Number(l),
-      close: Number(c),
-      volume: Number(volumes[i] ?? 0),
-    });
-  }
-  return candles;
 }
 
 async function fetchKrakenGoldCandles(

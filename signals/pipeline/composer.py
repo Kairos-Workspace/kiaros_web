@@ -77,8 +77,6 @@ SWING_MSNR_SYSTEM_PROMPT = (
 
 def _system_prompt_for(timeframe: str, strategy: str = DEFAULT_SIGNAL_STRATEGY) -> str:
     """Session/strategy-specific confirm prompts."""
-    if timeframe == "5m" and strategy == "ict_fvg":
-        return SUPER_SCALP_SYSTEM_PROMPT
     if timeframe == "1h" and strategy == "msnr":
         return SWING_MSNR_SYSTEM_PROMPT
     if timeframe == "5m":

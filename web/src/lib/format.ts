@@ -41,3 +41,13 @@ export function formatRelativeTime(iso: string, now: Date = new Date()): string 
   if (days < 30) return `${days}d ago`;
   return then.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
+
+/** Escape HTML special characters for safe inclusion in Telegram HTML messages. */
+export function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
