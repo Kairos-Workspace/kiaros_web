@@ -490,6 +490,8 @@ export type DailyPnL = {
   wins: number;
   losses: number;
   net: number; // wins - losses
+  pnlPercent?: number;
+  trades?: number;
 };
 
 export async function getDailyPnLStats(

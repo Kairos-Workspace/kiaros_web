@@ -1,6 +1,7 @@
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { mkdir, unlink, writeFile } from "fs/promises";
 import path from "path";
+import { deleteFromGcs, isGcsConfigured, uploadToGcs } from "./gcs";
 
 const accountId = process.env.R2_ACCOUNT_ID;
 const accessKeyId = process.env.R2_ACCESS_KEY_ID;
@@ -34,12 +35,13 @@ export function getR2Client(): S3Client | null {
 export type UploadResult = {
   url: string;
   key: string;
-  storage: "r2" | "local";
+  storage: "gcs" | "r2" | "local";
 };
 
 /**
  * Uploads a chart/graph image file.
- * Uses Cloudflare R2 if credentials are provided in env;
+ * Prioritizes Google Cloud Storage (GCS) if bucket configured;
+ * otherwise checks Cloudflare R2;
  * otherwise gracefully falls back to local storage in public/uploads/analysis.
  */
 export async function uploadAnalysisImage({
@@ -51,6 +53,25 @@ export async function uploadAnalysisImage({
   originalName: string;
   contentType: string;
 }): Promise<UploadResult> {
+  // 1. Google Cloud Storage (GCP Finhubkh)
+  if (isGcsConfigured()) {
+    try {
+      const gcsRes = await uploadToGcs({
+        buffer,
+        originalName,
+        contentType,
+        folder: "analysis",
+      });
+      return {
+        url: gcsRes.url,
+        key: gcsRes.key,
+        storage: "gcs",
+      };
+    } catch (err) {
+      console.error("[GCS Upload Fallback to R2/Local]:", err);
+    }
+  }
+
   const extension = path.extname(originalName) || ".png";
   const cleanBase = path
     .basename(originalName, extension)
@@ -60,7 +81,7 @@ export async function uploadAnalysisImage({
 
   const client = getR2Client();
 
-  // 1. Production Cloudflare R2 Upload
+  // 2. Cloudflare R2 Upload
   if (client) {
     try {
       await client.send(
@@ -80,11 +101,10 @@ export async function uploadAnalysisImage({
       return { url, key, storage: "r2" };
     } catch (err) {
       console.error("[R2 Upload Error]:", err);
-      // Fall through to local fallback if R2 fails
     }
   }
 
-  // 2. Local Fallback (while API key is pending)
+  // 3. Local Fallback (while cloud keys are pending)
   const uploadsDir = path.join(process.cwd(), "public", "uploads", "analysis");
   await mkdir(uploadsDir, { recursive: true });
 
@@ -100,10 +120,15 @@ export async function uploadAnalysisImage({
 }
 
 /**
- * Removes an image from Cloudflare R2 or local storage.
+ * Removes an image from Google Cloud Storage, Cloudflare R2, or local storage.
  */
 export async function deleteAnalysisImage(key: string): Promise<void> {
   if (!key) return;
+
+  if (key.startsWith("gcs:")) {
+    await deleteFromGcs(key);
+    return;
+  }
 
   if (key.startsWith("local:")) {
     const fileName = key.replace("local:", "");

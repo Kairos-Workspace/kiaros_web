@@ -2,7 +2,6 @@ import { Hero } from "@/components/landing/Hero";
 import { StrategyArchitecture } from "@/components/landing/StrategyArchitecture";
 import { StrategyTesting } from "@/components/landing/StrategyTesting";
 import { Certificates } from "@/components/landing/Certificates";
-import { SyndicateCta } from "@/components/landing/SyndicateCta";
 import { Footer } from "@/components/shared/Footer";
 
 export const revalidate = 60;
@@ -22,9 +21,6 @@ export default function Home() {
 
         {/* 5. Funded Certificates & Prop Passes */}
         <Certificates />
-
-        {/* 6. VIP Quant Syndicate Community Hub */}
-        <SyndicateCta />
       </main>
 
       {/* Institutional Terminal Footer */}

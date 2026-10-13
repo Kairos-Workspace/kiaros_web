@@ -42,7 +42,39 @@ let cachedEvents: EconomicCalendarEvent[] | null = null;
 let lastFetchTime = 0;
 const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
 
+export { isEventReleased } from "@/lib/economic-calendar-utils";
+
 const DEFAULT_CURATED_EVENTS: EconomicCalendarEvent[] = [
+  {
+    id: "usd-empire-state-mfg-index",
+    time: "12:30 GMT",
+    session: "New York",
+    currency: "USD",
+    event: "Empire State Manufacturing Index",
+    impact: "MEDIUM",
+    actual: "11.5",
+    forecast: "-3.6",
+    previous: "-11.2",
+    dateTag: "today",
+    dateFormatted: "Wednesday, Oct 14",
+    rawDate: "2026-10-14T12:30:00Z",
+    algoAction: "Normal STP Execution",
+  },
+  {
+    id: "usd-producer-price-index-mom",
+    time: "12:30 GMT",
+    session: "New York",
+    currency: "USD",
+    event: "PPI (MoM)",
+    impact: "HIGH",
+    actual: "0.0%",
+    forecast: "0.1%",
+    previous: "0.2%",
+    dateTag: "today",
+    dateFormatted: "Wednesday, Oct 14",
+    rawDate: "2026-10-14T12:30:00Z",
+    algoAction: "Signal Shield Active (±15m)",
+  },
   {
     id: "usd-core-cpi-mom",
     time: "12:30 GMT",

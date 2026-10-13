@@ -19,7 +19,7 @@ export async function Nav() {
   const email = await getSessionEmail();
 
   return (
-    <div className="sticky top-0 z-50 w-full">
+    <div className="relative z-40 w-full">
       {/* 1. Institutional Risk Disclaimer Marquee Strip */}
       <div
         className="warn-marquee border-b border-amber-200/80 bg-amber-50/95 py-1.5 text-amber-900 backdrop-blur-md overflow-hidden"

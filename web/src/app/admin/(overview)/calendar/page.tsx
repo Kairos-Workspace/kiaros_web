@@ -9,7 +9,7 @@ import { getDailyPnLStats } from "@/lib/signals";
 import { serviceRoleToken } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
-  title: "Admin · Economic Calendar & Gemini AI",
+  title: "Admin · Economic Calendar & Macro AI",
   description: "Monitor scheduled economic news and generate Gemini AI predictions on demand.",
 };
 
@@ -33,43 +33,60 @@ export default async function AdminCalendar({
   ]);
 
   return (
-    <div className="space-y-6">
-      {/* Sub-Tabs: Economic Calendar (Gemini AI) vs PnL Calendar */}
-      <div className="flex items-center gap-2 border-b border-zinc-200 pb-3">
-        <Link
-          href="/admin/calendar"
-          className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-mono text-xs font-bold transition-all ${
-            !isPnlTab
-              ? "bg-zinc-950 text-white shadow-2xs"
-              : "bg-white text-zinc-600 border border-zinc-200 hover:bg-zinc-50 hover:text-zinc-950"
-          }`}
-        >
-          <span>✨ Economic News & Gemini AI</span>
-          {!isPnlTab ? (
-            <span className="rounded bg-emerald-500/20 px-1.5 py-0.2 text-[9px] text-emerald-300 font-mono">
-              ACTIVE
-            </span>
-          ) : null}
-        </Link>
+    <div className="w-full space-y-6">
+      {/* 1. Header with View Segmented Tabs */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-zinc-200/80 pb-5">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 font-mono">
+            {isPnlTab ? "Signals PnL Performance" : "Macro Catalysts & AI Shield"}
+          </h1>
+          <p className="mt-1 text-xs text-zinc-500 max-w-2xl leading-relaxed">
+            {isPnlTab
+              ? "Verified STP/ECN algorithmic signal settlements, daily net R breakdown, and session streaks."
+              : "Institutional economic schedule, central bank rate catalysts, and automated Gemini AI projections."}
+          </p>
+        </div>
 
-        <Link
-          href="/admin/calendar?tab=pnl"
-          className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-mono text-xs font-bold transition-all ${
-            isPnlTab
-              ? "bg-zinc-950 text-white shadow-2xs"
-              : "bg-white text-zinc-600 border border-zinc-200 hover:bg-zinc-50 hover:text-zinc-950"
-          }`}
-        >
-          <span>Signals PnL Calendar</span>
-        </Link>
+        {/* Segmented Sub-Tabs */}
+        <div className="inline-flex items-center rounded-xl bg-zinc-100 p-1 border border-zinc-200/80 font-mono text-xs shrink-0">
+          <Link
+            href="/admin/calendar"
+            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-bold transition-all ${
+              !isPnlTab
+                ? "bg-zinc-950 text-white shadow-xs"
+                : "text-zinc-600 hover:text-zinc-950"
+            }`}
+          >
+            <span>Macro Catalysts & AI</span>
+            {!isPnlTab && (
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            )}
+          </Link>
+
+          <Link
+            href="/admin/calendar?tab=pnl"
+            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-1.5 font-bold transition-all ${
+              isPnlTab
+                ? "bg-zinc-950 text-white shadow-xs"
+                : "text-zinc-600 hover:text-zinc-950"
+            }`}
+          >
+            <span>Performance Calendar</span>
+            {isPnlTab && (
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            )}
+          </Link>
+        </div>
       </div>
 
-      {/* Render View */}
-      {isPnlTab ? (
-        <DailyPnLCalendar data={pnlData} />
-      ) : (
-        <AdminEconomicCalendar events={enrichedEvents} />
-      )}
+      {/* 2. Main Calendar Workspace */}
+      <div className="w-full">
+        {isPnlTab ? (
+          <DailyPnLCalendar data={pnlData} />
+        ) : (
+          <AdminEconomicCalendar events={enrichedEvents} />
+        )}
+      </div>
     </div>
   );
 }

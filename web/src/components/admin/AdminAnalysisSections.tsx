@@ -448,14 +448,6 @@ export function AdminAnalysisSections({
                     className="input-field w-full font-mono text-xs font-bold"
                   >
                     <option value="XAUUSD">XAUUSD (Gold)</option>
-                    <option value="BTCUSD">BTCUSD (Bitcoin)</option>
-                    <option value="ETHUSD">ETHUSD (Ethereum)</option>
-                    <option value="EURUSD">EURUSD (Euro)</option>
-                    <option value="GBPUSD">GBPUSD (Pound)</option>
-                    <option value="USDJPY">USDJPY (Yen)</option>
-                    <option value="SOLUSD">SOLUSD (Solana)</option>
-                    <option value="US30">US30 (Dow Jones)</option>
-                    <option value="NAS100">NAS100 (Nasdaq)</option>
                   </select>
                 </div>
 

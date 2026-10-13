@@ -78,55 +78,6 @@ const DEFAULT_ANALYSES: DailyAnalysis[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
-  {
-    id: "default-eurusd",
-    title: "EURUSD London Open Range Expansion & Bearish Displacement",
-    symbol: "EURUSD",
-    timeframe: "H4 / H1",
-    bias: "BEARISH",
-    imageUrl: "/assets/signal_screen.png",
-    description: `EURUSD completed an engineered liquidity sweep above the previous day high (1.08450) into an established institutional 4H order block. Displacement lower confirmed with consecutive bearish candle closures on 15m.
-
-### Execution Blueprint:
-- **Bias:** Short on premium re-entry into 1.08280 equilibrium.
-- **Stop Loss:** 1.08480
-- **Target 1:** 1.07800 (Previous Day Low)
-- **Target 2:** 1.07400 (Daily Institutional Demand)`,
-    session: "London Killzone",
-    keyLevels: [
-      { label: "Premium Order Block", level: "1.08450", type: "resistance" },
-      { label: "Equilibrium Level", level: "1.08250", type: "equilibrium" },
-      { label: "Sell-Side Liquidity Pool", level: "1.07800", type: "support" },
-    ],
-    author: "Kiaros Quant Team",
-    published: true,
-    createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-  },
-  {
-    id: "default-btcusd",
-    title: "Bitcoin (BTCUSD) 4H Bullish Structure Shift & Institutional Absorption",
-    symbol: "BTCUSD",
-    timeframe: "H4 / 1H",
-    bias: "BULLISH",
-    imageUrl: "/assets/signal_screen.png",
-    description: `BTC demonstrated massive spot volume absorption on the weekend consolidation retest. Price reclaimed key $68,200 pivot with sustained Open Interest (OI) expansion indicating institutional accumulation.
-
-### Execution Blueprint:
-- **Bias:** Long on retest of $68,500 demand shelf.
-- **Stop Loss:** $67,400
-- **Take Profit:** $71,200 / $73,500`,
-    session: "Global 24/7 Session",
-    keyLevels: [
-      { label: "All-Time High Liquidity", level: "$73,800", type: "resistance" },
-      { label: "Institutional Pivot Shelf", level: "$68,500", type: "support" },
-      { label: "Macro Invalidation", level: "$66,800", type: "invalidation" },
-    ],
-    author: "Kiaros Quant Team",
-    published: true,
-    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-  },
 ];
 
 const LOCAL_STORAGE_FILE = path.join(process.cwd(), "public", "uploads", "daily-analyses.json");
@@ -159,6 +110,11 @@ function getSupabaseConfig(): { url: string; key: string } | null {
  * Fetch all published analyses for public page (/analysis).
  */
 export async function listPublishedAnalyses(): Promise<DailyAnalysis[]> {
+  const isGold = (sym: string) => {
+    const s = (sym || "").toUpperCase();
+    return s === "XAUUSD" || s.includes("XAU") || s.includes("GOLD");
+  };
+
   const cfg = getSupabaseConfig();
   if (cfg) {
     try {
@@ -175,22 +131,25 @@ export async function listPublishedAnalyses(): Promise<DailyAnalysis[]> {
       if (res.ok) {
         const rows = await res.json();
         if (Array.isArray(rows) && rows.length > 0) {
-          return rows.map((r) => ({
-            id: r.id,
-            title: r.title,
-            symbol: r.symbol,
-            timeframe: r.timeframe,
-            bias: r.bias,
-            imageUrl: r.image_url,
-            imageKey: r.image_key,
-            description: r.description,
-            session: r.session || "London / New York",
-            keyLevels: r.key_levels || [],
-            author: r.author || "Kiaros Quant Team",
-            published: Boolean(r.published),
-            createdAt: r.created_at,
-            updatedAt: r.updated_at,
-          }));
+          const goldRows = rows.filter((r) => isGold(r.symbol));
+          if (goldRows.length > 0) {
+            return goldRows.map((r) => ({
+              id: r.id,
+              title: r.title,
+              symbol: r.symbol,
+              timeframe: r.timeframe,
+              bias: r.bias,
+              imageUrl: r.image_url,
+              imageKey: r.image_key,
+              description: r.description,
+              session: r.session || "London / New York",
+              keyLevels: r.key_levels || [],
+              author: r.author || "Kiaros Quant Team",
+              published: Boolean(r.published),
+              createdAt: r.created_at,
+              updatedAt: r.updated_at,
+            }));
+          }
         }
       }
     } catch {
@@ -199,7 +158,7 @@ export async function listPublishedAnalyses(): Promise<DailyAnalysis[]> {
   }
 
   const local = await readLocalAnalyses();
-  return local.filter((a) => a.published);
+  return local.filter((a) => a.published && isGold(a.symbol));
 }
 
 /**

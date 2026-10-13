@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import type { EconomicCalendarEvent } from "@/lib/economic-calendar";
+import { isEventReleased } from "@/lib/economic-calendar-utils";
 import {
   predictEconomicEventAction,
   deleteEconomicPredictionAction,
@@ -14,19 +15,35 @@ export function AdminEconomicCalendar({
   events: EconomicCalendarEvent[];
 }) {
   const [impactFilter, setImpactFilter] = useState<"ALL" | "HIGH" | "MEDIUM">("ALL");
-  const [dayFilter, setDayFilter] = useState<"all" | "today" | "tomorrow" | "this-week">("all");
+  const [dayFilter, setDayFilter] = useState<"all" | "today" | "tomorrow" | "this-week">("today");
+  const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [predictingId, setPredictingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const filteredEvents = useMemo(() => {
-    return events.filter((e) => {
+    const list = events.filter((e) => {
       if (impactFilter === "HIGH" && e.impact !== "HIGH") return false;
       if (impactFilter === "MEDIUM" && e.impact === "LOW") return false;
       if (dayFilter !== "all" && e.dateTag !== dayFilter) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchesName = e.event.toLowerCase().includes(q);
+        const matchesCurrency = e.currency.toLowerCase().includes(q);
+        if (!matchesName && !matchesCurrency) return false;
+      }
       return true;
     });
-  }, [events, impactFilter, dayFilter]);
+
+    // Move all grayed-out / released news to the bottom:
+    return list.slice().sort((a, b) => {
+      const aReleased = isEventReleased(a);
+      const bReleased = isEventReleased(b);
+      if (aReleased && !bReleased) return 1;  // a goes to bottom
+      if (!aReleased && bReleased) return -1; // b goes to bottom
+      return 0;
+    });
+  }, [events, impactFilter, dayFilter, searchQuery]);
 
   const stats = useMemo(() => {
     const total = events.length;
@@ -45,72 +62,96 @@ export function AdminEconomicCalendar({
 
   return (
     <div className="w-full space-y-6">
-      {/* 1. Admin Telemetry Ribbon */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-2xs">
-          <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500">
-            Upcoming Events
-          </p>
-          <p className="mt-1 font-mono text-2xl font-black text-zinc-950 tabular-nums">
-            {stats.total}
-          </p>
-          <p className="text-[11px] text-zinc-500">Scheduled releases</p>
+      {/* 1. Admin Telemetry KPI Metrics Bar */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 font-mono">
+        {/* Total Events */}
+        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+              Scheduled Catalysts
+            </span>
+            <span className="h-2 w-2 rounded-full bg-zinc-300" />
+          </div>
+          <div className="mt-2">
+            <span className="text-2xl sm:text-3xl font-black text-zinc-950 tabular-nums">
+              {stats.total}
+            </span>
+            <p className="text-[11px] text-zinc-400 mt-0.5">Macro events loaded</p>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-4 shadow-2xs">
-          <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-rose-700">
-            High Impact (Red)
-          </p>
-          <p className="mt-1 font-mono text-2xl font-black text-rose-800 tabular-nums">
-            {stats.highs}
-          </p>
-          <p className="text-[11px] text-rose-600">±15m News Shield rule</p>
+        {/* High Impact */}
+        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+              High Impact Releases
+            </span>
+            <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+          </div>
+          <div className="mt-2">
+            <span className="text-2xl sm:text-3xl font-black text-rose-700 tabular-nums">
+              {stats.highs}
+            </span>
+            <p className="text-[11px] text-zinc-400 mt-0.5">±15m News Shield target</p>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 shadow-2xs">
-          <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-800">
-            Gemini Predictions
-          </p>
-          <p className="mt-1 font-mono text-2xl font-black text-emerald-800 tabular-nums">
-            {stats.predicted}
-          </p>
-          <p className="text-[11px] text-emerald-700">Live on client calendar</p>
+        {/* AI Predictions */}
+        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+              Gemini Projections
+            </span>
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          </div>
+          <div className="mt-2">
+            <span className="text-2xl sm:text-3xl font-black text-emerald-700 tabular-nums">
+              {stats.predicted}
+            </span>
+            <p className="text-[11px] text-zinc-400 mt-0.5">Live on client portal</p>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-2xs flex flex-col justify-between">
-          <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500">
-            Client Preview
-          </p>
-          <Link
-            href="/calendar"
-            target="_blank"
-            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-zinc-900 hover:text-emerald-700 hover:underline"
-          >
-            <span>Open /calendar</span>
-            <span>↗</span>
-          </Link>
-          <p className="text-[10px] text-zinc-400">Public viewer portal</p>
+        {/* Client Viewer Portal */}
+        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+              Public Interface
+            </span>
+            <span className="text-zinc-400 text-xs">↗</span>
+          </div>
+          <div className="mt-2">
+            <Link
+              href="/calendar"
+              target="_blank"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-zinc-950 hover:text-emerald-700 transition-colors"
+            >
+              <span>Open /calendar</span>
+              <span>↗</span>
+            </Link>
+            <p className="text-[11px] text-zinc-400 mt-0.5">Real-time trader feed</p>
+          </div>
         </div>
       </div>
 
-      {/* 2. Filter & Controls Bar */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-2xs">
-        {/* Days */}
-        <div className="flex flex-wrap items-center gap-1.5">
+      {/* 2. Sleek Filter & Search Bar */}
+      <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-2xs flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        {/* Day Tabs */}
+        <div className="inline-flex items-center rounded-xl bg-zinc-100 p-1 border border-zinc-200/60 font-mono text-xs overflow-x-auto">
           {[
-            { id: "all", label: "All Upcoming" },
             { id: "today", label: "Today" },
             { id: "tomorrow", label: "Tomorrow" },
             { id: "this-week", label: "This Week" },
+            { id: "all", label: "All Upcoming" },
           ].map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setDayFilter(tab.id as typeof dayFilter)}
-              className={`px-3 py-1 text-xs font-mono font-bold rounded-lg transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer whitespace-nowrap ${
                 dayFilter === tab.id
-                  ? "bg-zinc-950 text-white shadow-2xs"
-                  : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950"
+                  ? "bg-white text-zinc-950 shadow-2xs"
+                  : "text-zinc-600 hover:text-zinc-950"
               }`}
             >
               {tab.label}
@@ -118,58 +159,71 @@ export function AdminEconomicCalendar({
           ))}
         </div>
 
-        {/* Impact & Currency */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Search & Impact Filters */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Quick Search */}
+          <div className="relative min-w-[200px] flex-1 sm:flex-initial">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Filter catalyst (e.g. CPI, NFP)..."
+              className="w-full rounded-xl border border-zinc-200 bg-zinc-50/70 px-3 py-1.5 text-xs font-mono placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-950"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-zinc-700"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
           {/* Impact Selector */}
-          <div className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-1 text-xs font-mono">
-            <span className="px-1.5 text-[10px] font-bold text-zinc-500 uppercase">Impact:</span>
+          <div className="inline-flex items-center rounded-xl bg-zinc-100 p-1 border border-zinc-200/60 font-mono text-xs">
             {(["ALL", "HIGH", "MEDIUM"] as const).map((imp) => (
               <button
                 key={imp}
                 type="button"
                 onClick={() => setImpactFilter(imp)}
-                className={`px-2 py-0.5 text-[11px] font-bold rounded transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
                   impactFilter === imp
-                    ? "bg-zinc-950 text-white"
+                    ? "bg-white text-zinc-950 shadow-2xs"
                     : "text-zinc-600 hover:text-zinc-950"
                 }`}
               >
-                {imp === "HIGH" ? "🔴 High" : imp === "MEDIUM" ? "🟠 Med" : "All"}
+                {imp === "HIGH" ? "High Impact" : imp === "MEDIUM" ? "Medium+" : "All"}
               </button>
             ))}
-          </div>
-
-          {/* USD Focus Badge */}
-          <div className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-mono">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
-            <span className="font-bold text-zinc-950">USD Only</span>
-            <span className="text-[10px] text-zinc-500 hidden sm:inline">(US Macro)</span>
           </div>
         </div>
       </div>
 
-      {/* 3. Event List with Gemini Predict Trigger */}
+      {/* 3. Event Matrix List */}
       <div className="space-y-3">
         {filteredEvents.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-12 text-center">
-            <p className="font-mono text-sm font-bold text-zinc-900">No events matching filters</p>
-            <p className="text-xs text-zinc-500 mt-1">Adjust impact or currency filters above.</p>
+          <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-12 text-center font-mono">
+            <p className="text-sm font-bold text-zinc-900">No scheduled catalysts match filters</p>
+            <p className="text-xs text-zinc-500 mt-1">Try resetting the day or impact filters above.</p>
           </div>
         ) : (
           filteredEvents.map((evt, idx) => {
             const isPredictingThis = isPending && predictingId === evt.id;
             const hasPrediction = Boolean(evt.prediction);
             const isExpanded = expandedId === evt.id;
+            const isOut = isEventReleased(evt);
 
             return (
               <div
                 key={`${evt.id}-${idx}`}
-                className={`rounded-xl border transition-all ${
-                  hasPrediction
-                    ? "border-emerald-300 bg-emerald-50/20 shadow-xs"
-                    : evt.impact === "HIGH"
-                    ? "border-zinc-200 bg-white hover:border-zinc-300 shadow-2xs"
-                    : "border-zinc-200 bg-white shadow-2xs"
+                className={`rounded-2xl border transition-all ${
+                  isOut
+                    ? "border-zinc-200/60 bg-zinc-50/50 opacity-60 hover:opacity-100 shadow-2xs"
+                    : hasPrediction
+                    ? "border-emerald-200/90 bg-white shadow-2xs"
+                    : "border-zinc-200/80 bg-white shadow-2xs hover:border-zinc-300"
                 }`}
               >
                 {/* Event Summary Row */}
@@ -180,28 +234,36 @@ export function AdminEconomicCalendar({
                     <div className="font-mono text-xs whitespace-nowrap min-w-[110px]">
                       <span className="font-black text-zinc-950 block text-sm">{evt.time}</span>
                       <span className="text-[11px] text-zinc-500 block">{evt.dateFormatted}</span>
-                      <span className="text-[10px] text-zinc-400 block">{evt.session} Session</span>
+                      {isOut ? (
+                        <span className="inline-flex items-center gap-1 font-mono text-[9px] font-bold text-zinc-500 uppercase mt-0.5">
+                          <span>✓</span> RELEASED
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 font-mono text-[9px] font-bold text-emerald-700 uppercase mt-0.5">
+                          <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" /> COMING OUT
+                        </span>
+                      )}
                     </div>
 
                     {/* Currency & Impact Badge */}
                     <div className="flex items-center gap-2">
-                      <span className="rounded bg-zinc-950 px-2.5 py-1 font-mono text-xs font-black text-white">
+                      <span className="rounded-lg bg-zinc-950 px-2.5 py-1 font-mono text-xs font-black text-white">
                         {evt.currency}
                       </span>
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 text-[10px] font-mono font-black uppercase rounded ${
+                        className={`inline-flex items-center px-2.5 py-1 text-[10px] font-mono font-bold uppercase rounded-lg border ${
                           evt.impact === "HIGH"
-                            ? "bg-rose-100 text-rose-800 border border-rose-300"
+                            ? "bg-rose-50 text-rose-800 border-rose-200"
                             : evt.impact === "MEDIUM"
-                            ? "bg-amber-100 text-amber-800 border border-amber-300"
-                            : "bg-zinc-100 text-zinc-700 border border-zinc-200"
+                            ? "bg-amber-50 text-amber-800 border-amber-200"
+                            : "bg-zinc-50 text-zinc-600 border-zinc-200"
                         }`}
                       >
-                        {evt.impact === "HIGH" ? "🔴 HIGH" : evt.impact === "MEDIUM" ? "🟠 MED" : "⚪ LOW"}
+                        {evt.impact === "HIGH" ? "HIGH" : evt.impact === "MEDIUM" ? "MED" : "LOW"}
                       </span>
                     </div>
 
-                    {/* Event Title */}
+                    {/* Event Title & Data */}
                     <div className="min-w-0 flex-1">
                       <h3 className="font-sans font-bold text-zinc-950 text-sm sm:text-base leading-snug">
                         {evt.event}
@@ -231,8 +293,8 @@ export function AdminEconomicCalendar({
                     {/* Prediction Status Badge */}
                     {hasPrediction ? (
                       <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 font-mono text-xs font-bold text-emerald-900 border border-emerald-300">
-                          <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
+                        <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-1 font-mono text-xs font-bold text-emerald-900 border border-emerald-200">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
                           <span>Gemini Predicted</span>
                           <span className="text-[10px] text-emerald-700 uppercase">
                             ({evt.prediction?.bias} {evt.currency})
@@ -242,14 +304,14 @@ export function AdminEconomicCalendar({
                         <button
                           type="button"
                           onClick={() => setExpandedId(isExpanded ? null : evt.id)}
-                          className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-mono font-bold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 transition-colors cursor-pointer"
+                          className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-mono font-bold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 transition-colors cursor-pointer"
                         >
-                          {isExpanded ? "Hide Details" : "View Analysis"}
+                          {isExpanded ? "Hide Details ↑" : "View Analysis ↓"}
                         </button>
                       </div>
                     ) : null}
 
-                    {/* Gemini Predict Form / Button */}
+                    {/* Gemini Predict Action Button */}
                     <form
                       action={(formData) => handlePredictSubmit(evt.id, formData)}
                       className="inline-flex"
@@ -266,37 +328,33 @@ export function AdminEconomicCalendar({
                       <button
                         type="submit"
                         disabled={isPending}
-                        className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 font-mono text-xs font-bold transition-all shadow-2xs cursor-pointer ${
+                        className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 font-mono text-xs font-bold transition-all cursor-pointer ${
                           hasPrediction
-                            ? "bg-zinc-100 text-zinc-800 hover:bg-zinc-200 border border-zinc-300"
-                            : "bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-700 shadow-xs"
+                            ? "bg-zinc-100 text-zinc-800 hover:bg-zinc-200 border border-zinc-200"
+                            : "bg-zinc-950 text-white hover:bg-zinc-850 shadow-2xs"
                         } disabled:opacity-50`}
                       >
                         {isPredictingThis ? (
                           <>
                             <span className="h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                            <span>Gemini Analyzing...</span>
+                            <span>Analyzing...</span>
                           </>
                         ) : hasPrediction ? (
-                          <>
-                            <span>🔄 Re-predict</span>
-                          </>
+                          <span>🔄 Re-analyze</span>
                         ) : (
-                          <>
-                            <span>✨ Gemini Predict</span>
-                          </>
+                          <span>✨ Run Gemini AI</span>
                         )}
                       </button>
                     </form>
 
-                    {/* Delete Prediction if exists */}
+                    {/* Delete Prediction */}
                     {hasPrediction ? (
                       <form action={deleteEconomicPredictionAction} className="inline-flex">
                         <input type="hidden" name="id" value={evt.id} />
                         <button
                           type="submit"
                           title="Delete Prediction"
-                          className="rounded-lg border border-zinc-200 bg-white p-1.5 text-xs text-zinc-400 hover:text-rose-600 hover:border-rose-200 transition-colors cursor-pointer"
+                          className="rounded-xl border border-zinc-200 bg-white p-2 text-xs text-zinc-400 hover:text-rose-600 hover:border-rose-200 transition-colors cursor-pointer"
                         >
                           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -309,14 +367,14 @@ export function AdminEconomicCalendar({
 
                 {/* Expanded Gemini Prediction Details Card */}
                 {hasPrediction && (isExpanded || isPredictingThis) ? (
-                  <div className="border-t border-emerald-200 bg-white p-5 sm:p-6 rounded-b-xl space-y-4 font-mono text-xs">
+                  <div className="border-t border-zinc-100 bg-zinc-50/60 p-5 sm:p-6 rounded-b-2xl space-y-4 font-mono text-xs">
                     {/* Header Banner */}
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-3">
                       <div className="flex items-center gap-2.5">
                         <span className="text-base font-black text-zinc-950">
                           Gemini Macro Intelligence Outlook
                         </span>
-                        <span className="rounded bg-zinc-100 border border-zinc-200 px-2 py-0.5 text-[10px] text-zinc-700 font-bold">
+                        <span className="rounded-md bg-white border border-zinc-200 px-2 py-0.5 text-[10px] text-zinc-700 font-bold">
                           {evt.prediction?.modelName}
                         </span>
                       </div>
@@ -326,7 +384,7 @@ export function AdminEconomicCalendar({
                         </span>
                         <span>•</span>
                         <span
-                          className={`font-black px-2 py-0.5 rounded ${
+                          className={`font-black px-2 py-0.5 rounded-md ${
                             evt.prediction?.bias === "BULLISH"
                               ? "bg-emerald-100 text-emerald-800"
                               : evt.prediction?.bias === "BEARISH"
@@ -338,7 +396,7 @@ export function AdminEconomicCalendar({
                         </span>
                         {evt.prediction?.goldImpact ? (
                           <span
-                            className={`font-black px-2 py-0.5 rounded ${
+                            className={`font-black px-2 py-0.5 rounded-md ${
                               evt.prediction?.goldImpact === "BULLISH"
                                 ? "bg-amber-100 text-amber-900 border border-amber-300"
                                 : evt.prediction?.goldImpact === "BEARISH"
@@ -353,8 +411,8 @@ export function AdminEconomicCalendar({
                     </div>
 
                     {/* Predicted Outcome */}
-                    <div className="rounded-lg bg-zinc-50 border border-zinc-200 p-3.5">
-                      <p className="text-[11px] uppercase font-bold text-zinc-500">
+                    <div className="rounded-xl bg-white border border-zinc-200 p-3.5">
+                      <p className="text-[10px] uppercase font-bold text-zinc-400">
                         Predicted Figure & Consensus Deviation
                       </p>
                       <p className="mt-1 font-sans text-sm font-bold text-zinc-950 leading-relaxed">
@@ -364,7 +422,7 @@ export function AdminEconomicCalendar({
 
                     {/* Executive Summary */}
                     <div>
-                      <p className="text-[11px] uppercase font-bold text-zinc-500">
+                      <p className="text-[10px] uppercase font-bold text-zinc-400">
                         Executive Summary
                       </p>
                       <p className="mt-1 font-sans text-sm text-zinc-700 leading-relaxed">
@@ -374,8 +432,8 @@ export function AdminEconomicCalendar({
 
                     {/* Macro Analysis & Playbook Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                      <div className="rounded-lg border border-zinc-200 bg-zinc-50/50 p-4">
-                        <p className="text-[11px] uppercase font-bold text-zinc-500 mb-2">
+                      <div className="rounded-xl border border-zinc-200 bg-white p-4">
+                        <p className="text-[10px] uppercase font-bold text-zinc-500 mb-2">
                           Macroeconomic & Orderflow Reasoning
                         </p>
                         <div className="font-sans text-xs text-zinc-700 leading-relaxed whitespace-pre-line">
@@ -383,8 +441,8 @@ export function AdminEconomicCalendar({
                         </div>
                       </div>
 
-                      <div className="rounded-lg border border-amber-200 bg-amber-50/40 p-4">
-                        <p className="text-[11px] uppercase font-bold text-amber-800 mb-2">
+                      <div className="rounded-xl border border-amber-200 bg-amber-50/40 p-4">
+                        <p className="text-[10px] uppercase font-bold text-amber-800 mb-2">
                           Institutional Execution & Shield Playbook
                         </p>
                         <div className="font-sans text-xs text-amber-950 leading-relaxed whitespace-pre-line">

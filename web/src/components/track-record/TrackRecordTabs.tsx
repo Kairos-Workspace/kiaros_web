@@ -14,10 +14,19 @@ export type TrackRecordTabsProps = {
   recent?: ClosedTrade[];
 };
 
-export function TrackRecordTabs({ dailyPnL = [] }: TrackRecordTabsProps) {
+export function TrackRecordTabs({
+  dailyPnL = [],
+  summary,
+  bySymbol,
+}: TrackRecordTabsProps) {
   return (
     <div className="w-full">
-      <DailyPnLCalendar data={dailyPnL} description={null} />
+      <DailyPnLCalendar
+        data={dailyPnL}
+        summary={summary}
+        bySymbol={bySymbol}
+        description={null}
+      />
     </div>
   );
 }
