@@ -1,10 +1,12 @@
 import type { NextConfig } from "next";
 
-// Chart images (chart_url / outcome_chart_url) are served from Supabase
-// Storage's public bucket, so next/image needs the project host allow-listed.
+// Chart images can come from Supabase Storage or the configured GCS bucket.
+// Both sources need to be allowed by next/image.
 const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
   : undefined;
+
+const gcsBucketName = process.env.GCS_BUCKET_NAME || "finhubkh-media";
 
 const r2PublicHost = process.env.R2_PUBLIC_URL
   ? (() => {
@@ -43,6 +45,11 @@ const nextConfig: NextConfig = {
             },
           ]
         : []),
+      {
+        protocol: "https" as const,
+        hostname: "storage.googleapis.com",
+        pathname: `/${gcsBucketName}/**`,
+      },
       {
         protocol: "https" as const,
         hostname: "*.r2.dev",

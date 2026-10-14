@@ -58,6 +58,10 @@ export const metadata: Metadata = {
     "Institutional-grade signal architecture across Crypto, Gold (XAUUSD), and Forex — validated by neural models and algorithmic execution (SMC, ICT, BBMA) with zero repaint.",
   creator: "Kiaros",
   publisher: "Kiaros",
+  // Temporarily hide the undecided logo; original icons are preserved in src/assets/brand-pending.
+  icons: {
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3C/svg%3E",
+  },
 };
 
 export default function RootLayout({

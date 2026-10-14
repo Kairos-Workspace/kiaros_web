@@ -297,7 +297,7 @@ export async function deleteDailyAnalysis(id: string): Promise<boolean> {
   const cfg = getSupabaseConfig();
   if (cfg) {
     try {
-      await fetch(
+      const res = await fetch(
         `${cfg.url}/rest/v1/daily_analyses?id=eq.${encodeURIComponent(id)}`,
         {
           method: "DELETE",
@@ -307,6 +307,7 @@ export async function deleteDailyAnalysis(id: string): Promise<boolean> {
           },
         },
       );
+      if (res.ok) return true;
     } catch {
       // Ignore
     }
@@ -328,7 +329,7 @@ export async function toggleDailyAnalysisPublished(
   const cfg = getSupabaseConfig();
   if (cfg) {
     try {
-      await fetch(
+      const res = await fetch(
         `${cfg.url}/rest/v1/daily_analyses?id=eq.${encodeURIComponent(id)}`,
         {
           method: "PATCH",
@@ -340,6 +341,7 @@ export async function toggleDailyAnalysisPublished(
           body: JSON.stringify({ published, updated_at: new Date().toISOString() }),
         },
       );
+      if (res.ok) return true;
     } catch {
       // Fallback
     }

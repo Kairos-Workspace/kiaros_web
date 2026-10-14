@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { signout } from "@/app/auth/actions";
@@ -21,16 +20,6 @@ export default async function AdminLayout({
         {/* Sidebar Header */}
         <div className="flex h-14 items-center justify-between border-b border-zinc-200/80 px-4">
           <Link href="/admin" className="flex items-center gap-2.5 group min-w-0">
-            <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-950 border border-zinc-800 p-1 shadow-xs transition-transform group-hover:scale-105">
-              <Image
-                src="/logo/kiaros-logo.png"
-                alt="Kiaros"
-                width={28}
-                height={28}
-                priority
-                className="h-5 w-5 object-contain"
-              />
-            </div>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5 leading-none">
                 <span className="font-sans text-[15px] font-black tracking-tight text-zinc-950">

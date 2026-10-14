@@ -29,7 +29,7 @@ export function AuthShell({
 
           <div className="relative z-10">
             <div className="flex items-center justify-between">
-              <Logo className="text-white brightness-125" />
+              <Logo tone="dark" className="text-white brightness-125" />
               <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/60 px-2 py-0.5 font-mono text-[9px] font-bold text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 STP-ECN LIVE
