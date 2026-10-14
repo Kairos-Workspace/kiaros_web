@@ -10,15 +10,16 @@
 //| Keep KiarosTickPush.mq5 attached for ticks/candles + outcomes.  |
 //| Allow WebRequest for SignalApiUrl + ChartApiUrl origin:            |
 //| Tools → Options → Expert Advisors                                  |
+//| WebRequest origin: https://kairos-web-sandy.vercel.app         |
 //+------------------------------------------------------------------+
 #property strict
 #property copyright "Kiaros"
-#property version   "1.00"
+#property version   "1.01"
 
 input string AppSymbol       = "XAUUSD";
-input string SignalApiUrl    = "https://qauntify-web.vercel.app/api/mt5/signal";
-input string ChartApiUrl     = "https://qauntify-web.vercel.app/api/mt5/chart";
-input string WebhookSecret   = "906f61d7dbd1aa2c72cc19a7a0382ce61434f8bd5d6d6c65466912d9808097e4";
+input string SignalApiUrl    = "https://kairos-web-sandy.vercel.app/api/mt5/signal";
+input string ChartApiUrl     = "https://kairos-web-sandy.vercel.app/api/mt5/chart";
+input string WebhookSecret   = ""; // Set MT5_WEBHOOK_SECRET from Vercel in EA inputs.
 input bool   UploadChartShot = true;
 input int    ChartWidth      = 1280;
 input int    ChartHeight     = 720;
@@ -584,6 +585,12 @@ void UpdateComment()
 
 int OnInit()
   {
+   if(StringLen(WebhookSecret) < 8)
+     {
+      Print("KiarosSMC: set WebhookSecret in EA inputs before connecting.");
+      return INIT_PARAMETERS_INCORRECT;
+     }
+
    if(_Symbol != AppSymbol && StringFind(_Symbol, "XAU") < 0 && StringFind(_Symbol, "GOLD") < 0)
       Print("KiarosSMC: attach on XAU/GOLD chart (AppSymbol=", AppSymbol, ")");
 

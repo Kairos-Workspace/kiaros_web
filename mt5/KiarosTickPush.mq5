@@ -10,16 +10,17 @@
 //|                                                                    |
 //| Allow WebRequest for ApiUrl / CandleApiUrl / Chart* origin:        |
 //| Tools → Options → Expert Advisors                                  |
+//| WebRequest origin: https://kairos-web-sandy.vercel.app         |
 //+------------------------------------------------------------------+
 #property strict
-#property version   "1.29"
+#property version   "1.30"
 
 input string AppSymbol         = "XAUUSD";
-input string ApiUrl            = "https://qauntify-web.vercel.app/api/mt5/tick";
-input string CandleApiUrl      = "https://qauntify-web.vercel.app/api/mt5/candles";
-input string ChartPendingUrl   = "https://qauntify-web.vercel.app/api/mt5/charts/pending";
-input string ChartUploadUrl    = "https://qauntify-web.vercel.app/api/mt5/chart";
-input string WebhookSecret     = "906f61d7dbd1aa2c72cc19a7a0382ce61434f8bd5d6d6c65466912d9808097e4";
+input string ApiUrl            = "https://kairos-web-sandy.vercel.app/api/mt5/tick";
+input string CandleApiUrl      = "https://kairos-web-sandy.vercel.app/api/mt5/candles";
+input string ChartPendingUrl   = "https://kairos-web-sandy.vercel.app/api/mt5/charts/pending";
+input string ChartUploadUrl    = "https://kairos-web-sandy.vercel.app/api/mt5/chart";
+input string WebhookSecret     = ""; // Set MT5_WEBHOOK_SECRET from Vercel in EA inputs.
 // 500ms keeps SL/TP responsive on gold while cutting Vercel tick flood ~3×.
 // MinPriceMove stays 0 so any move in the window still posts (no missed levels).
 input int    MinIntervalMs     = 500;
@@ -909,8 +910,11 @@ void MaybeUploadPendingCharts()
 
 int OnInit()
   {
-   if(WebhookSecret == "")
-      Print("KiarosTickPush: WebhookSecret is empty.");
+   if(StringLen(WebhookSecret) < 8)
+     {
+      Print("KiarosTickPush: set WebhookSecret in EA inputs before connecting.");
+      return(INIT_PARAMETERS_INCORRECT);
+     }
    BackfillClosedM1();
    UpdateStatusComment();
    return(INIT_SUCCEEDED);
