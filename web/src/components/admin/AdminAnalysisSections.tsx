@@ -12,6 +12,7 @@ import {
   deleteDailyAnalysisAction,
   toggleDailyAnalysisPublishedAction,
 } from "@/app/admin/actions";
+import { Dropdown } from "@/components/shared/Dropdown";
 import type { DailyAnalysis } from "@/lib/analysis";
 
 type Props = {
@@ -432,31 +433,44 @@ export function AdminAnalysisSections({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                    <T>{"Asset / Symbol *"}</T> </label>
-                  <select
+                    <T>{"Asset / Symbol *"}</T>
+                  </label>
+                  <Dropdown
                     name="symbol"
                     defaultValue="XAUUSD"
-                    className="input-field w-full font-mono text-xs font-bold"
-                  >
-                    <option value="XAUUSD"><T>{"XAUUSD (Gold)"}</T></option>
-                  </select>
+                    fullWidth
+                    options={[
+                      { value: "XAUUSD", label: <T>{"XAUUSD (Gold)"}</T> },
+                    ]}
+                  />
                 </div>
 
                 <div>
                   <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                    <T>{"Market Bias *"}</T> </label>
-                  <select
+                    <T>{"Market Bias *"}</T>
+                  </label>
+                  <Dropdown
                     name="bias"
                     defaultValue="BULLISH"
-                    className="input-field w-full font-mono text-xs font-bold"
-                  >
-                    <option value="BULLISH" className="text-emerald-700 font-bold">
-                      <T>{"▲ BULLISH"}</T> </option>
-                    <option value="BEARISH" className="text-rose-700 font-bold">
-                      <T>{"▼ BEARISH"}</T> </option>
-                    <option value="NEUTRAL" className="text-zinc-700 font-bold">
-                      <T>{"● NEUTRAL"}</T> </option>
-                  </select>
+                    fullWidth
+                    options={[
+                      {
+                        value: "BULLISH",
+                        label: <T>{"▲ BULLISH"}</T>,
+                        className: "text-emerald-700 font-bold",
+                      },
+                      {
+                        value: "BEARISH",
+                        label: <T>{"▼ BEARISH"}</T>,
+                        className: "text-rose-700 font-bold",
+                      },
+                      {
+                        value: "NEUTRAL",
+                        label: <T>{"● NEUTRAL"}</T>,
+                        className: "text-zinc-700 font-bold",
+                      },
+                    ]}
+                  />
                 </div>
               </div>
             </div>

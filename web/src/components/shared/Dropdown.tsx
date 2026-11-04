@@ -18,8 +18,9 @@ export interface DropdownOption<T extends string = string> {
 }
 
 export interface DropdownProps<T extends string = string> {
-  value: T;
-  onChange: (value: T) => void;
+  value?: T;
+  defaultValue?: T;
+  onChange?: (value: T) => void;
   options: DropdownOption<T>[];
   id?: string;
   name?: string;
@@ -55,7 +56,8 @@ const sizeStyles = {
 };
 
 export function Dropdown<T extends string = string>({
-  value,
+  value: controlledValue,
+  defaultValue,
   onChange,
   options,
   id: explicitId,
@@ -75,6 +77,12 @@ export function Dropdown<T extends string = string>({
   const generatedId = useId();
   const selectId = explicitId ?? generatedId;
   const listboxId = `${selectId}-listbox`;
+
+  const [uncontrolledValue, setUncontrolledValue] = useState<T>(() => {
+    return (defaultValue ?? options[0]?.value) as T;
+  });
+
+  const value = controlledValue !== undefined ? controlledValue : uncontrolledValue;
 
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
@@ -129,7 +137,10 @@ export function Dropdown<T extends string = string>({
 
   function selectOption(opt: DropdownOption<T>) {
     if (opt.disabled) return;
-    onChange(opt.value);
+    if (controlledValue === undefined) {
+      setUncontrolledValue(opt.value);
+    }
+    onChange?.(opt.value);
     setIsOpen(false);
     triggerRef.current?.focus();
   }

@@ -11,6 +11,7 @@ import {
   removeTool,
   toggleToolPublished,
 } from "@/app/admin/actions";
+import { Dropdown } from "@/components/shared/Dropdown";
 import {
   formatToolFileSize,
   type Tool,
@@ -332,14 +333,17 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
 
               <div>
                 <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                  <T>{"Category *"}</T> </label>
-                <select name="category" defaultValue="mt5_ea" className="input-field w-full font-bold">
-                  {TOOL_CATEGORIES.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      <T>{c.labelEn}</T>
-                    </option>
-                  ))}
-                </select>
+                  <T>{"Category *"}</T>
+                </label>
+                <Dropdown
+                  name="category"
+                  defaultValue="mt5_ea"
+                  fullWidth
+                  options={TOOL_CATEGORIES.map((c) => ({
+                    value: c.id,
+                    label: <T>{c.labelEn}</T>,
+                  }))}
+                />
               </div>
             </div>
 

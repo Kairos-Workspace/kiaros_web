@@ -129,4 +129,29 @@ describe("Dropdown component", () => {
     expect(hiddenInput).toBeTruthy();
     expect(hiddenInput.value).toBe("opt1");
   });
+
+  it("renders in uncontrolled mode with defaultValue and updates hidden input when selecting", () => {
+    const { container } = render(
+      <Dropdown
+        name="strategy"
+        defaultValue="opt2"
+        options={OPTIONS}
+        label="Strategy"
+      />
+    );
+
+    const trigger = screen.getByRole("button", { name: "Strategy" });
+    expect(trigger.textContent).toContain("Option 2");
+
+    const hiddenInput = container.querySelector('input[name="strategy"]') as HTMLInputElement;
+    expect(hiddenInput).toBeTruthy();
+    expect(hiddenInput.value).toBe("opt2");
+
+    fireEvent.click(trigger);
+    const option1 = screen.getByRole("option", { name: /Option 1/ });
+    fireEvent.click(option1);
+
+    expect(trigger.textContent).toContain("Option 1");
+    expect(hiddenInput.value).toBe("opt1");
+  });
 });

@@ -4,6 +4,7 @@ import { T } from "@/components/i18n/T";
 import type { Metadata } from "next";
 
 import { saveBotSettings } from "@/app/admin/actions";
+import { Dropdown } from "@/components/shared/Dropdown";
 import { Notice } from "@/components/shared/Notice";
 import { requireAdminPage } from "@/lib/admin-guard";
 import { getBotSettings, SIGNAL_STRATEGIES } from "@/lib/supabase/admin";
@@ -60,17 +61,17 @@ export default async function AdminAiSettings({
               <p className="mt-1 text-sm text-slate">
                 <T>{"Rules used to find candidate setups before SEA-LION confirms them."}</T> </p>
               <label className="mt-4 flex flex-col gap-1.5 text-sm font-medium">
-                <T>{"Signal strategy"}</T> <select
+                <T>{"Signal strategy"}</T>
+                <Dropdown
                   name="signalStrategy"
                   defaultValue={settings.signalStrategy}
-                  className="input-field w-full"
-                >
-                  {SIGNAL_STRATEGIES.map((strategy) => (
-                    <option key={strategy.id} value={strategy.id}>
-                      <T>{strategy.label}</T>
-                    </option>
-                  ))}
-                </select>
+                  fullWidth
+                  options={SIGNAL_STRATEGIES.map((strategy) => ({
+                    value: strategy.id,
+                    label: <T>{strategy.label}</T>,
+                    hint: strategy.id,
+                  }))}
+                />
                 <span className="text-xs font-normal text-slate">
                   <T>{SIGNAL_STRATEGIES.find(
                     (s) => s.id === settings.signalStrategy,
