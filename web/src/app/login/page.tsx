@@ -24,7 +24,8 @@ export default async function LoginPage({
   const { error } = await searchParams;
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
   if (user) {
     if (user.email && isAdminEmail(user.email)) {
       redirect("/admin");

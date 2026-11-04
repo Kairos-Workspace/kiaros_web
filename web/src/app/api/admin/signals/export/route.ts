@@ -15,8 +15,8 @@ export const dynamic = "force-dynamic";
 
 async function requireAdminApi(): Promise<NextResponse | null> {
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  const email = data.user?.email;
+  const { data: { session } } = await supabase.auth.getSession();
+  const email = session?.user?.email;
   if (!email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

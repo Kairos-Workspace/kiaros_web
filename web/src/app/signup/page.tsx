@@ -24,10 +24,8 @@ export default async function SignupPage({
   const { error, sent } = await searchParams;
 
   const supabase = await createClient();
-  // getUser() re-verifies the token with the auth server, unlike
-  // getSession() which just trusts the cookie's claimed contents.
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) redirect("/dashboard");
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user) redirect("/dashboard");
 
   return (
     <AuthShell

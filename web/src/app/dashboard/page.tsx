@@ -31,10 +31,8 @@ export default async function Dashboard({
   const supabase = await createClient();
   // No login gate: anon visitors see the same RLS-limited (24h) history as
   // /signals. accessToken stays undefined for them, same as that page.
-  const [{ data: { user } }, { data: { session } }] = await Promise.all([
-    supabase.auth.getUser(),
-    supabase.auth.getSession(),
-  ]);
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
   const accessToken = session?.access_token;
   const { admin, tab, strategy, page: pageParam } = await searchParams;
 
