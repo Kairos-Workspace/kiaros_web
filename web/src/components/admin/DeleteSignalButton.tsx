@@ -1,5 +1,7 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+
 import { useTransition } from "react";
 import { removeSignal } from "@/app/admin/actions";
 
@@ -48,8 +50,7 @@ export function DeleteSignalButton({
         }}
         className={triggerClassName}
       >
-        Delete
-      </button>
+        <T>{"Delete"}</T> </button>
 
       {/* Native <dialog> — it renders in the top layer, escaping overflow/z-index issues */}
       <dialog
@@ -85,10 +86,9 @@ export function DeleteSignalButton({
               <line x1="14" y1="11" x2="14" y2="17" />
             </svg>
           </div>
-          <h3 className="text-lg font-bold text-ink text-center">Delete Signal</h3>
+          <h3 className="text-lg font-bold text-ink text-center"><T>{"Delete Signal"}</T></h3>
           <p className="mt-2 text-sm text-slate text-center">
-            Are you sure you want to delete this signal? This action is permanent and cannot be undone.
-          </p>
+            <T>{"Are you sure you want to delete this signal? This action is permanent and cannot be undone."}</T> </p>
         </div>
 
         <div className="bg-slate/5 border-t border-line/50 px-6 py-4 flex items-center gap-3">
@@ -98,15 +98,14 @@ export function DeleteSignalButton({
             onClick={closeDialog}
             className="btn-ghost flex-1 disabled:opacity-50"
           >
-            Cancel
-          </button>
+            <T>{"Cancel"}</T> </button>
           <button
             type="button"
             disabled={isPending}
             onClick={handleConfirm}
             className="btn-primary-sm bg-short hover:bg-short/90 text-white flex-1 shadow-lg shadow-short/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isPending ? "Deleting…" : "Confirm"}
+            <T>{isPending ? "Deleting…" : "Confirm"}</T>
           </button>
         </div>
       </dialog>

@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import { useMemo, useState } from "react";
 import type { DailyPnL } from "@/lib/signals";
 
@@ -66,6 +69,7 @@ export function DailyPnLCalendar({
   bySymbol,
   economicCalendarHref,
 }: Props) {
+  const { t } = useTranslation();
   // Determine smart default month: if data exists, default to latest month; otherwise default to September 2025
   const defaultDate = useMemo(() => {
     if (data.length > 0) {
@@ -287,7 +291,7 @@ export function DailyPnLCalendar({
               onClick={prevMonth}
               disabled={!interactive}
               className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:text-white transition-colors cursor-pointer"
-              aria-label="Previous month"
+              aria-label={t("Previous month")}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -295,7 +299,7 @@ export function DailyPnLCalendar({
             </button>
 
             <h2 className="text-base sm:text-lg font-medium text-white tracking-tight select-none">
-              {monthName} {year}
+              <T>{monthName}</T> {year}
             </h2>
 
             <button
@@ -303,7 +307,7 @@ export function DailyPnLCalendar({
               onClick={nextMonth}
               disabled={!interactive}
               className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:text-white transition-colors cursor-pointer"
-              aria-label="Next month"
+              aria-label={t("Next month")}
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -316,7 +320,7 @@ export function DailyPnLCalendar({
         <div className="my-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {/* Total trades */}
           <div className="rounded-xl border border-[#1f1f23] bg-[#121214] p-3.5 sm:p-4 flex flex-col justify-between min-h-[92px]">
-            <span className="text-xs text-zinc-400 font-normal">Total trades</span>
+            <span className="text-xs text-zinc-400 font-normal"><T>{"Total trades"}</T></span>
             <span className="text-2xl sm:text-3xl font-medium tracking-tight text-white mt-2">
               {monthlyStats.totalTrades}
             </span>
@@ -324,7 +328,7 @@ export function DailyPnLCalendar({
 
           {/* Trading days */}
           <div className="rounded-xl border border-[#1f1f23] bg-[#121214] p-3.5 sm:p-4 flex flex-col justify-between min-h-[92px]">
-            <span className="text-xs text-zinc-400 font-normal">Trading days</span>
+            <span className="text-xs text-zinc-400 font-normal"><T>{"Trading days"}</T></span>
             <span className="text-2xl sm:text-3xl font-medium tracking-tight text-white mt-2">
               {monthlyStats.tradingDays}
             </span>
@@ -332,7 +336,7 @@ export function DailyPnLCalendar({
 
           {/* Most traded asset */}
           <div className="rounded-xl border border-[#1f1f23] bg-[#121214] p-3.5 sm:p-4 flex flex-col justify-between min-h-[92px]">
-            <span className="text-xs text-zinc-400 font-normal">Most traded asset</span>
+            <span className="text-xs text-zinc-400 font-normal"><T>{"Most traded asset"}</T></span>
             <span className="text-2xl sm:text-3xl font-medium tracking-tight text-white mt-2">
               {monthlyStats.mostTradedAsset}
             </span>
@@ -340,7 +344,7 @@ export function DailyPnLCalendar({
 
           {/* Average Trade Winrate */}
           <div className="rounded-xl border border-[#1f1f23] bg-[#121214] p-3.5 sm:p-4 flex flex-col justify-between min-h-[92px]">
-            <span className="text-xs text-zinc-400 font-normal">Average Trade Winrate</span>
+            <span className="text-xs text-zinc-400 font-normal"><T>{"Average Trade Winrate"}</T></span>
             <span className="text-2xl sm:text-3xl font-medium tracking-tight text-white mt-2">
               {monthlyStats.winRate}%
             </span>
@@ -348,7 +352,7 @@ export function DailyPnLCalendar({
 
           {/* Month P&L */}
           <div className="rounded-xl border border-[#1f1f23] bg-[#121214] p-3.5 sm:p-4 flex flex-col justify-between min-h-[92px]">
-            <span className="text-xs text-zinc-400 font-normal">Month P&L</span>
+            <span className="text-xs text-zinc-400 font-normal"><T>{"Month P&L"}</T></span>
             <span
               className={`text-2xl sm:text-3xl font-medium tracking-tight mt-2 ${
                 monthlyStats.monthPnLPercent < 0
@@ -381,8 +385,7 @@ export function DailyPnLCalendar({
                 </div>
               ))}
               <div className="rounded-xl border border-[#1f1f23] bg-[#121214] py-2 sm:py-2.5 text-center text-xs sm:text-sm font-medium text-zinc-300">
-                Week
-              </div>
+                <T>{"Week"}</T></div>
             </div>
 
             {/* Week Rows */}
@@ -449,13 +452,13 @@ export function DailyPnLCalendar({
                                 : `${day.pnlPercent.toFixed(2)}%`}
                             </span>
                             <span className="text-[11px] sm:text-xs text-zinc-400 font-normal mt-0.5">
-                              {day.totalTrades === 1 ? "1 trade" : `${day.totalTrades} trades`}
+                              <T values={{ count: day.totalTrades }}>{day.totalTrades === 1 ? "1 trade" : "{count} trades"}</T>
                             </span>
 
                             {/* Accessible screen-reader & test assertions for {wins} TP and {losses} SL */}
                             <span className="sr-only">
-                              <span>{day.wins} TP</span>
-                              <span>{day.losses} SL</span>
+                              <span>{day.wins} <T>{"TP"}</T></span>
+                              <span>{day.losses} <T>{"SL"}</T></span>
                             </span>
                           </div>
                         ) : (
@@ -483,7 +486,7 @@ export function DailyPnLCalendar({
                         : "0%"}
                     </span>
                     <span className="text-[11px] sm:text-xs text-zinc-400 font-normal mt-0.5">
-                      {row.weekTotalTrades === 1 ? "1 trade" : `${row.weekTotalTrades} trades`}
+                      <T values={{ count: row.weekTotalTrades }}>{row.weekTotalTrades === 1 ? "1 trade" : "{count} trades"}</T>
                     </span>
                   </div>
                 </div>
@@ -504,8 +507,7 @@ export function DailyPnLCalendar({
             <div className="flex items-start justify-between border-b border-[#222226] pb-4">
               <div>
                 <span className="text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Trading Session Breakdown
-                </span>
+                  <T>{"Trading Session Breakdown"}</T></span>
                 <h3 className="text-lg font-semibold text-white mt-1">
                   {selectedDay.dateStr}
                 </h3>
@@ -514,7 +516,7 @@ export function DailyPnLCalendar({
                 type="button"
                 onClick={() => setSelectedDay(null)}
                 className="rounded-lg bg-[#1f1f23] p-1.5 text-zinc-400 hover:text-white transition-colors cursor-pointer"
-                aria-label="Close session details"
+                aria-label={t("Close session details")}
               >
                 ✕
               </button>
@@ -523,7 +525,7 @@ export function DailyPnLCalendar({
             <div className="mt-5 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl border border-[#222226] bg-[#18181b] p-3 text-center">
-                  <span className="text-[10px] uppercase font-medium text-zinc-400 block">Session Net</span>
+                  <span className="text-[10px] uppercase font-medium text-zinc-400 block"><T>{"Session Net"}</T></span>
                   <span
                     className={`text-xl font-bold ${
                       selectedDay.pnlPercent > 0
@@ -539,7 +541,7 @@ export function DailyPnLCalendar({
                   </span>
                 </div>
                 <div className="rounded-xl border border-[#222226] bg-[#18181b] p-3 text-center">
-                  <span className="text-[10px] uppercase font-medium text-zinc-400 block">Win Rate</span>
+                  <span className="text-[10px] uppercase font-medium text-zinc-400 block"><T>{"Win Rate"}</T></span>
                   <span className="text-xl font-bold text-white">
                     {selectedDay.winRate}%
                   </span>
@@ -548,15 +550,15 @@ export function DailyPnLCalendar({
 
               <div className="rounded-xl border border-[#222226] bg-[#18181b]/60 p-4 space-y-2.5 text-xs">
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-400">Take Profit Targets (TP):</span>
-                  <span className="font-bold text-emerald-400">{selectedDay.wins} TP</span>
+                  <span className="text-zinc-400"><T>{"Take Profit Targets (TP):"}</T></span>
+                  <span className="font-bold text-emerald-400">{selectedDay.wins} <T>{"TP"}</T></span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-400">Stop Loss Hits (SL):</span>
-                  <span className="font-bold text-rose-400">{selectedDay.losses} SL</span>
+                  <span className="text-zinc-400"><T>{"Stop Loss Hits (SL):"}</T></span>
+                  <span className="font-bold text-rose-400">{selectedDay.losses} <T>{"SL"}</T></span>
                 </div>
                 <div className="flex justify-between items-center border-t border-[#27272a] pt-2">
-                  <span className="text-zinc-300 font-medium">Total Signals Executed:</span>
+                  <span className="text-zinc-300 font-medium"><T>{"Total Signals Executed:"}</T></span>
                   <span className="font-bold text-white">{selectedDay.totalTrades}</span>
                 </div>
               </div>
@@ -568,8 +570,7 @@ export function DailyPnLCalendar({
                 onClick={() => setSelectedDay(null)}
                 className="rounded-xl bg-[#27272a] hover:bg-[#323236] px-4 py-2 text-xs font-medium text-white transition-colors cursor-pointer"
               >
-                Close Details
-              </button>
+                <T>{"Close Details"}</T></button>
             </div>
           </div>
         </div>

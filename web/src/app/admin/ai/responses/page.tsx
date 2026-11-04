@@ -1,3 +1,6 @@
+import { getTranslations } from "@/lib/i18n/server";
+
+import { T } from "@/components/i18n/T";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -12,9 +15,12 @@ import { requireAdminPage } from "@/lib/admin-guard";
 import { formatDateTime } from "@/lib/format";
 import { listAiEventsPage } from "@/lib/supabase/admin";
 
-export const metadata: Metadata = {
-  title: "Admin · AI responses",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return {
+    title: t("Admin · AI responses"),
+  };
+}
 
 export const revalidate = 30;
 
@@ -39,7 +45,7 @@ function filterLink(
       href={href}
       className={`nav-item ${active ? "nav-item-active" : ""}`}
     >
-      {label}
+      <T>{label}</T>
     </Link>
   );
 }
@@ -57,6 +63,7 @@ export default async function AdminAiResponses({
   }>;
 }) {
   await requireAdminPage();
+  const { t, locale } = await getTranslations();
   const raw = await searchParams;
   const filters = parseAiEventFilters(raw);
   const requestedPage = Number(raw.page ?? "1");
@@ -67,8 +74,7 @@ export default async function AdminAiResponses({
   if (!result) {
     return (
       <p className="text-sm text-slate">
-        Could not load AI responses. Check Supabase configuration.
-      </p>
+        <T>{"Could not load AI responses. Check Supabase configuration."}</T> </p>
     );
   }
 
@@ -89,15 +95,13 @@ export default async function AdminAiResponses({
     <div className="w-full">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold">Recent responses</h2>
+          <h2 className="text-lg font-semibold"><T>{"Recent responses"}</T></h2>
           <p className="mt-1 text-sm text-slate">
-            Every SEA-LION reply from the engine: confirms, rejects, and
-            no-setup explanations (newest first).
-          </p>
+            <T>{"Every SEA-LION reply from the engine: confirms, rejects, and no-setup explanations (newest first)."}</T> </p>
         </div>
         {total > 0 ? (
           <p className="text-sm text-slate">
-            Page {result.page} of {totalPages}
+            <T>{"Page"}</T> {result.page}  <T>{"of"}</T> {totalPages}
           </p>
         ) : null}
       </div>
@@ -105,8 +109,7 @@ export default async function AdminAiResponses({
       <div className="mt-6 space-y-4 border-b border-line pb-5">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate">
-            Kind
-          </p>
+            <T>{"Kind"}</T> </p>
           <nav className="flex flex-wrap gap-2">
             {filterLink(filters, "clear-kind", "All", !filters.kind)}
             {filterLink(
@@ -132,8 +135,7 @@ export default async function AdminAiResponses({
 
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate">
-            Timeframe
-          </p>
+            <T>{"Timeframe"}</T> </p>
           <nav className="flex flex-wrap gap-2">
             {filterLink(filters, "clear-timeframe", "All", !filters.timeframe)}
             {filterLink(
@@ -172,12 +174,11 @@ export default async function AdminAiResponses({
           ) : null}
           <label className="block text-sm">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate">
-              Symbol
-            </span>
+              <T>{"Symbol"}</T> </span>
             <input
               name="symbol"
               defaultValue={filters.symbol ?? ""}
-              placeholder="e.g. BTCUSD"
+              placeholder={t("e.g. BTCUSD")}
               className="w-44 rounded-lg border border-line bg-card px-3 py-1.5 font-mono text-sm"
             />
           </label>
@@ -185,23 +186,20 @@ export default async function AdminAiResponses({
             type="submit"
             className="rounded-lg border border-line px-3 py-1.5 text-sm font-semibold text-slate hover:border-accent/40 hover:text-accent"
           >
-            Apply
-          </button>
+            <T>{"Apply"}</T> </button>
           {hasFilters ? (
             <Link
               href="/admin/ai/responses"
               className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate hover:text-accent"
             >
-              Clear filters
-            </Link>
+              <T>{"Clear filters"}</T> </Link>
           ) : null}
         </form>
 
         {filters.since || filters.until ? (
           <p className="font-mono text-xs text-slate">
-            Time window
-            {filters.since ? ` from ${formatDateTime(filters.since)}` : ""}
-            {filters.until ? ` to ${formatDateTime(filters.until)}` : ""}
+            <T>{"Time window"}</T> {filters.since ? t("From {date}", { date: formatDateTime(filters.since, locale) }) : ""}
+            {filters.until ? t("To {date}", { date: formatDateTime(filters.until, locale) }) : ""}
           </p>
         ) : null}
       </div>
@@ -213,21 +211,21 @@ export default async function AdminAiResponses({
               <div key={e.id} className="card-surface p-5">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
                   <span className="font-mono text-xs text-slate">
-                    {formatDateTime(e.createdAt)}
+                    {formatDateTime(e.createdAt, locale)}
                   </span>
                   <span className="font-mono text-sm font-semibold uppercase tracking-wide">
-                    {e.kind === "confirm"
+                    <T>{e.kind === "confirm"
                       ? "CONFIRM"
                       : e.kind === "reject"
                         ? "REJECT"
-                        : "NO SETUP"}
+                        : "NO SETUP"}</T>
                   </span>
                   <span className="rounded bg-line px-2 py-0.5 font-mono text-xs">
                     {e.symbol} · {e.timeframe}
                   </span>
                   {e.direction ? (
                     <span className="rounded bg-line px-2 py-0.5 font-mono text-xs">
-                      {e.direction.toUpperCase()}
+                      <T>{e.direction.toUpperCase()}</T>
                     </span>
                   ) : null}
                   {typeof e.confidence === "number" ? (
@@ -241,7 +239,7 @@ export default async function AdminAiResponses({
                 e.stopLoss != null &&
                 e.takeProfit != null ? (
                   <p className="mt-3 font-mono text-xs text-slate">
-                    Entry {e.entry} | SL {e.stopLoss} | TP {e.takeProfit}
+                    <T>{"Entry"}</T> {e.entry}  <T>{"| SL"}</T> {e.stopLoss}  <T>{"| TP"}</T> {e.takeProfit}
                   </p>
                 ) : null}
 
@@ -251,8 +249,7 @@ export default async function AdminAiResponses({
 
                 <details className="mt-4">
                   <summary className="cursor-pointer text-sm text-slate hover:text-ink">
-                    Show raw context (indicators + headlines)
-                  </summary>
+                    <T>{"Show raw context (indicators + headlines)"}</T> </summary>
                   <pre className="mt-3 overflow-auto rounded-lg border border-line bg-paper p-3 text-xs text-slate">
                     {JSON.stringify(
                       {
@@ -282,12 +279,10 @@ export default async function AdminAiResponses({
             ? "No AI responses match these filters."
             : (
               <>
-                No AI responses logged yet. Make sure you ran{" "}
+                <T>{"No AI responses logged yet. Make sure you ran"}</T>{" "}
                 <code className="font-mono text-xs">supabase/schema.sql</code>{" "}
-                to create the{" "}
-                <code className="font-mono text-xs">ai_events</code> table, then
-                run the engine once.
-              </>
+                <T>{"to create the"}</T>{" "}
+                <code className="font-mono text-xs">ai_events</code>  <T>{"table, then run the engine once."}</T> </>
             )}
         </p>
       )}

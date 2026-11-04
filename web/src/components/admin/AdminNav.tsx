@@ -1,5 +1,7 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -249,7 +251,7 @@ export function AdminNav({
               }`}
             >
               {l.icon(active)}
-              <span>{l.label}</span>
+              <span><T>{l.label}</T></span>
               {l.badge ? (
                 <span
                   className={`rounded px-1.5 py-0.2 font-mono text-[9px] font-bold ${
@@ -258,7 +260,7 @@ export function AdminNav({
                       : "bg-zinc-100 text-zinc-600"
                   }`}
                 >
-                  {l.badge}
+                  <T>{l.badge}</T>
                 </span>
               ) : null}
             </Link>
@@ -274,7 +276,7 @@ export function AdminNav({
         <div key={sec.group}>
           <div className="px-2.5 pb-2 pt-1">
             <span className="font-mono text-[10px] font-bold tracking-widest text-zinc-400 uppercase">
-              {sec.group}
+              <T>{sec.group}</T>
             </span>
           </div>
 
@@ -294,7 +296,7 @@ export function AdminNav({
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     {l.icon(active)}
-                    <span className="truncate">{l.label}</span>
+                    <span className="truncate"><T>{l.label}</T></span>
                   </div>
 
                   {l.badge ? (
@@ -311,7 +313,7 @@ export function AdminNav({
                           : "bg-zinc-100 text-zinc-600 border border-zinc-200 group-hover:bg-zinc-200"
                       }`}
                     >
-                      {l.badge}
+                      <T>{l.badge}</T>
                     </span>
                   ) : null}
                 </Link>

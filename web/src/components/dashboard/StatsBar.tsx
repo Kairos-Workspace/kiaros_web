@@ -1,3 +1,4 @@
+import { T } from "@/components/i18n/T";
 import type { Stats } from "@/lib/signals";
 
 export function StatsBar({ stats }: { stats: Stats }) {
@@ -28,7 +29,7 @@ export function StatsBar({ stats }: { stats: Stats }) {
       value: stats.winRate !== null ? `${stats.winRate}%` : "—",
       detail:
         stats.winRate !== null
-          ? `${stats.tpHits} Full / ${stats.partialWins} Partial / ${stats.slHits}L`
+          ? <T values={{ full: stats.tpHits, partial: stats.partialWins, losses: stats.slHits }}>{"{full} Full / {partial} Partial / {losses}L"}</T>
           : undefined,
       subtext: "Audited closed outcomes",
       badge: "AUDITED",
@@ -45,12 +46,12 @@ export function StatsBar({ stats }: { stats: Stats }) {
         >
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500">
-              {item.label}
+              <T>{item.label}</T>
             </p>
             <span
               className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider ${item.badgeColor}`}
             >
-              {item.badge}
+              <T>{item.badge}</T>
             </span>
           </div>
 
@@ -63,7 +64,7 @@ export function StatsBar({ stats }: { stats: Stats }) {
               {item.detail}
             </p>
           ) : (
-            <p className="mt-1 text-[11px] text-zinc-500">{item.subtext}</p>
+            <p className="mt-1 text-[11px] text-zinc-500"><T>{item.subtext}</T></p>
           )}
         </div>
       ))}

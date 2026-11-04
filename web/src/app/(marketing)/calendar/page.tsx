@@ -1,14 +1,16 @@
-import type { Metadata } from "next";
+import { getTranslations } from "@/lib/i18n/server";
 import { EconomicCalendarView } from "@/components/calendar/EconomicCalendarView";
 import { getEnrichedEconomicEvents } from "@/lib/economic-calendar";
 
 import { PageHeader } from "@/components/shared/PageHeader";
 
-export const metadata: Metadata = {
-  title: "Economic Calendar · Kiaros Quant",
-  description:
-    "Real-time institutional economic calendar — tracking high-impact CPI, NFP, and FOMC catalysts with Gemini AI predictions and automated quant risk shields for prop firm accounts.",
-};
+export async function generateMetadata() {
+  const { t } = await getTranslations();
+  return {
+    title: t("Economic Calendar · Kiaros Quant"),
+    description: t("Real-time institutional economic calendar — tracking high-impact CPI, NFP, and FOMC catalysts with Gemini AI predictions and automated quant risk shields for prop firm accounts."),
+  };
+}
 
 export const revalidate = 60;
 

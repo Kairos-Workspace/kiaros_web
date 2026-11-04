@@ -29,8 +29,5 @@ create policy "public read published daily analyses"
     on public.daily_analyses for select
     using (published = true);
 
-drop policy if exists "service role full access to daily analyses" on public.daily_analyses;
-create policy "service role full access to daily analyses"
-    on public.daily_analyses for all
-    using (true)
-    with check (true);
+-- Note: In Supabase, the service_role key automatically bypasses RLS.
+-- No permissive public write policy is needed.

@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -22,6 +25,7 @@ export function AdminAnalysisSections({
   r2Active,
   defaultTab = "list",
 }: Props) {
+  const { t, locale } = useTranslation();
   const [activeTab, setActiveTab] = useState<"list" | "upload">(defaultTab);
   const [selectedSymbolFilter, setSelectedSymbolFilter] = useState<string>("ALL");
   const [selectedBiasFilter, setSelectedBiasFilter] = useState<string>("ALL");
@@ -93,7 +97,7 @@ export function AdminAnalysisSections({
               <line x1="3" y1="12" x2="3.01" y2="12" />
               <line x1="3" y1="18" x2="3.01" y2="18" />
             </svg>
-            <span>Analysis Library</span>
+            <span><T>{"Analysis Library"}</T></span>
             <span
               className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold ${
                 activeTab === "list"
@@ -127,10 +131,9 @@ export function AdminAnalysisSections({
               <polyline points="17 8 12 3 7 8" />
               <line x1="12" y1="3" x2="12" y2="15" />
             </svg>
-            <span>Upload New Analysis</span>
+            <span><T>{"Upload New Analysis"}</T></span>
             <span className="rounded-full bg-emerald-100 text-emerald-800 px-1.5 py-0.5 font-mono text-[9px] font-bold">
-              + NEW
-            </span>
+              <T>{"+ NEW"}</T> </span>
           </button>
         </div>
 
@@ -141,8 +144,7 @@ export function AdminAnalysisSections({
             target="_blank"
             className="rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors shadow-2xs"
           >
-            Open Public Feed ↗
-          </Link>
+            <T>{"Open Public Feed ↗"}</T> </Link>
 
           {activeTab === "list" ? (
             <button
@@ -154,7 +156,7 @@ export function AdminAnalysisSections({
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              <span>Publish New Setup</span>
+              <span><T>{"Publish New Setup"}</T></span>
             </button>
           ) : (
             <button
@@ -162,7 +164,7 @@ export function AdminAnalysisSections({
               onClick={() => handleTabChange("list")}
               className="btn-secondary py-2 px-3 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
             >
-              <span>Back to Library ({analyses.length})</span>
+              <span><T>{"Back to Library ("}</T>{analyses.length})</span>
             </button>
           )}
         </div>
@@ -175,8 +177,7 @@ export function AdminAnalysisSections({
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[11px] font-mono font-bold uppercase text-zinc-500 mr-1">
-                Filter Asset:
-              </span>
+                <T>{"Filter Asset:"}</T> </span>
               <button
                 type="button"
                 onClick={() => setSelectedSymbolFilter("ALL")}
@@ -186,7 +187,7 @@ export function AdminAnalysisSections({
                     : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
                 }`}
               >
-                All Assets ({analyses.length})
+                <T>{"All Assets ("}</T>{analyses.length})
               </button>
               {uniqueSymbols.map((sym) => {
                 const count = analyses.filter((a) => a.symbol === sym).length;
@@ -209,8 +210,7 @@ export function AdminAnalysisSections({
 
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-mono font-bold uppercase text-zinc-500 mr-1">
-                Bias:
-              </span>
+                <T>{"Bias:"}</T> </span>
               {["ALL", "BULLISH", "BEARISH", "NEUTRAL"].map((bias) => (
                 <button
                   key={bias}
@@ -222,7 +222,7 @@ export function AdminAnalysisSections({
                       : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
                   }`}
                 >
-                  {bias}
+                  <T>{bias}</T>
                 </button>
               ))}
             </div>
@@ -231,8 +231,7 @@ export function AdminAnalysisSections({
           {/* Records Count */}
           <div className="flex items-center justify-between px-1">
             <p className="text-xs font-mono text-zinc-500">
-              Showing {filteredAnalyses.length} of {analyses.length} published breakdowns
-            </p>
+              <T>{"Showing"}</T> {filteredAnalyses.length}  <T>{"of"}</T> {analyses.length}  <T>{"published breakdowns"}</T> </p>
           </div>
 
           {/* Grid / List of Analyses */}
@@ -246,17 +245,15 @@ export function AdminAnalysisSections({
                   <line x1="16" y1="17" x2="8" y2="17" />
                 </svg>
               </div>
-              <h3 className="text-base font-bold text-zinc-900">No Technical Analyses Found</h3>
+              <h3 className="text-base font-bold text-zinc-900"><T>{"No Technical Analyses Found"}</T></h3>
               <p className="mt-1 text-xs text-zinc-500 max-w-sm mx-auto">
-                No setups match the current filters. Switch filters or tap Upload to publish a new institutional breakdown.
-              </p>
+                <T>{"No setups match the current filters. Switch filters or tap Upload to publish a new institutional breakdown."}</T> </p>
               <button
                 type="button"
                 onClick={() => handleTabChange("upload")}
                 className="btn-primary mt-4 py-2 px-4 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
               >
-                + Upload New Blueprint
-              </button>
+                <T>{"+ Upload New Blueprint"}</T> </button>
             </div>
           ) : (
             <div className="grid gap-4">
@@ -277,7 +274,7 @@ export function AdminAnalysisSections({
                         }
                       }}
                       className="group relative h-28 w-44 sm:h-24 sm:w-36 shrink-0 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-100 cursor-zoom-in"
-                      title="Click to view full high-res chart"
+                      title={t("Click to view full high-res chart")}
                     >
                       <Image
                         src={a.imageUrl}
@@ -312,7 +309,7 @@ export function AdminAnalysisSections({
                           }`}
                         >
                           {a.bias === "BULLISH" ? "▲ " : a.bias === "BEARISH" ? "▼ " : "● "}
-                          {a.bias}
+                          <T>{a.bias}</T>
                         </span>
                         <span className="font-mono text-[11px] font-medium text-zinc-500">
                           {a.timeframe}
@@ -321,7 +318,7 @@ export function AdminAnalysisSections({
                           {a.session}
                         </span>
                         <span className="text-[11px] text-zinc-400">
-                          • {new Date(a.createdAt).toLocaleDateString("en-US", {
+                          • {new Date(a.createdAt).toLocaleDateString(locale === "km" ? "km-KH" : "en-US", {
                             month: "short",
                             day: "numeric",
                             year: "numeric",
@@ -345,8 +342,7 @@ export function AdminAnalysisSections({
                       target="_blank"
                       className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-bold text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors shadow-xs"
                     >
-                      View Live ↗
-                    </Link>
+                      <T>{"View Live ↗"}</T> </Link>
 
                     <form action={toggleDailyAnalysisPublishedAction}>
                       <input type="hidden" name="id" value={a.id} />
@@ -363,7 +359,7 @@ export function AdminAnalysisSections({
                             : "bg-zinc-100 text-zinc-600 border-zinc-200 hover:bg-zinc-200"
                         }`}
                       >
-                        {a.published ? "● Published" : "○ Draft"}
+                        <T>{a.published ? "● Published" : "○ Draft"}</T>
                       </button>
                     </form>
 
@@ -379,10 +375,9 @@ export function AdminAnalysisSections({
                       <button
                         type="submit"
                         className="rounded-lg px-2.5 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-colors cursor-pointer"
-                        title="Delete this analysis"
+                        title={t("Delete this analysis")}
                       >
-                        Delete
-                      </button>
+                        <T>{"Delete"}</T> </button>
                     </form>
                   </div>
                 </div>
@@ -398,11 +393,9 @@ export function AdminAnalysisSections({
           <div className="border-b border-zinc-100 pb-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <h2 className="text-xl font-black tracking-tight text-zinc-950">
-                Publish Technical Blueprint
-              </h2>
+                <T>{"Publish Technical Blueprint"}</T> </h2>
               <p className="mt-1 text-xs text-zinc-500">
-                Provide high-resolution chart setups, orderflow observations, and invalidation rules for institutional readers.
-              </p>
+                <T>{"Provide high-resolution chart setups, orderflow observations, and invalidation rules for institutional readers."}</T> </p>
             </div>
             <div className="shrink-0">
               <span
@@ -417,7 +410,7 @@ export function AdminAnalysisSections({
                     r2Active ? "bg-emerald-600 animate-pulse" : "bg-amber-600"
                   }`}
                 />
-                {r2Active ? "Cloudflare R2 Bucket Connected" : "Local Fallback Active"}
+                <T>{r2Active ? "Cloudflare R2 Bucket Connected" : "Local Fallback Active"}</T>
               </span>
             </div>
           </div>
@@ -426,13 +419,12 @@ export function AdminAnalysisSections({
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
                 <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                  Blueprint Headline / Title *
-                </label>
+                  <T>{"Blueprint Headline / Title *"}</T> </label>
                 <input
                   type="text"
                   name="title"
                   required
-                  placeholder="XAUUSD London Sweep & M15 Fair Value Gap Retest"
+                  placeholder={t("XAUUSD London Sweep & M15 Fair Value Gap Retest")}
                   className="input-field w-full font-medium"
                 />
               </div>
@@ -440,35 +432,30 @@ export function AdminAnalysisSections({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                    Asset / Symbol *
-                  </label>
+                    <T>{"Asset / Symbol *"}</T> </label>
                   <select
                     name="symbol"
                     defaultValue="XAUUSD"
                     className="input-field w-full font-mono text-xs font-bold"
                   >
-                    <option value="XAUUSD">XAUUSD (Gold)</option>
+                    <option value="XAUUSD"><T>{"XAUUSD (Gold)"}</T></option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                    Market Bias *
-                  </label>
+                    <T>{"Market Bias *"}</T> </label>
                   <select
                     name="bias"
                     defaultValue="BULLISH"
                     className="input-field w-full font-mono text-xs font-bold"
                   >
                     <option value="BULLISH" className="text-emerald-700 font-bold">
-                      ▲ BULLISH
-                    </option>
+                      <T>{"▲ BULLISH"}</T> </option>
                     <option value="BEARISH" className="text-rose-700 font-bold">
-                      ▼ BEARISH
-                    </option>
+                      <T>{"▼ BEARISH"}</T> </option>
                     <option value="NEUTRAL" className="text-zinc-700 font-bold">
-                      ● NEUTRAL
-                    </option>
+                      <T>{"● NEUTRAL"}</T> </option>
                   </select>
                 </div>
               </div>
@@ -477,13 +464,12 @@ export function AdminAnalysisSections({
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
                 <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                  Timeframe Focus *
-                </label>
+                  <T>{"Timeframe Focus *"}</T> </label>
                 <input
                   type="text"
                   name="timeframe"
                   defaultValue="H4 / H1 / M15"
-                  placeholder="e.g. H4 / H1 / M15 or M15 Scalp"
+                  placeholder={t("e.g. H4 / H1 / M15 or M15 Scalp")}
                   className="input-field w-full font-mono text-xs"
                   required
                 />
@@ -491,13 +477,12 @@ export function AdminAnalysisSections({
 
               <div>
                 <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                  Trading Session Window *
-                </label>
+                  <T>{"Trading Session Window *"}</T> </label>
                 <input
                   type="text"
                   name="session"
                   defaultValue="London Killzone → NY Overlap"
-                  placeholder="e.g. London Session, NY Open, Asian Session"
+                  placeholder={t("e.g. London Session, NY Open, Asian Session")}
                   className="input-field w-full font-mono text-xs"
                   required
                 />
@@ -507,8 +492,7 @@ export function AdminAnalysisSections({
             {/* Interactive Image Upload with Live Preview */}
             <div>
               <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                Technical Chart Screenshot (.png, .jpeg, .webp, max 15MB) *
-              </label>
+                <T>{"Technical Chart Screenshot (.png, .jpeg, .webp, max 15MB) *"}</T> </label>
 
               <div className="mt-1 flex flex-col sm:flex-row items-center gap-4 rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4 hover:border-zinc-400 transition-colors">
                 <input
@@ -521,24 +505,21 @@ export function AdminAnalysisSections({
                 />
 
                 <span className="text-[11px] text-zinc-500">
-                  Upload TradingView or MT5 execution graph screenshot. Auto-synced to Cloudflare R2 bucket.
-                </span>
+                  <T>{"Upload TradingView or MT5 execution graph screenshot. Auto-synced to Cloudflare R2 bucket."}</T> </span>
               </div>
 
               {previewImage && (
                 <div className="mt-4 rounded-xl border border-zinc-200 bg-white p-3 shadow-xs">
                   <div className="mb-2 flex items-center justify-between text-xs">
                     <span className="font-mono font-bold text-zinc-800">
-                      Live Chart Preview
-                    </span>
+                      <T>{"Live Chart Preview"}</T> </span>
                     <span className="font-mono text-[10px] text-emerald-600 font-bold">
-                      Ready for upload
-                    </span>
+                      <T>{"Ready for upload"}</T> </span>
                   </div>
                   <div className="relative h-64 w-full overflow-hidden rounded-lg bg-zinc-100">
                     <Image
                       src={previewImage}
-                      alt="Upload preview"
+                      alt={t("Upload preview")}
                       fill
                       className="object-contain"
                     />
@@ -550,13 +531,12 @@ export function AdminAnalysisSections({
             {/* Playbook Description */}
             <div>
               <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                Institutional Playbook & Orderflow Breakdown *
-              </label>
+                <T>{"Institutional Playbook & Orderflow Breakdown *"}</T> </label>
               <textarea
                 name="description"
                 rows={6}
                 required
-                placeholder="Detail institutional liquidity sweeps, order blocks, premium/discount zones, entry triggers, stop-loss invalidation, and profit ladders..."
+                placeholder={t("Detail institutional liquidity sweeps, order blocks, premium/discount zones, entry triggers, stop-loss invalidation, and profit ladders...")}
                 className="input-field w-full font-mono text-xs leading-relaxed"
               />
             </div>
@@ -567,14 +547,13 @@ export function AdminAnalysisSections({
                 onClick={() => handleTabChange("list")}
                 className="btn-secondary py-2.5 px-4 text-xs font-bold cursor-pointer"
               >
-                Cancel & Return to Library
-              </button>
+                <T>{"Cancel & Return to Library"}</T> </button>
 
               <button
                 type="submit"
                 className="btn-primary py-3 px-6 text-sm font-bold tracking-tight shadow-md flex items-center gap-2 cursor-pointer"
               >
-                <span>Publish Daily Analysis</span>
+                <span><T>{"Publish Daily Analysis"}</T></span>
                 <span className="font-mono">→</span>
               </button>
             </div>
@@ -603,8 +582,7 @@ export function AdminAnalysisSections({
                 onClick={() => setLightboxImage(null)}
                 className="rounded-lg bg-zinc-800 px-2 py-1 font-mono text-xs font-bold text-zinc-300 hover:bg-zinc-700"
               >
-                ✕ Close
-              </button>
+                <T>{"✕ Close"}</T> </button>
             </div>
             <div className="relative h-[70vh] w-[85vw] max-w-4xl">
               <Image

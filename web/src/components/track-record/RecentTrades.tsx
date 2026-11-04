@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
@@ -16,6 +19,7 @@ function outcomeLabel(reached: number): string {
 }
 
 function ClosedTradeCard({ trade }: { trade: ClosedTrade }) {
+  const { t, locale } = useTranslation();
   const isLong = trade.direction === "long";
   const r = tradeR(trade);
   const win = trade.reached >= 1;
@@ -30,19 +34,18 @@ function ClosedTradeCard({ trade }: { trade: ClosedTrade }) {
         <div className="relative aspect-[16/9] overflow-hidden border-b border-zinc-200 bg-zinc-50">
           <Image
             src={trade.outcomeChartUrl}
-            alt={`${trade.symbol} outcome chart`}
+            alt={t("{symbol} outcome chart", { symbol: trade.symbol })}
             loading="lazy"
             fill
             sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
           <div className="absolute top-2.5 right-2.5 rounded bg-zinc-950/80 px-2 py-0.5 font-mono text-[10px] font-bold text-white backdrop-blur-xs">
-            VERIFIED CHART ↗
-          </div>
+            <T>{"VERIFIED CHART ↗"}</T></div>
         </div>
       ) : (
         <div className="flex aspect-[16/9] items-center justify-center border-b border-zinc-200 bg-zinc-50">
-          <span className="font-mono text-xs text-zinc-400">STP Execution Logged</span>
+          <span className="font-mono text-xs text-zinc-400"><T>{"STP Execution Logged"}</T></span>
         </div>
       )}
 
@@ -59,7 +62,7 @@ function ClosedTradeCard({ trade }: { trade: ClosedTrade }) {
                   : "bg-rose-50 text-rose-800 border border-rose-200"
               }`}
             >
-              {isLong ? "BUY" : "SELL"}
+              <T>{isLong ? "BUY" : "SELL"}</T>
             </span>
           </div>
           <p className="mt-1 truncate font-mono text-xs text-zinc-500">
@@ -75,7 +78,7 @@ function ClosedTradeCard({ trade }: { trade: ClosedTrade }) {
                 : "bg-rose-100 text-rose-900 border border-rose-300"
             }`}
           >
-            {label}
+            <T>{label}</T>
           </span>
           <p
             className={`mt-1 font-mono text-xs font-black ${
@@ -89,19 +92,19 @@ function ClosedTradeCard({ trade }: { trade: ClosedTrade }) {
 
       <div className="relative grid grid-cols-3 gap-3 border-t border-zinc-100 bg-zinc-50/50 px-5 py-3 pl-6 font-mono">
         <div>
-          <p className="text-[10px] font-bold uppercase text-zinc-400">Entry</p>
+          <p className="text-[10px] font-bold uppercase text-zinc-400"><T>{"Entry"}</T></p>
           <p className="mt-0.5 text-xs font-bold text-zinc-950">
             {formatPrice(trade.entry)}
           </p>
         </div>
         <div>
-          <p className="text-[10px] font-bold uppercase text-zinc-400">Stop</p>
+          <p className="text-[10px] font-bold uppercase text-zinc-400"><T>{"Stop"}</T></p>
           <p className="mt-0.5 text-xs font-bold text-rose-700">
             {formatPrice(trade.stopLoss)}
           </p>
         </div>
         <div>
-          <p className="text-[10px] font-bold uppercase text-zinc-400">Target</p>
+          <p className="text-[10px] font-bold uppercase text-zinc-400"><T>{"Target"}</T></p>
           <p className="mt-0.5 text-xs font-bold text-emerald-700 truncate">
             {trade.targets.map((p) => formatPrice(p)).join(" / ") || "—"}
           </p>
@@ -109,8 +112,8 @@ function ClosedTradeCard({ trade }: { trade: ClosedTrade }) {
       </div>
 
       <div className="relative border-t border-zinc-100 px-5 py-2.5 pl-6 flex items-center justify-between text-[11px] text-zinc-500 font-mono">
-        <span>Closed {relativeTime(trade.closedAt)}</span>
-        <span className="text-[10px] text-zinc-400">Bar-Close STP</span>
+        <span><T>{"Closed"}</T>{" "}{relativeTime(trade.closedAt, locale)}</span>
+        <span className="text-[10px] text-zinc-400"><T>{"Bar-Close STP"}</T></span>
       </div>
     </>
   );
@@ -150,6 +153,7 @@ function ClosedTradeCard({ trade }: { trade: ClosedTrade }) {
 }
 
 export function RecentTrades({ trades = [] }: { trades?: ClosedTrade[] }) {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<"ALL" | "WINS" | "LOSSES">("ALL");
   const [query, setQuery] = useState("");
 
@@ -170,10 +174,9 @@ export function RecentTrades({ trades = [] }: { trades?: ClosedTrade[] }) {
   if (trades.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-zinc-300 bg-white px-6 py-14 text-center">
-        <p className="font-mono text-sm font-bold text-zinc-900">No closed trades yet</p>
+        <p className="font-mono text-sm font-bold text-zinc-900"><T>{"No closed trades yet"}</T></p>
         <p className="mx-auto mt-1 max-w-sm text-xs text-zinc-500">
-          Results will appear here as trades close.
-        </p>
+          <T>{"Results will appear here as trades close."}</T></p>
       </div>
     );
   }
@@ -194,7 +197,7 @@ export function RecentTrades({ trades = [] }: { trades?: ClosedTrade[] }) {
                   : "border border-zinc-200 bg-white text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100"
               }`}
             >
-              {tab === "ALL" ? `All (${trades.length})` : tab === "WINS" ? "Wins (TP)" : "Losses (SL)"}
+              {tab === "ALL" ? t("All ({count})", { count: trades.length }) : t(tab === "WINS" ? "Wins (TP)" : "Losses (SL)")}
             </button>
           ))}
         </div>
@@ -203,14 +206,14 @@ export function RecentTrades({ trades = [] }: { trades?: ClosedTrade[] }) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search symbol (e.g. XAUUSD, BTC)..."
+          placeholder={t("Search symbol (e.g. XAUUSD, BTC)...")}
           className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-mono text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-950 sm:w-64"
         />
       </div>
 
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center">
-          <p className="font-mono text-xs text-zinc-500">No trades match your search criteria.</p>
+          <p className="font-mono text-xs text-zinc-500"><T>{"No trades match your search criteria."}</T></p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">

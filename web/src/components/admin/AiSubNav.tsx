@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -47,13 +50,14 @@ const tabs = [
 ];
 
 export function AiSubNav() {
+  const { t } = useTranslation();
   const pathname = usePathname();
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-200 pb-4">
       <nav
         className="inline-flex rounded-xl bg-zinc-100 p-1.5 border border-zinc-200/80 shadow-inner"
-        aria-label="AI sections"
+        aria-label={t("AI sections")}
       >
         {tabs.map((tab) => {
           const active = pathname.startsWith(tab.href);
@@ -68,7 +72,7 @@ export function AiSubNav() {
               }`}
             >
               {tab.icon}
-              <span>{tab.label}</span>
+              <span><T>{tab.label}</T></span>
               <span
                 className={`rounded-full px-1.5 py-0.5 font-mono text-[9px] font-bold ${
                   active
@@ -76,7 +80,7 @@ export function AiSubNav() {
                     : "bg-zinc-200 text-zinc-600"
                 }`}
               >
-                {tab.badge}
+                <T>{tab.badge}</T>
               </span>
             </Link>
           );

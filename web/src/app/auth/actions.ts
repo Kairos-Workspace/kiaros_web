@@ -21,17 +21,30 @@ export async function login(formData: FormData) {
     redirect(`/login?error=${encodeURIComponent("Please enter your email and password.")}`);
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
-  }
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      redirect(`/login?error=${encodeURIComponent(error.message)}`);
+    }
 
-  revalidatePath("/", "layout");
-  if (data.user?.email && isAdminEmail(data.user.email)) {
-    redirect("/admin");
-  } else {
-    redirect("/dashboard");
+    revalidatePath("/", "layout");
+    if (data.user?.email && isAdminEmail(data.user.email)) {
+      redirect("/admin");
+    } else {
+      redirect("/dashboard");
+    }
+  } catch (err: unknown) {
+    if ((err as { digest?: string })?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw err;
+    }
+    const isNetworkError =
+      (err as { message?: string })?.message === "fetch failed" ||
+      (err as { cause?: { code?: string } })?.cause?.code === "UND_ERR_CONNECT_TIMEOUT";
+    const message = isNetworkError
+      ? "Unable to reach Supabase authentication server. Please check that your Supabase project is active and unpaused."
+      : ((err as { message?: string })?.message ?? "Authentication failed.");
+    redirect(`/login?error=${encodeURIComponent(message)}`);
   }
 }
 
@@ -49,28 +62,41 @@ export async function signup(formData: FormData) {
   const origin =
     headerStore.get("origin") ?? `http://${headerStore.get("host") ?? "localhost:3000"}`;
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { emailRedirectTo: `${origin}/auth/confirm` },
-  });
-  if (error) {
-    redirect(`/signup?error=${encodeURIComponent(error.message)}`);
-  }
-
-  // If email confirmation is disabled in Supabase, signUp returns a live
-  // session — the user is already logged in.
-  if (data.session) {
-    revalidatePath("/", "layout");
-    if (data.session.user?.email && isAdminEmail(data.session.user.email)) {
-      redirect("/admin");
-    } else {
-      redirect("/dashboard");
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: `${origin}/auth/confirm` },
+    });
+    if (error) {
+      redirect(`/signup?error=${encodeURIComponent(error.message)}`);
     }
-  }
 
-  redirect("/signup?sent=1");
+    // If email confirmation is disabled in Supabase, signUp returns a live
+    // session — the user is already logged in.
+    if (data.session) {
+      revalidatePath("/", "layout");
+      if (data.session.user?.email && isAdminEmail(data.session.user.email)) {
+        redirect("/admin");
+      } else {
+        redirect("/dashboard");
+      }
+    }
+
+    redirect("/signup?sent=1");
+  } catch (err: unknown) {
+    if ((err as { digest?: string })?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw err;
+    }
+    const isNetworkError =
+      (err as { message?: string })?.message === "fetch failed" ||
+      (err as { cause?: { code?: string } })?.cause?.code === "UND_ERR_CONNECT_TIMEOUT";
+    const message = isNetworkError
+      ? "Unable to reach Supabase authentication server. Please check that your Supabase project is active and unpaused."
+      : ((err as { message?: string })?.message ?? "Registration failed.");
+    redirect(`/signup?error=${encodeURIComponent(message)}`);
+  }
 }
 
 export async function signout() {

@@ -1,3 +1,4 @@
+import { T } from "@/components/i18n/T";
 import Link from "next/link";
 
 import {
@@ -17,7 +18,7 @@ function ToolCard({ tool }: { tool: Tool }) {
     <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-300 hover:border-zinc-400 hover:shadow-md hover:-translate-y-1">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="rounded-md border border-zinc-200 bg-zinc-100 px-2.5 py-0.5 font-mono text-[11px] font-bold text-zinc-900">
-          {toolCategoryLabelKm(tool.category)}
+          <T>{toolCategoryLabelKm(tool.category)}</T>
         </span>
         {tool.fileName && size ? (
           <span className="font-mono text-xs text-zinc-500">{size}</span>
@@ -30,7 +31,7 @@ function ToolCard({ tool }: { tool: Tool }) {
 
       {tool.descriptionKm ? (
         <p className="mt-2.5 flex-1 text-xs leading-relaxed text-zinc-600">
-          {tool.descriptionKm}
+          <T>{tool.descriptionKm}</T>
         </p>
       ) : (
         <div className="flex-1" />
@@ -45,10 +46,10 @@ function ToolCard({ tool }: { tool: Tool }) {
             download={external ? undefined : tool.fileName ?? true}
             className="btn-primary inline-flex w-full justify-center sm:w-auto"
           >
-            <span>{external ? "Open on TradingView ↗" : "Download Free"}</span>
+            <span><T>{external ? "Open on TradingView ↗" : "Download Free"}</T></span>
           </a>
         ) : (
-          <span className="text-xs text-zinc-400">No file available</span>
+          <span className="text-xs text-zinc-400"><T>{"No file available"}</T></span>
         )}
         {tool.fileName && !external ? (
           <p className="mt-2.5 font-mono text-[11px] text-zinc-500 truncate">
@@ -67,13 +68,11 @@ export function ToolsGrid({ tools }: { tools: Tool[] }) {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-card text-ink mb-3">
           <span className="h-4 w-4 rounded-full border-2 border-line-highlight border-t-transparent animate-spin" />
         </div>
-        <p className="font-mono text-base font-bold text-ink">No tools available yet</p>
+        <p className="font-mono text-base font-bold text-ink"><T>{"No tools available yet"}</T></p>
         <p className="mx-auto mt-1 max-w-sm text-xs text-slate">
-          MT5 EAs, TradingView indicators, and quantitative tools will be published here shortly.
-        </p>
+          <T>{"MT5 EAs, TradingView indicators, and quantitative tools will be published here shortly."}</T></p>
         <Link href="/signals" className="btn-secondary mt-5 inline-flex text-xs">
-          Explore Live Signals →
-        </Link>
+          <T>{"Explore Live Signals →"}</T></Link>
       </div>
     );
   }

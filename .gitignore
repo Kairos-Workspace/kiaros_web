@@ -9,6 +9,9 @@ __pycache__/
 signals.db
 signals.json
 .pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
 .superpowers/
 .vercel
 .qodo/

@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import type { EconomicCalendarEvent } from "@/lib/economic-calendar";
@@ -14,6 +17,7 @@ export function AdminEconomicCalendar({
 }: {
   events: EconomicCalendarEvent[];
 }) {
+  const { t, locale } = useTranslation();
   const [impactFilter, setImpactFilter] = useState<"ALL" | "HIGH" | "MEDIUM">("ALL");
   const [dayFilter, setDayFilter] = useState<"all" | "today" | "tomorrow" | "this-week">("today");
   const [searchQuery, setSearchQuery] = useState("");
@@ -68,15 +72,14 @@ export function AdminEconomicCalendar({
         <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-              Scheduled Catalysts
-            </span>
+              <T>{"Scheduled Catalysts"}</T> </span>
             <span className="h-2 w-2 rounded-full bg-zinc-300" />
           </div>
           <div className="mt-2">
             <span className="text-2xl sm:text-3xl font-black text-zinc-950 tabular-nums">
               {stats.total}
             </span>
-            <p className="text-[11px] text-zinc-400 mt-0.5">Macro events loaded</p>
+            <p className="text-[11px] text-zinc-400 mt-0.5"><T>{"Macro events loaded"}</T></p>
           </div>
         </div>
 
@@ -84,15 +87,14 @@ export function AdminEconomicCalendar({
         <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-              High Impact Releases
-            </span>
+              <T>{"High Impact Releases"}</T> </span>
             <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
           </div>
           <div className="mt-2">
             <span className="text-2xl sm:text-3xl font-black text-rose-700 tabular-nums">
               {stats.highs}
             </span>
-            <p className="text-[11px] text-zinc-400 mt-0.5">±15m News Shield target</p>
+            <p className="text-[11px] text-zinc-400 mt-0.5"><T>{"±15m News Shield target"}</T></p>
           </div>
         </div>
 
@@ -100,15 +102,14 @@ export function AdminEconomicCalendar({
         <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-              Gemini Projections
-            </span>
+              <T>{"Gemini Projections"}</T> </span>
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
           </div>
           <div className="mt-2">
             <span className="text-2xl sm:text-3xl font-black text-emerald-700 tabular-nums">
               {stats.predicted}
             </span>
-            <p className="text-[11px] text-zinc-400 mt-0.5">Live on client portal</p>
+            <p className="text-[11px] text-zinc-400 mt-0.5"><T>{"Live on client portal"}</T></p>
           </div>
         </div>
 
@@ -116,8 +117,7 @@ export function AdminEconomicCalendar({
         <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-              Public Interface
-            </span>
+              <T>{"Public Interface"}</T> </span>
             <span className="text-zinc-400 text-xs">↗</span>
           </div>
           <div className="mt-2">
@@ -126,10 +126,10 @@ export function AdminEconomicCalendar({
               target="_blank"
               className="inline-flex items-center gap-1.5 text-sm font-bold text-zinc-950 hover:text-emerald-700 transition-colors"
             >
-              <span>Open /calendar</span>
+              <span><T>{"Open /calendar"}</T></span>
               <span>↗</span>
             </Link>
-            <p className="text-[11px] text-zinc-400 mt-0.5">Real-time trader feed</p>
+            <p className="text-[11px] text-zinc-400 mt-0.5"><T>{"Real-time trader feed"}</T></p>
           </div>
         </div>
       </div>
@@ -154,7 +154,7 @@ export function AdminEconomicCalendar({
                   : "text-zinc-600 hover:text-zinc-950"
               }`}
             >
-              {tab.label}
+              <T>{tab.label}</T>
             </button>
           ))}
         </div>
@@ -167,7 +167,7 @@ export function AdminEconomicCalendar({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filter catalyst (e.g. CPI, NFP)..."
+              placeholder={t("Filter catalyst (e.g. CPI, NFP)...")}
               className="w-full rounded-xl border border-zinc-200 bg-zinc-50/70 px-3 py-1.5 text-xs font-mono placeholder:text-zinc-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-zinc-950"
             />
             {searchQuery && (
@@ -194,7 +194,7 @@ export function AdminEconomicCalendar({
                     : "text-zinc-600 hover:text-zinc-950"
                 }`}
               >
-                {imp === "HIGH" ? "High Impact" : imp === "MEDIUM" ? "Medium+" : "All"}
+                <T>{imp === "HIGH" ? "High Impact" : imp === "MEDIUM" ? "Medium+" : "All"}</T>
               </button>
             ))}
           </div>
@@ -205,8 +205,8 @@ export function AdminEconomicCalendar({
       <div className="space-y-3">
         {filteredEvents.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-12 text-center font-mono">
-            <p className="text-sm font-bold text-zinc-900">No scheduled catalysts match filters</p>
-            <p className="text-xs text-zinc-500 mt-1">Try resetting the day or impact filters above.</p>
+            <p className="text-sm font-bold text-zinc-900"><T>{"No scheduled catalysts match filters"}</T></p>
+            <p className="text-xs text-zinc-500 mt-1"><T>{"Try resetting the day or impact filters above."}</T></p>
           </div>
         ) : (
           filteredEvents.map((evt, idx) => {
@@ -233,15 +233,13 @@ export function AdminEconomicCalendar({
                     {/* Time & Session */}
                     <div className="font-mono text-xs whitespace-nowrap min-w-[110px]">
                       <span className="font-black text-zinc-950 block text-sm">{evt.time}</span>
-                      <span className="text-[11px] text-zinc-500 block">{evt.dateFormatted}</span>
+                      <span className="text-[11px] text-zinc-500 block">{locale === "km" && !Number.isNaN(Date.parse(evt.rawDate)) ? new Date(evt.rawDate).toLocaleDateString("km-KH", { weekday: "long", month: "short", day: "numeric", timeZone: "UTC" }) : evt.dateFormatted}</span>
                       {isOut ? (
                         <span className="inline-flex items-center gap-1 font-mono text-[9px] font-bold text-zinc-500 uppercase mt-0.5">
-                          <span>✓</span> RELEASED
-                        </span>
+                          <span>✓</span>  <T>{"RELEASED"}</T> </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 font-mono text-[9px] font-bold text-emerald-700 uppercase mt-0.5">
-                          <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" /> COMING OUT
-                        </span>
+                          <span className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />  <T>{"COMING OUT"}</T> </span>
                       )}
                     </div>
 
@@ -259,28 +257,28 @@ export function AdminEconomicCalendar({
                             : "bg-zinc-50 text-zinc-600 border-zinc-200"
                         }`}
                       >
-                        {evt.impact === "HIGH" ? "HIGH" : evt.impact === "MEDIUM" ? "MED" : "LOW"}
+                        <T>{evt.impact === "HIGH" ? "HIGH" : evt.impact === "MEDIUM" ? "MED" : "LOW"}</T>
                       </span>
                     </div>
 
                     {/* Event Title & Data */}
                     <div className="min-w-0 flex-1">
                       <h3 className="font-sans font-bold text-zinc-950 text-sm sm:text-base leading-snug">
-                        {evt.event}
+                        <T>{evt.event}</T>
                       </h3>
                       <div className="mt-1 flex flex-wrap items-center gap-3 font-mono text-xs text-zinc-500">
                         <span>
-                          Forecast: <strong className="text-zinc-900">{evt.forecast}</strong>
+                          <T>{"Forecast:"}</T> <strong className="text-zinc-900">{evt.forecast}</strong>
                         </span>
                         <span>•</span>
                         <span>
-                          Previous: <strong className="text-zinc-600">{evt.previous}</strong>
+                          <T>{"Previous:"}</T> <strong className="text-zinc-600">{evt.previous}</strong>
                         </span>
                         {evt.actual ? (
                           <>
                             <span>•</span>
                             <span>
-                              Actual: <strong className="text-emerald-700 bg-emerald-50 px-1 rounded">{evt.actual}</strong>
+                              <T>{"Actual:"}</T> <strong className="text-emerald-700 bg-emerald-50 px-1 rounded">{evt.actual}</strong>
                             </span>
                           </>
                         ) : null}
@@ -295,9 +293,9 @@ export function AdminEconomicCalendar({
                       <div className="flex items-center gap-2">
                         <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-1 font-mono text-xs font-bold text-emerald-900 border border-emerald-200">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                          <span>Gemini Predicted</span>
+                          <span><T>{"Gemini Predicted"}</T></span>
                           <span className="text-[10px] text-emerald-700 uppercase">
-                            ({evt.prediction?.bias} {evt.currency})
+                            (<T>{evt.prediction?.bias ?? ""}</T> {evt.currency})
                           </span>
                         </span>
 
@@ -306,7 +304,7 @@ export function AdminEconomicCalendar({
                           onClick={() => setExpandedId(isExpanded ? null : evt.id)}
                           className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-mono font-bold text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 transition-colors cursor-pointer"
                         >
-                          {isExpanded ? "Hide Details ↑" : "View Analysis ↓"}
+                          <T>{isExpanded ? "Hide Details ↑" : "View Analysis ↓"}</T>
                         </button>
                       </div>
                     ) : null}
@@ -337,12 +335,12 @@ export function AdminEconomicCalendar({
                         {isPredictingThis ? (
                           <>
                             <span className="h-3 w-3 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                            <span>Analyzing...</span>
+                            <span><T>{"Analyzing..."}</T></span>
                           </>
                         ) : hasPrediction ? (
-                          <span>🔄 Re-analyze</span>
+                          <span><T>{"🔄 Re-analyze"}</T></span>
                         ) : (
-                          <span>✨ Run Gemini AI</span>
+                          <span><T>{"✨ Run Gemini AI"}</T></span>
                         )}
                       </button>
                     </form>
@@ -353,7 +351,7 @@ export function AdminEconomicCalendar({
                         <input type="hidden" name="id" value={evt.id} />
                         <button
                           type="submit"
-                          title="Delete Prediction"
+                          title={t("Delete Prediction")}
                           className="rounded-xl border border-zinc-200 bg-white p-2 text-xs text-zinc-400 hover:text-rose-600 hover:border-rose-200 transition-colors cursor-pointer"
                         >
                           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -372,15 +370,14 @@ export function AdminEconomicCalendar({
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-3">
                       <div className="flex items-center gap-2.5">
                         <span className="text-base font-black text-zinc-950">
-                          Gemini Macro Intelligence Outlook
-                        </span>
+                          <T>{"Gemini Macro Intelligence Outlook"}</T> </span>
                         <span className="rounded-md bg-white border border-zinc-200 px-2 py-0.5 text-[10px] text-zinc-700 font-bold">
                           {evt.prediction?.modelName}
                         </span>
                       </div>
                       <div className="flex items-center gap-3 text-xs">
                         <span className="text-zinc-500">
-                          Confidence: <strong className="text-zinc-950">{evt.prediction?.confidence}%</strong>
+                          <T>{"Confidence:"}</T> <strong className="text-zinc-950">{evt.prediction?.confidence}%</strong>
                         </span>
                         <span>•</span>
                         <span
@@ -392,7 +389,7 @@ export function AdminEconomicCalendar({
                               : "bg-zinc-100 text-zinc-800"
                           }`}
                         >
-                          {evt.currency}: {evt.prediction?.bias}
+                          {evt.currency}: <T>{evt.prediction?.bias ?? ""}</T>
                         </span>
                         {evt.prediction?.goldImpact ? (
                           <span
@@ -404,7 +401,7 @@ export function AdminEconomicCalendar({
                                 : "bg-zinc-100 text-zinc-800"
                             }`}
                           >
-                            XAUUSD: {evt.prediction?.goldImpact}
+                            <T>{"XAUUSD:"}</T> <T>{evt.prediction?.goldImpact ?? ""}</T>
                           </span>
                         ) : null}
                       </div>
@@ -413,8 +410,7 @@ export function AdminEconomicCalendar({
                     {/* Predicted Outcome */}
                     <div className="rounded-xl bg-white border border-zinc-200 p-3.5">
                       <p className="text-[10px] uppercase font-bold text-zinc-400">
-                        Predicted Figure & Consensus Deviation
-                      </p>
+                        <T>{"Predicted Figure & Consensus Deviation"}</T> </p>
                       <p className="mt-1 font-sans text-sm font-bold text-zinc-950 leading-relaxed">
                         {evt.prediction?.predictedOutcome}
                       </p>
@@ -423,8 +419,7 @@ export function AdminEconomicCalendar({
                     {/* Executive Summary */}
                     <div>
                       <p className="text-[10px] uppercase font-bold text-zinc-400">
-                        Executive Summary
-                      </p>
+                        <T>{"Executive Summary"}</T> </p>
                       <p className="mt-1 font-sans text-sm text-zinc-700 leading-relaxed">
                         {evt.prediction?.summary}
                       </p>
@@ -434,8 +429,7 @@ export function AdminEconomicCalendar({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                       <div className="rounded-xl border border-zinc-200 bg-white p-4">
                         <p className="text-[10px] uppercase font-bold text-zinc-500 mb-2">
-                          Macroeconomic & Orderflow Reasoning
-                        </p>
+                          <T>{"Macroeconomic & Orderflow Reasoning"}</T> </p>
                         <div className="font-sans text-xs text-zinc-700 leading-relaxed whitespace-pre-line">
                           {evt.prediction?.macroAnalysis}
                         </div>
@@ -443,8 +437,7 @@ export function AdminEconomicCalendar({
 
                       <div className="rounded-xl border border-amber-200 bg-amber-50/40 p-4">
                         <p className="text-[10px] uppercase font-bold text-amber-800 mb-2">
-                          Institutional Execution & Shield Playbook
-                        </p>
+                          <T>{"Institutional Execution & Shield Playbook"}</T> </p>
                         <div className="font-sans text-xs text-amber-950 leading-relaxed whitespace-pre-line">
                           {evt.prediction?.tradingPlaybook}
                         </div>

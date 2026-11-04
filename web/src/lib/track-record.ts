@@ -316,6 +316,7 @@ async function fetchClosedRows(accessToken?: string): Promise<RawRow[] | null> {
   try {
     const res = await fetch(`${base}/rest/v1/signals?${query}`, {
       headers: { apikey: anonKey, Authorization: `Bearer ${accessToken ?? anonKey}` },
+      signal: AbortSignal.timeout(2500),
       ...SLOW_FETCH,
     });
     if (!res.ok) return null;

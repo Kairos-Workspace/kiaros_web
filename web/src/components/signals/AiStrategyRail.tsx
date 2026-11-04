@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import { SlidingPillNav } from "@/components/shared/SlidingPillNav";
 import {
   AI_SIGNAL_STRATEGY_OPTIONS,
@@ -14,11 +16,12 @@ export function AiStrategyRail({
   strategy: AiSignalStrategy;
   basePath: string;
 }) {
+  const { t } = useTranslation();
   return (
     <SlidingPillNav
-      ariaLabel="AI Strategies"
+      ariaLabel={t("AI Strategies")}
       activeId={strategy}
-      options={AI_SIGNAL_STRATEGY_OPTIONS}
+      options={AI_SIGNAL_STRATEGY_OPTIONS.map((option) => ({ ...option, label: t(option.label), hint: t(option.hint) }))}
       hrefFor={(id) =>
         id === "all" ? `${basePath}?tab=ai` : `${basePath}?tab=ai&strategy=${id}`
       }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { T } from "@/components/i18n/T";
 
 export function Logo({
   suffix,
@@ -19,12 +20,12 @@ export function Logo({
         <span className={`font-sans text-[1.15rem] font-black tracking-tight ${tone === "dark" ? "text-white" : "text-zinc-900"}`}>
           Kiar<span className={tone === "dark" ? "text-zinc-400" : "text-zinc-500"}>os</span>
         </span>
-        <span className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-[9px] font-black tracking-wider text-zinc-900 uppercase">
+        <span className="hidden sm:inline rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-[9px] font-black tracking-wider text-zinc-900 uppercase">
           QUANT
         </span>
         {suffix ? (
           <span className="rounded bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-zinc-600 uppercase">
-            {suffix}
+            <T>{suffix}</T>
           </span>
         ) : null}
       </div>

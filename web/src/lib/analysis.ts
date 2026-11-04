@@ -125,6 +125,7 @@ export async function listPublishedAnalyses(): Promise<DailyAnalysis[]> {
             apikey: cfg.key,
             Authorization: `Bearer ${cfg.key}`,
           },
+          signal: AbortSignal.timeout(2500),
           next: { revalidate: 30, tags: ["daily-analyses"] },
         },
       );
@@ -175,6 +176,7 @@ export async function listAllAnalysesForAdmin(): Promise<DailyAnalysis[]> {
             apikey: cfg.key,
             Authorization: `Bearer ${cfg.key}`,
           },
+          signal: AbortSignal.timeout(2500),
           cache: "no-store",
         },
       );

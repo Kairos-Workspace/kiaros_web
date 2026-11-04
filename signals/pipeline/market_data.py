@@ -177,8 +177,12 @@ def _snap_gold_setup_to_live(setup: CandidateSetup, live: float,
         ind["live_snap_source"] = source
         ind["live_snap_to"] = live
         return replace(setup, indicators=ind), ""
-    delta = live - setup.entry
-    new_stop = setup.stop_loss + delta
+    # Preserve structural stop loss anchored to market structure
+    new_stop = setup.stop_loss
+    if setup.direction == "long" and live <= new_stop:
+        return None, "Live price at or below stop — not publishing"
+    if setup.direction == "short" and live >= new_stop:
+        return None, "Live price at or above stop — not publishing"
     tp_r = setup.indicators.get("tp_r")
     if isinstance(tp_r, (list, tuple)) and len(tp_r) == 3:
         tp1, tp2, tp3 = take_profits_from_risk(
@@ -189,10 +193,6 @@ def _snap_gold_setup_to_live(setup: CandidateSetup, live: float,
         tp1, tp2, tp3 = take_profits_from_risk(
             live, new_stop, setup.direction,
         )
-    if setup.direction == "long" and live <= new_stop:
-        return None, "Live price at or below stop — not publishing"
-    if setup.direction == "short" and live >= new_stop:
-        return None, "Live price at or above stop — not publishing"
     ind = dict(setup.indicators)
     ind["live_snap_from"] = setup.entry
     ind["live_snap_to"] = live

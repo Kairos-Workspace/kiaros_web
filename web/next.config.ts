@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    // Avoid blocking the dev server if remote storage is unreachable or paused
+    unoptimized: process.env.NODE_ENV === "development",
     remotePatterns: [
       ...(supabaseHost
         ? [

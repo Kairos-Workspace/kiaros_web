@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 
@@ -36,6 +39,7 @@ export function SignalsBrowseFilter({
   /** Single-line trigger — better in tight header rows. */
   compact?: boolean;
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
@@ -67,27 +71,27 @@ export function SignalsBrowseFilter({
     <div ref={rootRef} className="relative w-full min-w-[11rem] max-w-xs sm:w-56">
       {showLabel ? (
         <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate/70">
-          {label}
+          <T>{label}</T>
         </label>
       ) : (
-        <span className="sr-only">{label}</span>
+        <span className="sr-only"><T>{label}</T></span>
       )}
       <button
         type="button"
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-controls={menuId}
-        aria-label={label}
+        aria-label={t(label)}
         onClick={() => setOpen((v) => !v)}
         className="btn-secondary flex w-full items-center justify-between gap-3 text-left"
       >
         <span className="min-w-0">
           <span className="block truncate text-sm font-semibold text-ink">
-            {current.label}
+            <T>{current.label}</T>
           </span>
           {!compact ? (
             <span className="block truncate text-[11px] font-medium text-slate">
-              {current.hint}
+              <T>{current.hint}</T>
             </span>
           ) : null}
         </span>
@@ -107,7 +111,7 @@ export function SignalsBrowseFilter({
         <ul
           id={menuId}
           role="listbox"
-          aria-label={label}
+          aria-label={t(label)}
           className="absolute left-0 z-30 mt-2 w-full overflow-hidden rounded-lg border border-line bg-card shadow-[var(--shadow-card-hover)]"
         >
           {options.map((opt, index) => {
@@ -119,8 +123,8 @@ export function SignalsBrowseFilter({
                       index > 0 ? "border-t border-line" : ""
                     }`}
                   >
-                    <span className="block text-sm font-semibold text-ink">{opt.label}</span>
-                    <span className="block text-[11px] text-slate">{opt.hint}</span>
+                    <span className="block text-sm font-semibold text-ink"><T>{opt.label}</T></span>
+                    <span className="block text-[11px] text-slate"><T>{opt.hint}</T></span>
                   </span>
                 </li>
               );
@@ -137,13 +141,13 @@ export function SignalsBrowseFilter({
                       : "text-ink hover:bg-accent-soft"
                   } ${index > 0 ? "border-t border-line" : ""}`}
                 >
-                  <span className="block text-sm font-semibold">{opt.label}</span>
+                  <span className="block text-sm font-semibold"><T>{opt.label}</T></span>
                   <span
                     className={`block text-[11px] ${
                       active ? "text-paper/70" : "text-slate"
                     }`}
                   >
-                    {opt.hint}
+                    <T>{opt.hint}</T>
                   </span>
                 </Link>
               </li>

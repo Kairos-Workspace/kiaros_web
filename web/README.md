@@ -3,6 +3,22 @@
 The Kiaros web application for AI-assisted trading signals, transparent track
 records, and community trading tools.
 
+## Languages
+
+Use the **English / ខ្មែរ** selector in the public header, dashboard, admin
+header, or account forms. The `kiaros-language` cookie remembers the selection
+for one year. English is the default. Switching preserves the current URL,
+query filters, and mounted client state, and refreshes server-rendered content.
+
+Khmer interface translations live in `src/lib/i18n/messages/`, grouped into
+common, landing, trading, and admin copy. English source phrases are the keys.
+Use `<T>English phrase</T>` for text, `useTranslation().t()` in interactive
+components, and `await getTranslations()` for server attributes and metadata.
+Use complete messages with `{name}` placeholders for variable text. Add the
+matching Khmer entry whenever interface copy changes. Unknown user-authored
+content, third-party data, and text inside uploaded images retain their source
+language. The bundled Noto Sans Khmer fonts provide Khmer typography.
+
 ## Getting Started
 
 First, run the development server:

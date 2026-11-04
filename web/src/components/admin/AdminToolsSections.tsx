@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import Link from "next/link";
 import { useState } from "react";
 
@@ -23,6 +26,7 @@ type Props = {
 };
 
 export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"list" | "add">(defaultTab);
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
@@ -68,7 +72,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
               <rect x="14" y="14" width="7" height="7" />
               <rect x="3" y="14" width="7" height="7" />
             </svg>
-            <span>Tool Repository</span>
+            <span><T>{"Tool Repository"}</T></span>
             <span
               className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold ${
                 activeTab === "list"
@@ -101,10 +105,9 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            <span>Add New Tool</span>
+            <span><T>{"Add New Tool"}</T></span>
             <span className="rounded-full bg-emerald-100 text-emerald-800 px-1.5 py-0.5 font-mono text-[9px] font-bold">
-              + NEW
-            </span>
+              <T>{"+ NEW"}</T> </span>
           </button>
         </div>
 
@@ -115,8 +118,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
             target="_blank"
             className="rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors shadow-2xs"
           >
-            Open Public Tools ↗
-          </Link>
+            <T>{"Open Public Tools ↗"}</T> </Link>
 
           {activeTab === "list" ? (
             <button
@@ -128,7 +130,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              <span>Add EA or Indicator</span>
+              <span><T>{"Add EA or Indicator"}</T></span>
             </button>
           ) : (
             <button
@@ -136,7 +138,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
               onClick={() => handleTabChange("list")}
               className="btn-secondary py-2 px-3.5 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
             >
-              <span>Back to Repository ({tools.length})</span>
+              <span><T>{"Back to Repository ("}</T>{tools.length})</span>
             </button>
           )}
         </div>
@@ -148,8 +150,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
           {/* Category Filter Chips */}
           <div className="flex flex-wrap items-center gap-2 rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs">
             <span className="text-[11px] font-mono font-bold uppercase text-zinc-500 mr-1">
-              Category:
-            </span>
+              <T>{"Category:"}</T> </span>
             <button
               type="button"
               onClick={() => setCategoryFilter("all")}
@@ -159,7 +160,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                   : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
               }`}
             >
-              All Tools ({tools.length})
+              <T>{"All Tools ("}</T>{tools.length})
             </button>
             {TOOL_CATEGORIES.map((c) => {
               const count = tools.filter((t) => t.category === c.id).length;
@@ -174,7 +175,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                       : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
                   }`}
                 >
-                  {c.labelEn} ({count})
+                  <T>{c.labelEn}</T> ({count})
                 </button>
               );
             })}
@@ -190,17 +191,15 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                   <line x1="16" y1="17" x2="8" y2="17" />
                 </svg>
               </div>
-              <h3 className="text-base font-bold text-zinc-900">No Trading Tools Found</h3>
+              <h3 className="text-base font-bold text-zinc-900"><T>{"No Trading Tools Found"}</T></h3>
               <p className="mt-1 text-xs text-zinc-500 max-w-sm mx-auto">
-                No tools match this category. Switch category filters or upload an EA/indicator above.
-              </p>
+                <T>{"No tools match this category. Switch category filters or upload an EA/indicator above."}</T> </p>
               <button
                 type="button"
                 onClick={() => handleTabChange("add")}
                 className="btn-primary mt-4 py-2 px-4 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
               >
-                + Add Trading Tool
-              </button>
+                <T>{"+ Add Trading Tool"}</T> </button>
             </div>
           ) : (
             <div className="grid gap-3.5">
@@ -220,16 +219,14 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                           {tool.titleKm}
                         </h3>
                         <span className="rounded-md bg-zinc-100 px-2 py-0.5 font-mono text-[10px] font-bold text-zinc-700 border border-zinc-200">
-                          {toolCategoryLabelKm(tool.category)}
+                          <T>{toolCategoryLabelKm(tool.category)}</T>
                         </span>
                         {!tool.published ? (
                           <span className="rounded-md bg-amber-50 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-800 border border-amber-200">
-                            Draft (Hidden)
-                          </span>
+                            <T>{"Draft (Hidden)"}</T> </span>
                         ) : (
                           <span className="rounded-md bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-800 border border-emerald-200">
-                            Live Published
-                          </span>
+                            <T>{"Live Published"}</T> </span>
                         )}
                       </div>
 
@@ -251,7 +248,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                         ) : (
                           <span>—</span>
                         )}
-                        <span>• Order: {tool.sortOrder}</span>
+                        <span><T>{"• Order:"}</T> {tool.sortOrder}</span>
                       </div>
                     </div>
 
@@ -263,7 +260,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                           rel="noopener noreferrer"
                           className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 font-mono text-xs font-bold text-zinc-800 hover:bg-zinc-50 hover:text-zinc-950 transition-colors shadow-xs"
                         >
-                          {isExternal ? "Open Link ↗" : "Download File ↓"}
+                          <T>{isExternal ? "Open Link ↗" : "Download File ↓"}</T>
                         </a>
                       ) : null}
 
@@ -282,7 +279,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                               : "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100"
                           }`}
                         >
-                          {tool.published ? "Hide" : "Publish"}
+                          <T>{tool.published ? "Hide" : "Publish"}</T>
                         </button>
                       </form>
 
@@ -299,8 +296,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                           type="submit"
                           className="rounded-lg px-2.5 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-colors cursor-pointer"
                         >
-                          Delete
-                        </button>
+                          <T>{"Delete"}</T> </button>
                       </form>
                     </div>
                   </article>
@@ -315,35 +311,32 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
       {activeTab === "add" && (
         <section className="card-surface p-6 sm:p-8 animate-in fade-in duration-200">
           <div className="border-b border-zinc-100 pb-4 mb-6">
-            <h2 className="text-xl font-black tracking-tight text-zinc-950">Add Trading Tool or EA</h2>
+            <h2 className="text-xl font-black tracking-tight text-zinc-950"><T>{"Add Trading Tool or EA"}</T></h2>
             <p className="mt-1 text-xs text-zinc-500">
-              Provide title, category, and either an uploadable MT5 binary/source file (.mq5, .ex5, .zip) or an external TradingView Pine Script URL.
-            </p>
+              <T>{"Provide title, category, and either an uploadable MT5 binary/source file (.mq5, .ex5, .zip) or an external TradingView Pine Script URL."}</T> </p>
           </div>
 
           <form action={createTool} className="flex flex-col gap-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                  Tool Title *
-                </label>
+                  <T>{"Tool Title *"}</T> </label>
                 <input
                   type="text"
                   name="title_km"
                   required
-                  placeholder="Kiaros BBMA Execution EA"
+                  placeholder={t("Kiaros BBMA Execution EA")}
                   className="input-field w-full font-medium"
                 />
               </div>
 
               <div>
                 <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                  Category *
-                </label>
+                  <T>{"Category *"}</T> </label>
                 <select name="category" defaultValue="mt5_ea" className="input-field w-full font-bold">
                   {TOOL_CATEGORIES.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.labelEn}
+                      <T>{c.labelEn}</T>
                     </option>
                   ))}
                 </select>
@@ -352,12 +345,11 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
 
             <div>
               <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                Description & Strategy Rules
-              </label>
+                <T>{"Description & Strategy Rules"}</T> </label>
               <textarea
                 name="description_km"
                 rows={3}
-                placeholder="Institutional EA for automated entry based on London session liquidity sweeps..."
+                placeholder={t("Institutional EA for automated entry based on London session liquidity sweeps...")}
                 className="input-field w-full resize-y font-mono text-xs leading-relaxed"
               />
             </div>
@@ -365,8 +357,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50/50 p-4">
                 <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                  File Upload (.mq5, .ex5, .zip, max 25MB)
-                </label>
+                  <T>{"File Upload (.mq5, .ex5, .zip, max 25MB)"}</T> </label>
                 <input
                   type="file"
                   name="file"
@@ -374,14 +365,12 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                   className="file:mr-4 file:rounded-lg file:border-0 file:bg-zinc-950 file:px-4 file:py-2 file:text-xs file:font-bold file:text-white hover:file:bg-zinc-800 input-field w-full py-2 cursor-pointer"
                 />
                 <span className="block mt-1 font-mono text-[10px] text-zinc-400">
-                  Upload EA binary, source code, or preset templates.
-                </span>
+                  <T>{"Upload EA binary, source code, or preset templates."}</T> </span>
               </div>
 
               <div className="rounded-xl border border-zinc-200 bg-white p-4">
                 <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                  Or External URL (TradingView Script)
-                </label>
+                  <T>{"Or External URL (TradingView Script)"}</T> </label>
                 <input
                   type="url"
                   name="external_url"
@@ -389,15 +378,13 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                   className="input-field w-full font-mono text-xs"
                 />
                 <span className="block mt-1 font-mono text-[10px] text-zinc-400">
-                  Optional: Link direct TradingView community script instead.
-                </span>
+                  <T>{"Optional: Link direct TradingView community script instead."}</T> </span>
               </div>
             </div>
 
             <div className="w-36">
               <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                Sort Order
-              </label>
+                <T>{"Sort Order"}</T> </label>
               <input
                 type="number"
                 name="sort_order"
@@ -405,7 +392,7 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                 step={1}
                 className="input-field w-full font-mono text-xs"
               />
-              <span className="block mt-1 font-mono text-[10px] text-zinc-400">Lower = displayed first</span>
+              <span className="block mt-1 font-mono text-[10px] text-zinc-400"><T>{"Lower = displayed first"}</T></span>
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-4 border-t border-zinc-100 pt-5">
@@ -414,14 +401,13 @@ export function AdminToolsSections({ tools, defaultTab = "list" }: Props) {
                 onClick={() => handleTabChange("list")}
                 className="btn-secondary py-2.5 px-4 text-xs font-bold cursor-pointer"
               >
-                Cancel & Return to Repository
-              </button>
+                <T>{"Cancel & Return to Repository"}</T> </button>
 
               <button
                 type="submit"
                 className="btn-primary py-3 px-6 text-sm font-bold tracking-tight shadow-md flex items-center gap-2 cursor-pointer"
               >
-                <span>Publish Trading Tool</span>
+                <span><T>{"Publish Trading Tool"}</T></span>
                 <span className="font-mono">→</span>
               </button>
             </div>

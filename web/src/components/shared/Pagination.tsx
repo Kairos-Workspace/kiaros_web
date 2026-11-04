@@ -1,3 +1,7 @@
+"use client";
+
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
 import Link from "next/link";
 
 function buildHref(baseHref: string, params: Record<string, string>) {
@@ -25,6 +29,7 @@ export function Pagination({
   extraParams?: Record<string, string>;
   itemLabel?: string;
 }) {
+  const { t } = useTranslation();
   if (totalPages <= 1) return null;
 
   const from = (page - 1) * pageSize + 1;
@@ -45,11 +50,11 @@ export function Pagination({
   return (
     <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
       <p className="text-xs text-slate font-mono">
-        Showing <span className="text-ink font-semibold">{from}–{to}</span> of{" "}
-        <span className="text-ink font-semibold">{total}</span> {itemLabel}
+        <T>{"Showing"}</T>{" "}<span className="text-ink font-semibold">{from}–{to}</span> <T>{"of"}</T>{" "}
+        <span className="text-ink font-semibold">{total}</span> <T>{itemLabel}</T>
       </p>
 
-      <nav className="flex items-center gap-1" aria-label="Pagination">
+      <nav className="flex items-center gap-1" aria-label={t("Pagination")}>
         {/* Prev */}
         {hasPrev ? (
           <Link
@@ -57,13 +62,11 @@ export function Pagination({
             className="flex items-center gap-1 rounded-lg border border-line bg-card px-3 py-1.5 text-xs font-semibold text-slate hover:border-accent/40 hover:text-accent transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            Previous
-          </Link>
+            <T>{"Previous"}</T></Link>
         ) : (
           <span className="flex items-center gap-1 rounded-lg border border-line/50 bg-card/50 px-3 py-1.5 text-xs font-semibold text-slate/40 cursor-not-allowed">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            Previous
-          </span>
+            <T>{"Previous"}</T></span>
         )}
 
         {/* Page numbers */}
@@ -97,13 +100,11 @@ export function Pagination({
             href={buildHref(basePath, { ...extraParams, page: String(page + 1) })}
             className="flex items-center gap-1 rounded-lg border border-line bg-card px-3 py-1.5 text-xs font-semibold text-slate hover:border-accent/40 hover:text-accent transition-colors"
           >
-            Next
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <T>{"Next"}</T>{" "}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </Link>
         ) : (
           <span className="flex items-center gap-1 rounded-lg border border-line/50 bg-card/50 px-3 py-1.5 text-xs font-semibold text-slate/40 cursor-not-allowed">
-            Next
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <T>{"Next"}</T>{" "}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </span>
         )}
       </nav>

@@ -1,9 +1,12 @@
+import { getTranslations } from "@/lib/i18n/server";
+import { T } from "@/components/i18n/T";
 import { InteractiveHeroBackground } from "@/components/landing/InteractiveHeroBackground";
 import { DualPhoneMockup } from "@/components/landing/PhoneMockup";
 import { TelegramIcon } from "@/components/shared/TelegramIcon";
 import { TELEGRAM_GROUP_URL } from "@/lib/constants";
 
-export function Hero() {
+export async function Hero() {
+  const { t } = await getTranslations();
   return (
     <section className="relative overflow-hidden border-b border-zinc-200/80 bg-[#fafafa] min-h-[calc(100dvh-5.75rem)] flex items-center justify-center py-12 sm:py-16 lg:py-20">
       {/* Interactive Quantitative Canvas Background */}
@@ -21,18 +24,15 @@ export function Hero() {
           {/* Left Column: Master Headline, Value Proposition & Primary CTA */}
           <div className="flex flex-col items-center text-center lg:col-span-6 lg:items-start lg:text-left">
             {/* Master Headline */}
-            <h1 className="text-4xl font-black tracking-tight text-zinc-950 sm:text-5xl lg:text-6xl xl:text-7xl lg:leading-[1.08]">
-              Quant Algo Precision. <br />
-              <span className="bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-600 bg-clip-text text-transparent">
-                LLM Neural Edge.
+            <h1 className="hero-heading text-4xl font-black tracking-tight text-zinc-950 sm:text-5xl lg:text-6xl xl:text-7xl lg:leading-[1.08]">
+              <span className="block"><T>{"Quant Algo Precision."}</T></span>
+              <span className="block bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-600 bg-clip-text text-transparent">
+                <T>{"LLM Neural Edge."}</T>
               </span>
             </h1>
 
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-zinc-600 sm:text-lg">
-              Kiaros fuses quantitative algorithmic execution (Algo) with real-time 
-              Large Language Model (LLM) validation. We capture high-probability set up and volatility expansions across Gold (XAUUSD), Crypto, 
-              and Forex — verified by AI before reaching your terminal and Telegram.
-            </p>
+            <p className="hero-description mt-5 max-w-xl text-base leading-relaxed text-zinc-600 sm:text-lg">
+              <T>{"Kiaros fuses quantitative algorithmic execution (Algo) with real-time Large Language Model (LLM) validation. We capture high-probability set up and volatility expansions across Gold (XAUUSD), Crypto, and Forex — verified by AI before reaching your terminal and Telegram."}</T> </p>
 
             {/* Primary CTA */}
             <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3.5">
@@ -41,10 +41,10 @@ export function Hero() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-telegram group flex items-center gap-2.5 px-7 py-3.5 text-base shadow-lg"
-                title="Join Telegram Community"
+                title={t("Join Telegram Community")}
               >
                 <TelegramIcon size={18} />
-                <span>Join Telegram Free</span>
+                <span><T>{"Join Telegram Free"}</T></span>
                 <span className="rounded bg-zinc-800 px-2 py-0.5 font-mono text-xs font-bold text-zinc-200">
                   1,250+
                 </span>

@@ -1,3 +1,6 @@
+import { T } from "@/components/i18n/T";
+import { LanguageSwitch } from "@/components/i18n/LanguageSwitch";
+import { getTranslations } from "@/lib/i18n/server";
 import Link from "next/link";
 
 import { signout } from "@/app/auth/actions";
@@ -11,6 +14,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const email = await requireAdminPage();
+  const { t } = await getTranslations();
   const initials = email ? email.substring(0, 2).toUpperCase() : "AD";
 
   return (
@@ -26,16 +30,16 @@ export default async function AdminLayout({
                   Kiar<span className="text-zinc-500">os</span>
                 </span>
                 <span className="rounded bg-zinc-950 px-1 py-0.2 font-mono text-[9px] font-bold tracking-wider text-white uppercase">
-                  DESK
+                  <T>{"DESK"}</T>
                 </span>
               </div>
               <span className="mt-0.5 font-mono text-[10px] font-medium text-zinc-400 truncate">
-                Quant Operations
+                <T>{"Quant Operations"}</T>
               </span>
             </div>
           </Link>
 
-          <div className="flex items-center" title="System operational">
+          <div className="flex items-center" title={t("System operational")}>
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -54,9 +58,9 @@ export default async function AdminLayout({
           <div className="flex items-center justify-between rounded-lg border border-zinc-200/70 bg-white/80 px-2.5 py-1.5 text-[10px] font-mono">
             <span className="flex items-center gap-1.5 text-zinc-500 font-medium">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              Engine Status
+              <T>{"Engine Status"}</T>
             </span>
-            <span className="font-semibold text-emerald-700">ONLINE • v2.4</span>
+            <span className="font-semibold text-emerald-700"><T>{"ONLINE • v2.4"}</T></span>
           </div>
 
           {/* Admin Profile Card */}
@@ -71,7 +75,7 @@ export default async function AdminLayout({
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-emerald-800">
-                  Super Admin
+                  <T>{"Super Admin"}</T>
                 </span>
               </div>
             </div>
@@ -84,7 +88,7 @@ export default async function AdminLayout({
               target="_blank"
               className="flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200/80 bg-white px-2 py-1.5 text-[11px] font-medium text-zinc-700 shadow-2xs hover:bg-zinc-50 hover:text-zinc-950 transition-colors"
             >
-              <span>Live App</span>
+              <span><T>{"Live App"}</T></span>
               <span className="text-zinc-400">↗</span>
             </Link>
             <form action={signout} className="flex">
@@ -92,7 +96,7 @@ export default async function AdminLayout({
                 type="submit"
                 className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-zinc-200/80 bg-white px-2 py-1.5 text-[11px] font-medium text-zinc-600 shadow-2xs hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 transition-colors cursor-pointer"
               >
-                <span>Sign out</span>
+                <span><T>{"Sign out"}</T></span>
               </button>
             </form>
           </div>
@@ -108,16 +112,17 @@ export default async function AdminLayout({
               <Logo suffix="admin" />
             </div>
             <div className="hidden lg:flex items-center gap-2 font-mono text-xs text-zinc-400">
-              <span className="font-bold text-zinc-950">Kiaros Desk</span>
+              <span className="font-bold text-zinc-950"><T>{"Kiaros Desk"}</T></span>
               <span className="text-zinc-300">/</span>
-              <span className="text-zinc-500">Operations Control</span>
+              <span className="text-zinc-500"><T>{"Operations Control"}</T></span>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
+            <LanguageSwitch />
             <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-800 shadow-2xs">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
-              STP-ECN LIVE
+              <T>{"STP-ECN LIVE"}</T>
             </span>
 
             <Link
@@ -125,13 +130,13 @@ export default async function AdminLayout({
               target="_blank"
               className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-2.5 py-1 font-mono text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors shadow-2xs"
             >
-              <span>Visit Website</span>
+              <span><T>{"Visit Website"}</T></span>
               <span>↗</span>
             </Link>
 
             <form action={signout} className="lg:hidden">
               <button type="submit" className="btn-ghost text-xs">
-                Sign out
+                <T>{"Sign out"}</T>
               </button>
             </form>
           </div>

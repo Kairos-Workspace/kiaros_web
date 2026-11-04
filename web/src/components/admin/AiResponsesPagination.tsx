@@ -1,3 +1,8 @@
+"use client";
+
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
+import { T } from "@/components/i18n/T";
 import Link from "next/link";
 
 import {
@@ -30,6 +35,7 @@ export function AiResponsesPagination({
   totalPages,
   filters = {},
 }: AiResponsesPaginationProps) {
+  const { t } = useTranslation();
   if (total === 0) return null;
 
   const rangeStart = (page - 1) * pageSize + 1;
@@ -44,20 +50,17 @@ export function AiResponsesPagination({
   return (
     <div className="mt-8 flex flex-col gap-4 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-sm text-slate">
-        Showing {rangeStart}–{rangeEnd} of {total} responses
-      </p>
+        <T>{"Showing"}</T> {rangeStart}–{rangeEnd}  <T>{"of"}</T> {total}  <T>{"responses"}</T> </p>
       <nav
         className="flex flex-wrap items-center gap-2"
-        aria-label="AI responses pagination"
+        aria-label={t("AI responses pagination")}
       >
         {page > 1 ? (
           <Link href={aiResponsesHref(filters, page - 1)} className={linkClass}>
-            Previous
-          </Link>
+            <T>{"Previous"}</T> </Link>
         ) : (
           <span className={`${linkClass} cursor-not-allowed opacity-40`}>
-            Previous
-          </span>
+            <T>{"Previous"}</T> </span>
         )}
 
         {pages[0] > 1 ? (
@@ -103,12 +106,10 @@ export function AiResponsesPagination({
 
         {page < totalPages ? (
           <Link href={aiResponsesHref(filters, page + 1)} className={linkClass}>
-            Next
-          </Link>
+            <T>{"Next"}</T> </Link>
         ) : (
           <span className={`${linkClass} cursor-not-allowed opacity-40`}>
-            Next
-          </span>
+            <T>{"Next"}</T> </span>
         )}
       </nav>
     </div>

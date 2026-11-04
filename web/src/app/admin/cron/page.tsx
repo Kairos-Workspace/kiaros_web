@@ -1,3 +1,4 @@
+import { getTranslations } from "@/lib/i18n/server";
 import type { Metadata } from "next";
 
 import { AdminCronSections } from "@/components/admin/AdminCronSections";
@@ -5,9 +6,12 @@ import { requireAdminPage } from "@/lib/admin-guard";
 import { listCronStatuses } from "@/lib/github-engine";
 import { getXauScanStatus } from "@/lib/supabase/admin";
 
-export const metadata: Metadata = {
-  title: "Admin · Cron & Telemetry",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return {
+    title: t("Admin · Cron & Telemetry"),
+  };
+}
 
 export const dynamic = "force-dynamic";
 

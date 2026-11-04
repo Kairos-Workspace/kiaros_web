@@ -1,3 +1,4 @@
+import { T } from "@/components/i18n/T";
 import type { ReactNode } from "react";
 import { AnimatedHeaderBackground } from "@/components/shared/AnimatedHeaderBackground";
 
@@ -23,16 +24,16 @@ export function PageHeader({
         {badge ? (
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 font-mono text-[11px] font-semibold text-zinc-300 shadow-xs">
             <span className={`h-1.5 w-1.5 rounded-full ${badgeDotColor} animate-pulse`} />
-            <span>{badge}</span>
+            <span>{typeof badge === "string" ? <T>{badge}</T> : badge}</span>
           </div>
         ) : null}
 
         <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl font-mono">
-          {title}
+          <T>{title}</T>
         </h1>
 
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400 mx-auto">
-          {subtitle}
+          <T>{subtitle}</T>
         </p>
       </div>
     </section>

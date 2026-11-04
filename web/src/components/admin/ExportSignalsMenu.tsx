@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import { useEffect, useId, useRef, useState } from "react";
 
 type ExportTab = "all" | "super-scalping" | "scalping" | "swing" | "smc";
@@ -11,6 +14,7 @@ export function ExportSignalsMenu({
   tab: ExportTab;
   disabled?: boolean;
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
@@ -47,16 +51,13 @@ export function ExportSignalsMenu({
         aria-expanded={open}
         aria-haspopup="menu"
         aria-controls={menuId}
-        title={
-          disabled
+        title={t(disabled
             ? "No TP/SL-hit signals for this filter"
-            : "Download closed TP/SL signals"
-        }
+            : "Download closed TP/SL signals")}
         onClick={() => setOpen((v) => !v)}
         className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        Export
-        <svg
+        <T>{"Export"}</T> <svg
           className="ml-1.5 h-3.5 w-3.5 text-slate"
           viewBox="0 0 20 20"
           fill="currentColor"
@@ -82,16 +83,14 @@ export function ExportSignalsMenu({
             className="block px-4 py-2.5 text-sm font-medium text-ink hover:bg-accent-soft"
             onClick={() => setOpen(false)}
           >
-            Excel (.xlsx)
-          </a>
+            <T>{"Excel (.xlsx)"}</T> </a>
           <a
             role="menuitem"
             href={href("pdf")}
             className="block border-t border-line px-4 py-2.5 text-sm font-medium text-ink hover:bg-accent-soft"
             onClick={() => setOpen(false)}
           >
-            PDF (.pdf)
-          </a>
+            <T>{"PDF (.pdf)"}</T> </a>
         </div>
       ) : null}
     </div>

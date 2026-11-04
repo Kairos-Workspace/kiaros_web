@@ -1,3 +1,4 @@
+import { T } from "@/components/i18n/T";
 import type { Stats } from "@/lib/signals";
 
 /** Kept for reuse; homepage stats live inside Hero. */
@@ -27,7 +28,7 @@ export function StatsBand({ stats }: { stats: Stats }) {
               {item.value}
             </p>
             <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate sm:text-[11px]">
-              {item.label}
+              <T>{item.label}</T>
             </p>
           </div>
         ))}

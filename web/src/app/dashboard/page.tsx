@@ -1,3 +1,5 @@
+import { getTranslations } from "@/lib/i18n/server";
+import { T } from "@/components/i18n/T";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { SignalsBrowse } from "@/components/signals/SignalsBrowse";
 import { Notice } from "@/components/shared/Notice";
@@ -7,9 +9,12 @@ import {
 } from "@/lib/signals-browse-tabs";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = {
-  title: "Dashboard",
-};
+export async function generateMetadata() {
+  const { t } = await getTranslations();
+  return {
+    title: t("Dashboard"),
+  };
+}
 
 export const revalidate = 30;
 
@@ -45,15 +50,14 @@ export default async function Dashboard({
       <div className="w-full space-y-6">
         {admin === "denied" && user ? (
           <Notice tone="error">
-            Admin access is not enabled for {user.email}. Ask the
-            owner to add your email to ADMIN_EMAILS, then sign out and back in.
+            <T values={{ email: user.email ?? "" }}>{"Admin access is not enabled for {email}. Ask the owner to add your email to ADMIN_EMAILS, then sign out and back in."}</T>
           </Notice>
         ) : null}
 
         <div className="lg:hidden">
-          <h1 className="text-2xl font-bold tracking-tight text-ink">Signals</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-ink"><T>{"Signals"}</T></h1>
           <p className="mt-1 text-sm text-slate">
-            AI-confirmed setups and live EA feeds
+            <T>{"AI-confirmed setups and live EA feeds"}</T>
           </p>
         </div>
 

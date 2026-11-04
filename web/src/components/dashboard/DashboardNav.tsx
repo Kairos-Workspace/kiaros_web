@@ -1,5 +1,7 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -28,7 +30,7 @@ export function DashboardNav({
             className={`nav-item ${active ? "nav-item-active" : ""}`}
           >
             <ChartIcon />
-            {l.label}
+            <T>{l.label}</T>
           </Link>
         );
       })}
@@ -41,8 +43,7 @@ export function DashboardNav({
             }`}
           >
             <DocumentIcon />
-            Daily Analysis
-          </Link>
+            <T>{"Daily Analysis"}</T></Link>
           <Link
             href="/admin"
             className={`nav-item ${
@@ -52,8 +53,7 @@ export function DashboardNav({
             }`}
           >
             <GearIcon />
-            Admin Panel
-          </Link>
+            <T>{"Admin Panel"}</T></Link>
         </>
       ) : null}
     </nav>

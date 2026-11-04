@@ -1,5 +1,7 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
 import Link from "next/link";
 import { useCallback, useEffect, useState, useRef } from "react";
 
@@ -116,6 +118,7 @@ const STRATEGIES: StrategyItem[] = [
 const AUTO_SLIDE_INTERVAL = 3800; // 3.8 seconds
 
 export function StrategyArchitecture() {
+  const { t } = useTranslation();
   const [itemsPerPage, setItemsPerPage] = useState<number>(3);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -201,12 +204,9 @@ export function StrategyArchitecture() {
         {/* Section Header */}
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl md:text-5xl">
-            Algo + LLM Trading Strategies
-          </h2>
+            <T>{"Algo + LLM Trading Strategies"}</T> </h2>
           <p className="mt-3 text-sm text-zinc-600 sm:text-base leading-relaxed">
-            Sub-millisecond quantitative algorithms identify microstructure liquidity sweeps and volatility patterns, 
-            while our Large Language Model (LLM) validation layer verifies macroeconomic context to eliminate false breakouts.
-          </p>
+            <T>{"Sub-millisecond quantitative algorithms identify microstructure liquidity sweeps and volatility patterns, while our Large Language Model (LLM) validation layer verifies macroeconomic context to eliminate false breakouts."}</T> </p>
         </div>
 
         {/* Carousel: Multi-Card Slider with Elevated Center Focal Card */}
@@ -219,7 +219,7 @@ export function StrategyArchitecture() {
           <button
             type="button"
             onClick={handlePrev}
-            aria-label="Previous strategy"
+            aria-label={t("Previous strategy")}
             className="absolute -left-2 sm:-left-5 top-1/2 z-30 flex h-10 w-10 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full bg-zinc-950 text-white shadow-xl transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95"
           >
             <svg
@@ -237,7 +237,7 @@ export function StrategyArchitecture() {
           <button
             type="button"
             onClick={handleNext}
-            aria-label="Next strategy"
+            aria-label={t("Next strategy")}
             className="absolute -right-2 sm:-right-5 top-1/2 z-30 flex h-10 w-10 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full bg-zinc-950 text-white shadow-xl transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95"
           >
             <svg
@@ -301,7 +301,7 @@ export function StrategyArchitecture() {
                                 : "border-zinc-200 bg-zinc-100 text-zinc-900"
                             }`}
                           >
-                            {s.badge}
+                            <T>{s.badge}</T>
                           </span>
                           <span
                             className={`font-mono text-xs font-bold transition-colors duration-300 ${
@@ -314,29 +314,28 @@ export function StrategyArchitecture() {
 
                         {/* Strategy Title */}
                         <h3 className="mt-4 text-lg font-bold tracking-tight text-zinc-950 transition-colors group-hover:text-black">
-                          {s.title}
+                          <T>{s.title}</T>
                         </h3>
 
                         {/* Description */}
                         <p className="mt-2 text-xs leading-relaxed text-zinc-600">
-                          {s.description}
+                          <T>{s.description}</T>
                         </p>
 
                         {/* Execution Details */}
                         <div className="mt-5 border-t border-zinc-100 pt-4">
                           <div className="mb-3 flex items-center justify-between font-mono text-[11px] text-zinc-500">
-                            <span className="font-semibold uppercase tracking-wider">HORIZON</span>
-                            <span className="font-bold text-zinc-900">{s.timeframe}</span>
+                            <span className="font-semibold uppercase tracking-wider"><T>{"HORIZON"}</T></span>
+                            <span className="font-bold text-zinc-900"><T>{s.timeframe}</T></span>
                           </div>
 
                           <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-                            Execution Mechanics
-                          </p>
+                            <T>{"Execution Mechanics"}</T> </p>
                           <ul className="mt-2 space-y-2 text-xs text-zinc-700">
                             {s.features.map((f) => (
                               <li key={f} className="flex items-start gap-2">
                                 <span className="shrink-0 font-bold text-zinc-950">✓</span>
-                                <span>{f}</span>
+                                <span><T>{f}</T></span>
                               </li>
                             ))}
                           </ul>
@@ -353,7 +352,7 @@ export function StrategyArchitecture() {
                               : "text-zinc-700 hover:text-black"
                           }`}
                         >
-                          <span>Explore {s.shortName} Feeds</span>
+                          <span>{t("Explore {strategy} Feeds", { strategy: s.shortName })}</span>
                           <span className="transition-transform group-hover:translate-x-1">→</span>
                         </Link>
                       </div>
@@ -371,7 +370,7 @@ export function StrategyArchitecture() {
                 key={idx}
                 type="button"
                 onClick={() => setCurrentIndex(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
+                aria-label={t("Go to slide {number}", { number: idx + 1 })}
                 className={`h-2 transition-all duration-300 rounded-full ${
                   safeIndex === idx
                     ? "w-6 bg-zinc-950"

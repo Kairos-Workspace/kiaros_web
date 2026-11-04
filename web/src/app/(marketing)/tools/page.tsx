@@ -1,3 +1,4 @@
+import { getTranslations } from "@/lib/i18n/server";
 import { Footer } from "@/components/shared/Footer";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { ToolsGrid } from "@/components/tools/ToolsGrid";
@@ -5,11 +6,13 @@ import { getPublishedTools } from "@/lib/tools";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Trading Tools & MT5 EAs (Free Repository)",
-  description:
-    "Free MT5 Expert Advisors, TradingView indicators, and quantitative risk calculators from Kiaros.",
-};
+export async function generateMetadata() {
+  const { t } = await getTranslations();
+  return {
+    title: t("Trading Tools & MT5 EAs (Free Repository)"),
+    description: t("Free MT5 Expert Advisors, TradingView indicators, and quantitative risk calculators from Kiaros."),
+  };
+}
 
 export default async function ToolsPage() {
   const tools = await getPublishedTools();

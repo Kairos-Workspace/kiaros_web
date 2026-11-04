@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { getTranslations } from "@/lib/i18n/server";
 
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SignalsBrowse } from "@/components/signals/SignalsBrowse";
@@ -8,11 +8,13 @@ import {
   parseSignalsBrowseTab,
 } from "@/lib/signals-browse-tabs";
 
-export const metadata: Metadata = {
-  title: "Live Signals Terminal",
-  description:
-    "Live real-time trade signals across sessions (SMC, ICT, BBMA) — entry, stop loss, profit targets, and audited outcomes.",
-};
+export async function generateMetadata() {
+  const { t } = await getTranslations();
+  return {
+    title: t("Live Signals Terminal"),
+    description: t("Live real-time trade signals across sessions (SMC, ICT, BBMA) — entry, stop loss, profit targets, and audited outcomes."),
+  };
+}
 
 export const revalidate = 30;
 

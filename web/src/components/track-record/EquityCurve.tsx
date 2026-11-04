@@ -1,5 +1,7 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+
 import { useId, useMemo, useState } from "react";
 import type { EquityPoint } from "@/lib/track-record";
 
@@ -28,10 +30,9 @@ export function EquityCurve({ points = [] }: { points?: EquityPoint[] }) {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 mb-3">
           📈
         </div>
-        <p className="font-mono text-sm font-bold text-zinc-950">Generating Equity Curve</p>
+        <p className="font-mono text-sm font-bold text-zinc-950"><T>{"Generating Equity Curve"}</T></p>
         <p className="mx-auto mt-1 max-w-sm text-xs text-zinc-500">
-          Cumulative R trajectory requires at least 2 finalized trade settlements to plot the slope.
-        </p>
+          <T>{"Cumulative R trajectory requires at least 2 finalized trade settlements to plot the slope."}</T></p>
       </div>
     );
   }
@@ -80,35 +81,31 @@ export function EquityCurve({ points = [] }: { points?: EquityPoint[] }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-500">
-              Cumulative Growth Curve
-            </span>
+              <T>{"Cumulative Growth Curve"}</T></span>
             <span className="rounded bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-800">
-              AUDITED R-MULTIPLE
-            </span>
+              <T>{"AUDITED R-MULTIPLE"}</T></span>
           </div>
           <p className="mt-1 text-xs text-zinc-500">
-            Realized cumulative risk-reward yield across {data.length} audited trade executions
-          </p>
+            <T>{"Realized cumulative risk-reward yield across"}</T>{" "}{data.length} <T>{"audited trade executions"}</T></p>
         </div>
 
         {/* Hover inspector HUD */}
         <div className="flex items-center gap-4 bg-zinc-50 rounded-xl p-2.5 border border-zinc-200 font-mono">
           <div>
-            <span className="text-[10px] uppercase font-bold text-zinc-400 block">Inspected R</span>
+            <span className="text-[10px] uppercase font-bold text-zinc-400 block"><T>{"Inspected R"}</T></span>
             <span className={`text-base font-black ${activePoint.r >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
               {activePoint.r >= 0 ? "+" : ""}
-              {activePoint.r.toFixed(2)}R
-            </span>
+              {activePoint.r.toFixed(2)}<T>{"R"}</T></span>
           </div>
           <div className="border-l border-zinc-200 pl-4">
-            <span className="text-[10px] uppercase font-bold text-zinc-400 block">Trade #</span>
+            <span className="text-[10px] uppercase font-bold text-zinc-400 block"><T>{"Trade #"}</T></span>
             <span className="text-base font-black text-zinc-950">
               {hoverIndex !== null ? `#${hoverIndex + 1}` : `#${data.length}`}
             </span>
           </div>
           {activePoint.t && (
             <div className="border-l border-zinc-200 pl-4 hidden md:block">
-              <span className="text-[10px] uppercase font-bold text-zinc-400 block">Date</span>
+              <span className="text-[10px] uppercase font-bold text-zinc-400 block"><T>{"Date"}</T></span>
               <span className="text-xs font-bold text-zinc-600">
                 {activePoint.t.split("T")[0]}
               </span>
@@ -219,22 +216,22 @@ export function EquityCurve({ points = [] }: { points?: EquityPoint[] }) {
       {/* Footer Metrics */}
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 border-t border-zinc-100 pt-4 font-mono text-center">
         <div>
-          <span className="text-[10px] uppercase font-bold text-zinc-400 block">Peak Return</span>
-          <span className="text-sm font-black text-emerald-700">+{stats.maxR.toFixed(1)}R</span>
+          <span className="text-[10px] uppercase font-bold text-zinc-400 block"><T>{"Peak Return"}</T></span>
+          <span className="text-sm font-black text-emerald-700">+{stats.maxR.toFixed(1)}<T>{"R"}</T></span>
         </div>
         <div>
-          <span className="text-[10px] uppercase font-bold text-zinc-400 block">Max Drawdown</span>
+          <span className="text-[10px] uppercase font-bold text-zinc-400 block"><T>{"Max Drawdown"}</T></span>
           <span className="text-sm font-black text-zinc-700">
-            {stats.minR < 0 ? `${stats.minR.toFixed(1)}R` : "0.0R"}
+            <T>{stats.minR < 0 ? `${stats.minR.toFixed(1)}R` : "0.0R"}</T>
           </span>
         </div>
         <div>
-          <span className="text-[10px] uppercase font-bold text-zinc-400 block">Current Multiple</span>
-          <span className="text-sm font-black text-emerald-800">+{stats.currentR.toFixed(1)}R</span>
+          <span className="text-[10px] uppercase font-bold text-zinc-400 block"><T>{"Current Multiple"}</T></span>
+          <span className="text-sm font-black text-emerald-800">+{stats.currentR.toFixed(1)}<T>{"R"}</T></span>
         </div>
         <div>
-          <span className="text-[10px] uppercase font-bold text-zinc-400 block">Total Plotted</span>
-          <span className="text-sm font-black text-zinc-950">{stats.total} Executions</span>
+          <span className="text-[10px] uppercase font-bold text-zinc-400 block"><T>{"Total Plotted"}</T></span>
+          <span className="text-sm font-black text-zinc-950">{stats.total} <T>{"Executions"}</T></span>
         </div>
       </div>
     </div>

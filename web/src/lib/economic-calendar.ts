@@ -346,6 +346,7 @@ export async function getAllPredictions(): Promise<Record<string, EconomicPredic
           apikey: cfg.key,
           Authorization: `Bearer ${cfg.key}`,
         },
+        signal: AbortSignal.timeout(2500),
         next: { revalidate: 30, tags: ["economic-predictions"] },
       });
       if (res.ok) {

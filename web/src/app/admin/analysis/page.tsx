@@ -1,3 +1,6 @@
+import { getTranslations } from "@/lib/i18n/server";
+
+import { T } from "@/components/i18n/T";
 import type { Metadata } from "next";
 
 import { AdminAnalysisSections } from "@/components/admin/AdminAnalysisSections";
@@ -6,9 +9,12 @@ import { requireAdminPage } from "@/lib/admin-guard";
 import { listAllAnalysesForAdmin } from "@/lib/analysis";
 import { isR2Configured } from "@/lib/r2";
 
-export const metadata: Metadata = {
-  title: "Admin · Daily Analysis",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return {
+    title: t("Admin · Daily Analysis"),
+  };
+}
 
 export const revalidate = 0;
 
@@ -31,9 +37,9 @@ export default async function AdminAnalysisPage({
 
   return (
     <div className="flex w-full flex-col gap-5">
-      {error ? <Notice tone="error">{error}</Notice> : null}
-      {saved ? <Notice tone="success">Daily analysis published / updated successfully.</Notice> : null}
-      {deleted ? <Notice tone="success">Analysis record deleted successfully.</Notice> : null}
+      {error ? <Notice tone="error"><T>{error}</T></Notice> : null}
+      {saved ? <Notice tone="success"><T>{"Daily analysis published / updated successfully."}</T></Notice> : null}
+      {deleted ? <Notice tone="success"><T>{"Analysis record deleted successfully."}</T></Notice> : null}
 
       {/* Tabbed Sections: Library & Upload */}
       <AdminAnalysisSections

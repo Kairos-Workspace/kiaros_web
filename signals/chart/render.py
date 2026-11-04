@@ -4,6 +4,7 @@ mplfinance places candles at integer x-positions (0..n-1). Annotations carry
 candle open_times, so we map each time to its x-index before drawing.
 """
 import io
+import threading
 from datetime import datetime, timezone
 
 import matplotlib
@@ -309,6 +310,9 @@ def _setup_title(signal) -> str:
     return title
 
 
+_CHART_LOCK = threading.Lock()
+
+
 def render_chart(candles, plan, signal, title=None) -> bytes:
     """Render setup candles + annotations to PNG bytes.
 
@@ -324,15 +328,16 @@ def render_chart(candles, plan, signal, title=None) -> bytes:
     `title` overrides the default headline for callers with no confidence score
     to show, such as a backtest replay.
     """
-    view = view_for_plan(candles, plan)
-    fig, ax, x_of, last_x = _base_plot(view)
-    _draw(ax, plan, x_of, last_x)
-    ax.set_ylim(*_price_bounds(view, plan))
-    ax.set_title(
-        title or _setup_title(signal),
-        color=_TEXT, fontsize=15, fontweight="bold", loc="left", pad=12,
-    )
-    return _to_png(fig)
+    with _CHART_LOCK:
+        view = view_for_plan(candles, plan)
+        fig, ax, x_of, last_x = _base_plot(view)
+        _draw(ax, plan, x_of, last_x)
+        ax.set_ylim(*_price_bounds(view, plan))
+        ax.set_title(
+            title or _setup_title(signal),
+            color=_TEXT, fontsize=15, fontweight="bold", loc="left", pad=12,
+        )
+        return _to_png(fig)
 
 
 OUTCOME_MAX_BARS = 100
@@ -426,27 +431,28 @@ def render_outcome_chart(candles, plan, signal_row, entry_time, outcome,
     `max_bars` widens the window past OUTCOME_MAX_BARS. The default view starts
     a few bars before entry so the SL/TP path stays on-screen.
     """
-    exit_time = None
-    for a in plan or ():
-        if a.get("kind") == "zone" and a.get("end_time") is not None:
-            exit_time = a["end_time"]
-            break
-    view = view_for_outcome(
-        candles, entry_time, max_bars=max_bars or OUTCOME_MAX_BARS,
-        exit_time=exit_time,
-    )
-    fig, ax, x_of, last_x = _base_plot(view)
-    entry_x = x_of.get(entry_time)
-    if entry_x is not None:
-        ax.axvspan(-0.5, entry_x - 0.5, color="#94a3b8", alpha=0.05, zorder=0)
-        ax.axvline(
-            entry_x, color="#64748b", linestyle=(0, (2, 3)),
-            linewidth=1.1, zorder=1,
+    with _CHART_LOCK:
+        exit_time = None
+        for a in plan or ():
+            if a.get("kind") == "zone" and a.get("end_time") is not None:
+                exit_time = a["end_time"]
+                break
+        view = view_for_outcome(
+            candles, entry_time, max_bars=max_bars or OUTCOME_MAX_BARS,
+            exit_time=exit_time,
         )
-    _draw(ax, plan, x_of, last_x)
-    ax.set_ylim(*_price_bounds(view, plan))
-    ax.set_title(
-        title or _outcome_title(signal_row, outcome),
-        color=_TEXT, fontsize=15, fontweight="bold", loc="left", pad=12,
-    )
-    return _to_png(fig)
+        fig, ax, x_of, last_x = _base_plot(view)
+        entry_x = x_of.get(entry_time)
+        if entry_x is not None:
+            ax.axvspan(-0.5, entry_x - 0.5, color="#94a3b8", alpha=0.05, zorder=0)
+            ax.axvline(
+                entry_x, color="#64748b", linestyle=(0, (2, 3)),
+                linewidth=1.1, zorder=1,
+            )
+        _draw(ax, plan, x_of, last_x)
+        ax.set_ylim(*_price_bounds(view, plan))
+        ax.set_title(
+            title or _outcome_title(signal_row, outcome),
+            color=_TEXT, fontsize=15, fontweight="bold", loc="left", pad=12,
+        )
+        return _to_png(fig)

@@ -34,7 +34,8 @@ input int    ChartBarsVisible  = 60;    // left pad for annotation lines
 input int    ChartScale        = 2;     // normal MT5 zoom (0=max in … 5=out)
 
 double   lastSentMid    = 0.0;
-uint     lastSentTick   = 0;
+ulong    lastSentTick   = 0;
+int      tickFailCount  = 0;
 datetime lastClosedBar  = 0;
 datetime lastChartPoll  = 0;
 long     ticksSeen      = 0;
@@ -60,13 +61,13 @@ string AuthHeadersGet()
    return "Authorization: Bearer " + WebhookSecret + "\r\n";
   }
 
-int HttpPost(const string url, const string body, string &responseBody)
+int HttpPost(const string url, const string body, string &responseBody, const int timeoutMs = 2500)
   {
    char post[];
    char result[];
    string resultHeaders;
    StringToCharArray(body, post, 0, StringLen(body));
-   int status = WebRequest("POST", url, AuthHeaders(), 30000, post, result, resultHeaders);
+   int status = WebRequest("POST", url, AuthHeaders(), timeoutMs, post, result, resultHeaders);
    responseBody = CharArrayToString(result, 0, WHOLE_ARRAY, CP_UTF8);
    return status;
   }
@@ -937,33 +938,38 @@ void OnTick()
    if(bid <= 0.0 || ask <= 0.0 || ask < bid)
       return;
    double mid = (bid + ask) * 0.5;
-   bool dueToSend = GetTickCount() - lastSentTick >= (uint)MinIntervalMs
+   ulong nowTick = GetTickCount64();
+   ulong backoffMs = tickFailCount > 0 ? (ulong)MathMin(10000, 1000 * MathPow(2, tickFailCount)) : (ulong)MinIntervalMs;
+   bool dueToSend = (nowTick - lastSentTick >= backoffMs)
                     && (MinPriceMove <= 0.0 || MathAbs(mid - lastSentMid) >= MinPriceMove);
 
    if(dueToSend)
      {
+      lastSentTick = nowTick;
       string body = StringFormat(
          "{\"symbol\":\"%s\",\"bid\":%.5f,\"ask\":%.5f,\"mid\":%.5f,\"price\":%.5f,\"time\":%d}",
          AppSymbol, bid, ask, mid, mid, (int)TimeCurrent());
 
       string resp = "";
-      lastStatus = HttpPost(ApiUrl, body, resp);
+      lastStatus = HttpPost(ApiUrl, body, resp, 2500);
 
       if(lastStatus == -1)
         {
          sendsFailed++;
+         tickFailCount = MathMin(tickFailCount + 1, 5);
          Print("KiarosTickPush: tick WebRequest failed, error ", GetLastError());
         }
       else if(lastStatus != 200)
         {
          sendsFailed++;
+         tickFailCount = MathMin(tickFailCount + 1, 5);
          Print("KiarosTickPush: tick API HTTP ", lastStatus);
         }
       else
         {
          sendsOk++;
+         tickFailCount = 0;
          lastSentMid  = mid;
-         lastSentTick = GetTickCount();
         }
      }
    UpdateStatusComment();

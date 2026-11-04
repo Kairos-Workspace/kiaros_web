@@ -1,3 +1,6 @@
+import { getTranslations } from "@/lib/i18n/server";
+
+import { T } from "@/components/i18n/T";
 import type { Metadata } from "next";
 
 import { DeleteSignalButton } from "@/components/admin/DeleteSignalButton";
@@ -15,9 +18,12 @@ import {
 import { ADMIN_SIGNAL_FILTER_OPTIONS } from "@/lib/signals-browse-tabs";
 import { serviceRoleToken } from "@/lib/supabase/admin";
 
-export const metadata: Metadata = {
-  title: "Admin · Signals",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return {
+    title: t("Admin · Signals"),
+  };
+}
 
 export const revalidate = 30;
 
@@ -103,8 +109,8 @@ export default async function AdminSignals({
     <div className="flex w-full flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-zinc-950">{title} ({total})</h1>
-          <p className="mt-1 text-xs text-zinc-500">{subtitle}</p>
+          <h1 className="text-2xl font-black tracking-tight text-zinc-950"><T>{title}</T> ({total})</h1>
+          <p className="mt-1 text-xs text-zinc-500"><T>{subtitle}</T></p>
         </div>
         <ExportSignalsMenu tab={exportTab} disabled={exportableCount === 0} />
       </div>
@@ -123,8 +129,7 @@ export default async function AdminSignals({
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
             <p className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-400">
-              NEURAL CONFLUENCE VALIDATION ACTIVE
-            </p>
+              <T>{"NEURAL CONFLUENCE VALIDATION ACTIVE"}</T> </p>
           </div>
           <p className="mt-1.5 font-mono text-xs text-zinc-300">
             {`Showing ${total} SEA-LION confirmed signal${total === 1 ? "" : "s"} across institutional timeframes.`}
@@ -160,9 +165,9 @@ export default async function AdminSignals({
         </>
       ) : (
         <p className="mt-8 text-sm text-slate">
-          {isLlmTab
+          <T>{isLlmTab
             ? "No LLM-confirmed signals yet."
-            : "No signals found for this category."}
+            : "No signals found for this category."}</T>
         </p>
       )}
     </div>

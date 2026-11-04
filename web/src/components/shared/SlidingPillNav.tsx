@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
 
 export type PillNavOption = {
   id: string;
@@ -22,11 +23,12 @@ export function SlidingPillNav({
   ariaLabel: string;
   size?: "md" | "sm";
 }) {
+  const { t } = useTranslation();
   const isSm = size === "sm";
 
   return (
     <ul
-      aria-label={ariaLabel}
+      aria-label={t(ariaLabel)}
       className={`flex flex-wrap text-center border-b border-zinc-200 text-zinc-600 ${
         isSm ? "text-xs font-medium" : "text-sm font-medium"
       }`}
@@ -41,7 +43,7 @@ export function SlidingPillNav({
                   isSm ? "px-3 py-2.5" : "p-4"
                 } text-zinc-400 rounded-t-lg cursor-not-allowed`}
               >
-                {opt.label}
+                {t(opt.label)}
               </span>
             </li>
           );
@@ -62,7 +64,7 @@ export function SlidingPillNav({
                   : "text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100"
               }`}
             >
-              {opt.label}
+              {t(opt.label)}
             </Link>
           </li>
         );

@@ -36,8 +36,10 @@ const URL_PATTERN = /^https?:\/\/.+/i;
 
 async function requireAdmin(): Promise<void> {
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  if (!isAdminEmail(data.user?.email)) redirect("/dashboard?admin=denied");
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error || !user?.email || !user.email_confirmed_at || !isAdminEmail(user.email)) {
+    redirect("/dashboard?admin=denied");
+  }
 }
 
 export async function saveBotSettings(formData: FormData) {

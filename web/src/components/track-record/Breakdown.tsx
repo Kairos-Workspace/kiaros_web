@@ -1,3 +1,4 @@
+import { T } from "@/components/i18n/T";
 import type { BreakdownRow } from "@/lib/track-record";
 
 export function Breakdown({ title, rows = [] }: { title: string; rows: BreakdownRow[] }) {
@@ -9,16 +10,16 @@ export function Breakdown({ title, rows = [] }: { title: string; rows: Breakdown
     <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-xs flex flex-col h-full">
       <div className="flex items-center justify-between border-b border-zinc-100 pb-4 mb-4">
         <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-900">
-          {title}
+          <T>{title}</T>
         </h3>
         <span className="font-mono text-[10px] font-semibold text-zinc-400">
-          {rows.length} {rows.length === 1 ? "Category" : "Categories"}
+          {rows.length} <T>{rows.length === 1 ? "Category" : "Categories"}</T>
         </span>
       </div>
 
       {rows.length === 0 ? (
         <div className="flex-1 flex items-center justify-center py-8 text-center">
-          <p className="text-xs text-zinc-400">No category settlements recorded yet.</p>
+          <p className="text-xs text-zinc-400"><T>{"No category settlements recorded yet."}</T></p>
         </div>
       ) : (
         <ul className="space-y-4">
@@ -32,14 +33,12 @@ export function Breakdown({ title, rows = [] }: { title: string; rows: Breakdown
                       {formatName(r.name)}
                     </span>
                     <span className="text-[11px] text-zinc-400 font-normal">
-                      ({r.count} trades)
-                    </span>
+                      (<T values={{ count: r.count }}>{"{count} trades"}</T>){" "}</span>
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0 tabular-nums">
                     <span className="font-semibold text-zinc-600">
-                      {r.winRate}% WR
-                    </span>
+                      {r.winRate}<T>{"% WR"}</T></span>
                     <span
                       className={`font-black px-2 py-0.5 rounded text-[11px] ${
                         isPositive
@@ -48,8 +47,7 @@ export function Breakdown({ title, rows = [] }: { title: string; rows: Breakdown
                       }`}
                     >
                       {isPositive ? "+" : ""}
-                      {r.netR.toFixed(1)}R
-                    </span>
+                      {r.netR.toFixed(1)}<T>{"R"}</T></span>
                   </div>
                 </div>
 

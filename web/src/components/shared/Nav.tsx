@@ -1,3 +1,6 @@
+import { T } from "@/components/i18n/T";
+import { LanguageSwitch } from "@/components/i18n/LanguageSwitch";
+import { getTranslations } from "@/lib/i18n/server";
 import Link from "next/link";
 
 import { Logo } from "@/components/shared/Logo";
@@ -16,6 +19,7 @@ const links = [
 ];
 
 export async function Nav() {
+  const { t } = await getTranslations();
   const email = await getSessionEmail();
 
   return (
@@ -24,7 +28,7 @@ export async function Nav() {
       <div
         className="warn-marquee border-b border-amber-200/80 bg-amber-50/95 py-1.5 text-amber-900 backdrop-blur-md overflow-hidden"
         role="region"
-        aria-label="Risk Disclaimer"
+        aria-label={t("Risk Disclaimer")}
       >
         <div className="warn-marquee-track flex items-center">
           {[0, 1].map((copy) => (
@@ -34,14 +38,14 @@ export async function Nav() {
               aria-hidden={copy === 1}
             >
               <span className="inline-flex items-center gap-1 rounded bg-amber-200/80 px-1.5 py-0.5 text-[9px] font-black uppercase text-amber-950 border border-amber-300">
-                ⚠ RISK DISCLAIMER
+                <T>{"⚠ RISK DISCLAIMER"}</T>
               </span>
               <span className="text-amber-950 font-semibold">
-                Trading CFDs, Forex, Gold & Crypto carries significant risk of capital loss.
+                <T>{"Trading CFDs, Forex, Gold & Crypto carries significant risk of capital loss."}</T>
               </span>
               <span className="text-amber-400">•</span>
               <span className="text-amber-900">
-                All signals, algorithms, and quantitative models on Kiaros are strictly for educational & research purposes only — not financial advice.
+                <T>{"All signals, algorithms, and quantitative models on Kiaros are strictly for educational & research purposes only — not financial advice."}</T>
               </span>
             </div>
           ))}
@@ -53,7 +57,7 @@ export async function Nav() {
         <div className="page-container flex h-16 items-center justify-between">
           <Logo />
 
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-1 xl:flex">
             {links.map((l) => (
               <Link
                 key={l.href}
@@ -61,50 +65,51 @@ export async function Nav() {
                 prefetch
                 className="group relative flex items-center rounded-lg px-3.5 py-2 text-sm font-semibold text-zinc-600 transition-all hover:bg-zinc-100 hover:text-zinc-950"
               >
-                <span>{l.label}</span>
+                <span><T>{l.label}</T></span>
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
+            <LanguageSwitch />
             {/* Telegram Syndicate VIP Link */}
             <a
               href={TELEGRAM_GROUP_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-zinc-950 px-3.5 py-1.5 font-mono text-xs font-bold text-white transition-all hover:bg-zinc-800 shadow-sm"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-950 px-2 py-1.5 sm:px-3.5 font-mono text-xs font-bold text-white transition-all hover:bg-zinc-800 shadow-sm"
             >
               <TelegramIcon size={14} />
-              <span className="hidden sm:inline">JOIN TELEGRAM</span>
-              <span className="sm:hidden">TELEGRAM</span>
-              <span className="rounded bg-zinc-800 px-1 py-0.2 font-mono text-[9px] text-zinc-200">
-                FREE
+              <span className="hidden sm:inline"><T>{"JOIN TELEGRAM"}</T></span>
+              <span className="sr-only sm:hidden"><T>{"TELEGRAM"}</T></span>
+              <span className="hidden sm:inline rounded bg-zinc-800 px-1 py-0.2 font-mono text-[9px] text-zinc-200">
+                <T>{"FREE"}</T>
               </span>
             </a>
 
             {email && isAdminEmail(email) ? (
               <Link href="/admin" className="btn-secondary py-1.5! px-3! text-xs!">
-                Admin Console
+                <T>{"Admin Console"}</T>
               </Link>
             ) : null}
 
             {!email && SHOW_LOGIN_LINK ? (
               <Link href="/login" className="btn-secondary py-1.5! px-3! text-xs!">
-                Sign In
+                <T>{"Sign In"}</T>
               </Link>
             ) : null}
           </div>
         </div>
 
         {/* Mobile Navigation Bar - Horizontally Scrollable Pill Rail */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none border-t border-zinc-200/90 bg-white/95 px-3 py-2 md:hidden">
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none border-t border-zinc-200/90 bg-white/95 px-3 py-2 xl:hidden">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               className="shrink-0 flex items-center rounded-lg px-3 py-1 text-xs font-semibold text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950 whitespace-nowrap active:bg-zinc-200"
             >
-              <span>{l.label}</span>
+              <span><T>{l.label}</T></span>
             </Link>
           ))}
         </div>

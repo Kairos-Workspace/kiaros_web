@@ -176,6 +176,7 @@ async function fetchRows(
           // the anon key alone only sees the 24-hour preview.
           Authorization: `Bearer ${accessToken ?? config.anonKey}`,
         },
+        signal: AbortSignal.timeout(2500),
         ...PUBLIC_FETCH,
       },
     );
@@ -205,6 +206,7 @@ async function callRpc<T>(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(params),
+      signal: AbortSignal.timeout(2500),
       ...PUBLIC_FETCH,
     });
     if (!response.ok) return null;
@@ -234,6 +236,7 @@ async function fetchRowsPaginated(
           Range: `${offset}-${rangeEnd}`,
           Prefer: "count=exact",
         },
+        signal: AbortSignal.timeout(2500),
         ...PUBLIC_FETCH,
       },
     );

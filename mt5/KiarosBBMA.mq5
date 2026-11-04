@@ -712,8 +712,13 @@ void OnTick()
      }
 
    datetime barTime = iTime(_Symbol, PERIOD_H1, 1); // last closed H1
-   if(barTime == 0 || barTime == lastEvaluatedBar) return;
-   lastEvaluatedBar = barTime;
+   if(barTime == 0) return;
+
+   static datetime failedBar = 0;
+   static ulong    lastRetryTick = 0;
+
+   if(barTime == lastEvaluatedBar) return;
+   if(barTime == failedBar && GetTickCount64() - lastRetryTick < 15000) return;
 
    string direction = "", strategy = "", trigger = "", side = "";
    double entry = 0, stop = 0, tp1 = 0, tp2 = 0, tp3 = 0;
@@ -725,11 +730,26 @@ void OnTick()
    if(found)
      {
       PinSignal(direction, entry, stop, tp1, strategy, 1, true);
-      Publish(direction, entry, stop, tp1, tp2, tp3, strategy, trigger, side, bias);
+      bool pubOk = Publish(direction, entry, stop, tp1, tp2, tp3, strategy, trigger, side, bias);
+      if(pubOk)
+        {
+         lastEvaluatedBar = barTime;
+         failedBar = 0;
+        }
+      else
+        {
+         failedBar = barTime;
+         lastRetryTick = GetTickCount64();
+         Print("KiarosBBMA: Publish failed for bar ", TimeToString(barTime), ". Will retry in 15s.");
+        }
      }
    else
+     {
+      lastEvaluatedBar = barTime;
+      failedBar = 0;
       lastStatus = StringFormat("no setup (H4 %s)",
          bias > 0 ? "up" : (bias < 0 ? "down" : "flat"));
+     }
 
    UpdateComment();
   }

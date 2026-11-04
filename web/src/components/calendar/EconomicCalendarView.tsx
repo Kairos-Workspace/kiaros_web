@@ -1,4 +1,7 @@
 "use client";
+
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
 import { Fragment, useMemo, useState } from "react";
 import type { EconomicCalendarEvent, EconomicPrediction } from "@/lib/economic-calendar";
 import { isEventReleased } from "@/lib/economic-calendar-utils";
@@ -26,6 +29,7 @@ export function EconomicCalendarView({
 }: {
   initialEvents?: EconomicCalendarEvent[];
 }) {
+  const { t, locale } = useTranslation();
   const [impactFilter, setImpactFilter] = useState<"ALL" | "HIGH" | "MEDIUM">("ALL");
   const [dayFilter, setDayFilter] = useState<"all" | "today" | "tomorrow" | "this-week">("today");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "UPCOMING" | "RELEASED">("ALL");
@@ -83,7 +87,7 @@ export function EconomicCalendarView({
                   : "text-zinc-500 hover:text-zinc-800"
               }`}
             >
-              {tab.label}
+              <T>{tab.label}</T>
             </button>
           ))}
         </div>
@@ -109,7 +113,7 @@ export function EconomicCalendarView({
                     : "text-zinc-500 hover:text-zinc-800"
                 }`}
               >
-                {st.label}
+                <T>{st.label}</T>
                 <span className={`ml-1 text-[10px] ${statusFilter === st.id ? "text-zinc-400" : "text-zinc-400"}`}>
                   {st.count}
                 </span>
@@ -132,7 +136,7 @@ export function EconomicCalendarView({
               >
                 {imp === "HIGH" && <span className="h-1.5 w-1.5 rounded-full bg-rose-500 shrink-0" />}
                 {imp === "MEDIUM" && <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />}
-                {imp === "HIGH" ? "High" : imp === "MEDIUM" ? "Medium+" : "All Impact"}
+                <T>{imp === "HIGH" ? "High" : imp === "MEDIUM" ? "Medium+" : "All Impact"}</T>
               </button>
             ))}
           </div>
@@ -145,14 +149,14 @@ export function EconomicCalendarView({
           <table className="w-full text-left text-[13px]">
             <thead>
               <tr className="border-b border-zinc-200 bg-zinc-50/80">
-                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Time</th>
-                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Currency</th>
-                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Event</th>
-                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Impact</th>
-                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Actual</th>
-                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Forecast</th>
-                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Previous</th>
-                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">AI Insight</th>
+                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400"><T>{"Time"}</T></th>
+                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400"><T>{"Currency"}</T></th>
+                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400"><T>{"Event"}</T></th>
+                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400"><T>{"Impact"}</T></th>
+                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400"><T>{"Actual"}</T></th>
+                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400"><T>{"Forecast"}</T></th>
+                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400"><T>{"Previous"}</T></th>
+                <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400"><T>{"AI Insight"}</T></th>
               </tr>
             </thead>
             <tbody>
@@ -165,7 +169,7 @@ export function EconomicCalendarView({
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                       </div>
-                      <p className="text-sm font-medium text-zinc-500">No events found</p>
+                      <p className="text-sm font-medium text-zinc-500"><T>{"No events found"}</T></p>
                       <button
                         type="button"
                         onClick={() => {
@@ -175,8 +179,7 @@ export function EconomicCalendarView({
                         }}
                         className="text-xs text-zinc-400 hover:text-zinc-700 underline underline-offset-4 cursor-pointer transition-colors"
                       >
-                        Clear all filters
-                      </button>
+                        <T>{"Clear all filters"}</T></button>
                     </div>
                   </td>
                 </tr>
@@ -200,7 +203,7 @@ export function EconomicCalendarView({
                         <span className={`font-semibold ${isOut ? "text-zinc-400" : "text-zinc-900"}`}>
                           {evt.time}
                         </span>
-                        <span className="text-[10px] text-zinc-400 block">{evt.dateFormatted}</span>
+                        <span className="text-[10px] text-zinc-400 block">{evt.rawDate ? new Date(evt.rawDate).toLocaleDateString(locale === "km" ? "km-KH" : "en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }) : evt.dateFormatted}</span>
                       </td>
 
                       {/* Currency */}
@@ -219,7 +222,7 @@ export function EconomicCalendarView({
                       {/* Event */}
                       <td className="px-5 py-3.5">
                         <span className={`font-semibold ${isOut ? "text-zinc-400" : "text-zinc-900"}`}>
-                          {evt.event}
+                          <T>{evt.event}</T>
                         </span>
                       </td>
 
@@ -238,7 +241,7 @@ export function EconomicCalendarView({
                             }`}
                           />
                           <span className={`text-[11px] font-medium capitalize ${isOut ? "text-zinc-400" : "text-zinc-600"}`}>
-                            {evt.impact?.toLowerCase()}
+                            <T>{evt.impact?.toLowerCase() ?? ""}</T>
                           </span>
                         </div>
                       </td>
@@ -270,8 +273,7 @@ export function EconomicCalendarView({
                         ) : (
                           <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-600">
                             <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-                            Pending
-                          </span>
+                            <T>{"Pending"}</T></span>
                         )}
                       </td>
 
@@ -298,7 +300,7 @@ export function EconomicCalendarView({
                             }`}
                           >
                             {!isOut && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />}
-                            {evt.prediction?.bias}
+                            <T>{evt.prediction?.bias ?? ""}</T>
                             <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
@@ -311,7 +313,7 @@ export function EconomicCalendarView({
                               ? "text-rose-600 font-semibold"
                               : "text-zinc-400"
                           }`}>
-                            {isOut ? "—" : (evt.algoAction || "—")}
+                            <T>{isOut ? "—" : (evt.algoAction || "—")}</T>
                           </span>
                         )}
                       </td>
@@ -337,17 +339,16 @@ export function EconomicCalendarView({
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-100 bg-white/95 backdrop-blur-sm px-6 py-4 rounded-t-2xl">
               <div>
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600">
-                  Gemini AI Outlook
-                </span>
+                  <T>{"Gemini AI Outlook"}</T></span>
                 <h3 className="text-lg font-bold text-zinc-950 mt-0.5">
-                  {selectedPrediction.currency} · {selectedPrediction.eventTitle}
+                  {selectedPrediction.currency} · <T>{selectedPrediction.eventTitle}</T>
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedPrediction(null)}
                 className="h-8 w-8 flex items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
-                aria-label="Close prediction details"
+                aria-label={t("Close prediction details")}
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -360,15 +361,15 @@ export function EconomicCalendarView({
               {/* Metric Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="rounded-lg bg-zinc-50 p-3">
-                  <span className="text-[10px] font-medium text-zinc-400 block">Forecast</span>
+                  <span className="text-[10px] font-medium text-zinc-400 block"><T>{"Forecast"}</T></span>
                   <span className="text-sm font-bold text-zinc-900">{selectedPrediction.forecast}</span>
                 </div>
                 <div className="rounded-lg bg-zinc-50 p-3">
-                  <span className="text-[10px] font-medium text-zinc-400 block">Confidence</span>
+                  <span className="text-[10px] font-medium text-zinc-400 block"><T>{"Confidence"}</T></span>
                   <span className="text-sm font-bold text-emerald-600">{selectedPrediction.confidence}%</span>
                 </div>
                 <div className="rounded-lg bg-zinc-50 p-3">
-                  <span className="text-[10px] font-medium text-zinc-400 block">{selectedPrediction.currency} Bias</span>
+                  <span className="text-[10px] font-medium text-zinc-400 block">{selectedPrediction.currency} <T>{"Bias"}</T></span>
                   <span
                     className={`text-sm font-bold ${
                       selectedPrediction.bias === "BULLISH"
@@ -378,11 +379,11 @@ export function EconomicCalendarView({
                         : "text-zinc-600"
                     }`}
                   >
-                    {selectedPrediction.bias}
+                    <T>{selectedPrediction.bias}</T>
                   </span>
                 </div>
                 <div className="rounded-lg bg-amber-50/80 p-3">
-                  <span className="text-[10px] font-medium text-amber-700 block">Gold Bias</span>
+                  <span className="text-[10px] font-medium text-amber-700 block"><T>{"Gold Bias"}</T></span>
                   <span
                     className={`text-sm font-bold ${
                       selectedPrediction.goldImpact === "BULLISH"
@@ -400,8 +401,7 @@ export function EconomicCalendarView({
               {/* Predicted Figure */}
               <div className="rounded-lg bg-zinc-50 p-4">
                 <h4 className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">
-                  Predicted Figure
-                </h4>
+                  <T>{"Predicted Figure"}</T></h4>
                 <p className="text-sm font-medium text-zinc-900 leading-relaxed">
                   {selectedPrediction.predictedOutcome}
                 </p>
@@ -410,8 +410,7 @@ export function EconomicCalendarView({
               {/* Executive Summary */}
               <div>
                 <h4 className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                  Executive Summary
-                </h4>
+                  <T>{"Executive Summary"}</T></h4>
                 <p className="text-[13px] text-zinc-700 leading-relaxed">
                   {selectedPrediction.summary}
                 </p>
@@ -420,8 +419,7 @@ export function EconomicCalendarView({
               {/* Macro Analysis */}
               <div className="rounded-lg bg-zinc-50 p-4">
                 <h4 className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-                  Macro Analysis
-                </h4>
+                  <T>{"Macro Analysis"}</T></h4>
                 <div className="text-[13px] text-zinc-700 leading-relaxed whitespace-pre-line">
                   {selectedPrediction.macroAnalysis}
                 </div>
@@ -430,8 +428,7 @@ export function EconomicCalendarView({
               {/* Trading Playbook */}
               <div className="rounded-lg border border-amber-100 bg-amber-50/50 p-4">
                 <h4 className="text-[10px] font-semibold uppercase tracking-wider text-amber-700 mb-2">
-                  Execution & Risk Advisory
-                </h4>
+                  <T>{"Execution & Risk Advisory"}</T></h4>
                 <div className="text-[13px] text-amber-950 leading-relaxed whitespace-pre-line">
                   {selectedPrediction.tradingPlaybook}
                 </div>
@@ -446,8 +443,7 @@ export function EconomicCalendarView({
                 onClick={() => setSelectedPrediction(null)}
                 className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors cursor-pointer"
               >
-                Close
-              </button>
+                <T>{"Close"}</T></button>
             </div>
           </div>
         </div>

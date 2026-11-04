@@ -1,3 +1,4 @@
+import { getTranslations } from "@/lib/i18n/server";
 import Image from "next/image";
 
 interface PhoneMockupProps {
@@ -7,12 +8,13 @@ interface PhoneMockupProps {
   sizeClass?: string;
 }
 
-export function PhoneMockup({
+export async function PhoneMockup({
   imageSrc = "/assets/signal_screen.png",
   imageAlt = "Kiaros AI Signal Telegram Broadcast",
   className = "",
   sizeClass = "w-[280px] sm:w-[310px] md:w-[325px] xl:w-[340px]",
 }: PhoneMockupProps) {
+  const { t } = await getTranslations();
   return (
     <div className={`relative mx-auto flex items-center justify-center ${className}`}>
       {/* Ambient background glow behind the phone */}
@@ -37,7 +39,7 @@ export function PhoneMockup({
             {/* The Actual Signal Screen Image */}
             <Image
               src={imageSrc}
-              alt={imageAlt}
+              alt={t(imageAlt)}
               width={1181}
               height={2560}
               priority

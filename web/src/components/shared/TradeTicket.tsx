@@ -1,3 +1,7 @@
+"use client";
+
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
 import type { Signal } from "@/lib/signals";
 import { formatPrice, formatRelativeTime, formatTimeframe } from "@/lib/format";
 
@@ -12,7 +16,7 @@ function DirectionBadge({ direction }: { direction: Signal["direction"] }) {
       }`}
     >
       <span aria-hidden>{isLong ? "▲" : "▼"}</span>
-      <span>{isLong ? "BUY" : "SELL"}</span>
+      <span><T>{isLong ? "BUY" : "SELL"}</T></span>
     </span>
   );
 }
@@ -28,8 +32,7 @@ function StatusBadge({
   if (status === "expired") {
     return (
       <span className="inline-flex items-center rounded-md border border-zinc-200 bg-zinc-100 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-600">
-        Expired
-      </span>
+        <T>{"Expired"}</T></span>
     );
   }
   // Open partials (no closedAt) stay emerald; closed TP1/TP2 wins go green.
@@ -37,7 +40,7 @@ function StatusBadge({
     return (
       <span className="inline-flex items-center gap-1 rounded-md border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-800 shadow-2xs">
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
-        <span>{status === "tp1_hit" ? "TP1 Hit" : "TP2 Hit"}</span>
+        <span><T>{status === "tp1_hit" ? "TP1 Hit" : "TP2 Hit"}</T></span>
       </span>
     );
   }
@@ -60,14 +63,15 @@ function StatusBadge({
           : "border-rose-300 bg-rose-50 text-rose-800"
       }`}
     >
-      <span>{label}</span>
+      <span><T>{label}</T></span>
     </span>
   );
 }
 
 function ConfidenceGauge({ value }: { value: number }) {
+  const { t } = useTranslation();
   return (
-    <div className="flex items-center gap-2" title={`Neural Confluence ${value}/100`}>
+    <div className="flex items-center gap-2" title={t("Neural Confluence {value}/100", { value })}>
       <div className="h-1.5 w-16 overflow-hidden rounded-full bg-zinc-200">
         <div
           className="h-full rounded-full bg-zinc-900 transition-all duration-300"
@@ -105,7 +109,7 @@ function PriceCell({
   return (
     <div className={`flex flex-col gap-1 rounded-xl border p-2.5 transition-colors ${bgBorderClass}`}>
       <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-500">
-        {label}
+        <T>{label}</T>
       </span>
       <span className={`font-mono text-sm tracking-tight ${toneClass}`}>
         {formatPrice(value)}
@@ -125,6 +129,7 @@ export function TradeTicket({
   showRationale?: boolean;
   adminSlot?: React.ReactNode;
 }) {
+  const { locale } = useTranslation();
   const isLong = signal.direction === "long";
 
   return (
@@ -176,9 +181,8 @@ export function TradeTicket({
         <div className="border-t border-zinc-100 bg-zinc-50/60 px-4 py-3 text-xs leading-relaxed text-zinc-600">
           <div className="flex items-start gap-2">
             <span className="rounded bg-zinc-900 px-1.5 py-0.5 font-mono text-[9px] font-black uppercase text-white shrink-0 mt-0.5">
-              QUANT THESIS
-            </span>
-            <span className="text-zinc-700 font-medium">{signal.rationale}</span>
+              <T>{"QUANT THESIS"}</T></span>
+            <span className="text-zinc-700 font-medium"><T>{signal.rationale}</T></span>
           </div>
         </div>
       ) : null}
@@ -187,13 +191,12 @@ export function TradeTicket({
       <div className="flex items-center justify-between border-t border-zinc-100 bg-white px-4 py-2.5 font-mono text-xs text-zinc-500">
         <span className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
-          <span>{sample ? "example signal" : formatRelativeTime(signal.createdAt)}</span>
+          <span><T>{sample ? "example signal" : formatRelativeTime(signal.createdAt, undefined, locale)}</T></span>
         </span>
         <div className="flex items-center gap-3">
           {signal.newsHeadlines && signal.newsHeadlines.length > 0 ? (
             <span className="rounded bg-zinc-100 border border-zinc-200 px-2 py-0.5 text-[10px] text-zinc-700">
-              {signal.newsHeadlines.length} Headlines Checked
-            </span>
+              {signal.newsHeadlines.length} <T>{"Headlines Checked"}</T></span>
           ) : null}
           {adminSlot}
         </div>

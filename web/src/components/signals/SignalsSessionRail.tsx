@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import { SlidingPillNav } from "@/components/shared/SlidingPillNav";
 import {
   SIGNAL_FILTER_OPTIONS,
@@ -17,11 +19,12 @@ export function SignalsSessionRail({
   basePath: string;
   options?: SignalFilterOption[];
 }) {
+  const { t } = useTranslation();
   return (
     <SlidingPillNav
-      ariaLabel="Sessions"
+      ariaLabel={t("Sessions")}
       activeId={tab}
-      options={options}
+      options={options.map((option) => ({ ...option, label: t(option.label), hint: t(option.hint) }))}
       hrefFor={(id) => (id === "all" ? basePath : `${basePath}?tab=${id}`)}
     />
   );

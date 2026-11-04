@@ -40,22 +40,31 @@ export async function proxy(request: NextRequest) {
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    const expiresAtMs = (session?.expires_at ?? 0) * 1000;
-    const needsRefresh =
-      !session ||
-      expiresAtMs - Date.now() < REFRESH_WITHIN_MS ||
-      isAdminPath;
+
+    if (isAdminPath && !session) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
 
     let user = session?.user ?? null;
-    if (needsRefresh) {
-      const {
-        data: { user: verified },
-      } = await supabase.auth.getUser();
-      user = verified;
+    if (session) {
+      const expiresAtMs = (session.expires_at ?? 0) * 1000;
+      const needsRefresh =
+        expiresAtMs - Date.now() < REFRESH_WITHIN_MS || isAdminPath;
+
+      if (needsRefresh) {
+        try {
+          const {
+            data: { user: verified },
+          } = await supabase.auth.getUser();
+          user = verified;
+        } catch {
+          // If auth network check fails, fallback to session user
+        }
+      }
     }
 
     if (isAdminPath) {
-      if (!user?.email) {
+      if (!user?.email || !user.email_confirmed_at) {
         return NextResponse.redirect(new URL("/login", request.url));
       }
       if (!isAdminEmail(user.email)) {
@@ -67,7 +76,11 @@ export async function proxy(request: NextRequest) {
 
     return response;
   } catch {
-    // Never take down the whole site if session refresh fails.
+    // Fail closed on admin routes during auth infrastructure failures
+    if (request.nextUrl.pathname === "/admin" || request.nextUrl.pathname.startsWith("/admin/")) {
+      return NextResponse.redirect(new URL("/login?error=auth_unavailable", request.url));
+    }
+    // Never take down public site if session refresh fails.
     return NextResponse.next({ request });
   }
 }

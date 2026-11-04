@@ -155,8 +155,9 @@ def already_signaled(setup, cfg, timeframe="1h", session=None,
             return True
     if row is None:
         return False
-    # Prefer status when present (open rows always block).
-    if row.get("status") == "open":
+    # Prefer status when present (active open positions always block).
+    status = row.get("status")
+    if status in {"open", "tp1_hit", "tp2_hit"} and not row.get("closed_at"):
         return True
     if row["direction"] != setup.direction:
         return False

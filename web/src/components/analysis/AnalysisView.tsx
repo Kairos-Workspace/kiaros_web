@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import { useState } from "react";
 import Image from "next/image";
 import type { DailyAnalysis } from "@/lib/analysis";
@@ -48,6 +51,7 @@ function extractExecutionPlan(raw: string): ExtractedPlan {
 }
 
 export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
+  const { t, locale } = useTranslation();
   const isGold = (sym: string) => {
     const s = (sym || "").toUpperCase();
     return s === "XAUUSD" || s.includes("XAU") || s.includes("GOLD");
@@ -74,11 +78,9 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
           </svg>
         </div>
         <h3 className="mt-4 text-sm font-bold text-zinc-900">
-          No Analysis Published Yet
-        </h3>
+          <T>{"No Analysis Published Yet"}</T></h3>
         <p className="mt-1.5 text-xs text-zinc-500 max-w-sm mx-auto leading-relaxed">
-          Daily Gold (XAUUSD) analysis will appear here once published. New blueprints are posted ahead of London and New York sessions.
-        </p>
+          <T>{"Daily Gold (XAUUSD) analysis will appear here once published. New blueprints are posted ahead of London and New York sessions."}</T></p>
       </div>
     );
   }
@@ -117,7 +119,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
                   : "text-zinc-500 hover:text-zinc-800"
               }`}
             >
-              {item.session} · {new Date(item.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+              <T>{item.session}</T> · {new Date(item.createdAt).toLocaleDateString(locale === "km" ? "km-KH" : "en-US", { month: "short", day: "numeric" })}
             </button>
           ))}
         </div>
@@ -132,22 +134,22 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
             </h1>
             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-md ${biasColor.bg} ${biasColor.text} ${biasColor.border} border`}>
               <span className={`h-1.5 w-1.5 rounded-full ${biasColor.dot}`} />
-              {selected.bias}
+              <T>{selected.bias}</T>
             </span>
             <span className="text-xs text-zinc-400 font-medium">{selected.timeframe}</span>
             <span className="text-xs text-zinc-400">·</span>
-            <span className="text-xs text-zinc-400 font-medium">{selected.session}</span>
+            <span className="text-xs text-zinc-400 font-medium"><T>{selected.session}</T></span>
           </div>
           <h2 className="text-sm font-medium text-zinc-700 max-w-2xl leading-relaxed">
-            {selected.title}
+            <T>{selected.title}</T>
           </h2>
           <div className="flex items-center gap-2 text-[11px] text-zinc-400">
             <span>{selected.author}</span>
             <span>·</span>
-            <span>{formatRelativeTime(selected.createdAt)}</span>
+            <span>{formatRelativeTime(selected.createdAt, undefined, locale)}</span>
             <span>·</span>
             <span>
-              {new Date(selected.createdAt).toLocaleDateString("en-US", {
+              {new Date(selected.createdAt).toLocaleDateString(locale === "km" ? "km-KH" : "en-US", {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
@@ -165,13 +167,11 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
             {copiedLink ? (
               <>
                 <svg className="h-3.5 w-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                Copied
-              </>
+                <T>{"Copied"}</T></>
             ) : (
               <>
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                Share
-              </>
+                <T>{"Share"}</T></>
             )}
           </button>
           <a
@@ -181,8 +181,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
             className="inline-flex items-center gap-1.5 bg-zinc-900 px-3.5 py-2 text-[11px] font-semibold text-white rounded-lg hover:bg-zinc-800 transition-colors cursor-pointer"
           >
             <TelegramIcon size={13} />
-            Live Alerts
-          </a>
+            <T>{"Live Alerts"}</T></a>
         </div>
       </div>
 
@@ -200,7 +199,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
             >
               <Image
                 src={selected.imageUrl}
-                alt={selected.title}
+                alt={t(selected.title)}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 840px"
@@ -208,28 +207,25 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                 <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 text-white text-[11px] font-medium px-3 py-1.5 rounded-full backdrop-blur-sm">
-                  Click to enlarge
-                </span>
+                  <T>{"Click to enlarge"}</T></span>
               </div>
             </div>
             <div className="flex items-center justify-between border-t border-zinc-100 px-4 py-2 text-[11px] text-zinc-400">
-              <span>{selected.symbol} · {selected.timeframe} · {selected.session}</span>
+              <span>{selected.symbol} · {selected.timeframe} · <T>{selected.session}</T></span>
               <a
                 href={selected.imageUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-zinc-700 transition-colors"
               >
-                Open image ↗
-              </a>
+                <T>{"Open image ↗"}</T></a>
             </div>
           </div>
 
           {/* Technical Analysis */}
           <div className="rounded-xl border border-zinc-200 bg-white p-6">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-4">
-              Technical Analysis
-            </h3>
+              <T>{"Technical Analysis"}</T></h3>
             <div className="space-y-3 text-[13px] leading-relaxed text-zinc-700">
               {formatDescription(selected.description)}
             </div>
@@ -243,8 +239,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
           <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
             <div className="flex items-center justify-between bg-zinc-900 px-4 py-3">
               <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
-                Execution Plan
-              </h3>
+                <T>{"Execution Plan"}</T></h3>
               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
                 selected.bias === "BULLISH"
                   ? "bg-emerald-500/20 text-emerald-300"
@@ -252,7 +247,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
                   ? "bg-rose-500/20 text-rose-300"
                   : "bg-zinc-700 text-zinc-300"
               }`}>
-                {selected.bias}
+                <T>{selected.bias}</T>
               </span>
             </div>
 
@@ -260,7 +255,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
               {/* Trigger */}
               {executionPlan.trigger && (
                 <div className="bg-zinc-50 rounded-lg p-3">
-                  <span className="text-[10px] font-medium text-zinc-400 uppercase block">Trigger</span>
+                  <span className="text-[10px] font-medium text-zinc-400 uppercase block"><T>{"Trigger"}</T></span>
                   <span className="text-[13px] font-semibold text-zinc-900 mt-0.5 block">{executionPlan.trigger}</span>
                 </div>
               )}
@@ -268,7 +263,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
               {/* Entry */}
               {executionPlan.entry && (
                 <div className="flex items-center justify-between rounded-lg border border-zinc-200 p-3">
-                  <span className="text-[11px] font-medium text-zinc-500">Entry Zone</span>
+                  <span className="text-[11px] font-medium text-zinc-500"><T>{"Entry Zone"}</T></span>
                   <span className="text-sm font-bold text-zinc-900">{executionPlan.entry}</span>
                 </div>
               )}
@@ -276,7 +271,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
               {/* Stop Loss */}
               {executionPlan.stopLoss && (
                 <div className="flex items-center justify-between rounded-lg border border-rose-100 bg-rose-50/50 p-3">
-                  <span className="text-[11px] font-medium text-rose-600">Stop Loss</span>
+                  <span className="text-[11px] font-medium text-rose-600"><T>{"Stop Loss"}</T></span>
                   <span className="text-sm font-bold text-rose-700">{executionPlan.stopLoss}</span>
                 </div>
               )}
@@ -289,7 +284,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
                       key={idx}
                       className="flex items-center justify-between rounded-lg border border-emerald-100 bg-emerald-50/50 p-3"
                     >
-                      <span className="text-[11px] font-medium text-emerald-600">TP {idx + 1}</span>
+                      <span className="text-[11px] font-medium text-emerald-600"><T>{"TP"}</T>{" "}{idx + 1}</span>
                       <span className="text-sm font-bold text-emerald-700">{tp}</span>
                     </div>
                   ))}
@@ -299,7 +294,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
               {/* Risk/Reward */}
               {executionPlan.riskReward && (
                 <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-                  <span className="text-[11px] font-medium text-zinc-500">R:R</span>
+                  <span className="text-[11px] font-medium text-zinc-500"><T>{"R:R"}</T></span>
                   <span className="text-sm font-bold text-zinc-900">{executionPlan.riskReward}</span>
                 </div>
               )}
@@ -307,8 +302,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
               {/* Fallback if no execution data */}
               {!executionPlan.trigger && !executionPlan.entry && !executionPlan.stopLoss && executionPlan.targets.length === 0 && (
                 <p className="text-[11px] text-zinc-400 text-center py-4">
-                  Execution details are embedded in the analysis breakdown.
-                </p>
+                  <T>{"Execution details are embedded in the analysis breakdown."}</T></p>
               )}
             </div>
           </div>
@@ -318,11 +312,9 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
             <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
               <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Key Levels
-                </h3>
+                  <T>{"Key Levels"}</T></h3>
                 <span className="text-[10px] font-medium text-zinc-400">
-                  {selected.keyLevels.length} levels
-                </span>
+                  {selected.keyLevels.length} <T>{"levels"}</T></span>
               </div>
 
               <div className="divide-y divide-zinc-100">
@@ -338,13 +330,13 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
                     >
                       <div className="min-w-0">
                         <span className="text-[13px] font-semibold text-zinc-800 block truncate">
-                          {lvl.label}
+                          <T>{lvl.label}</T>
                         </span>
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className={`text-[10px] font-medium capitalize ${
                             isResistance ? "text-rose-500" : isSupport ? "text-emerald-500" : isInvalidation ? "text-amber-500" : "text-zinc-400"
                           }`}>
-                            {lvl.type}
+                            <T>{lvl.type}</T>
                           </span>
                           {lvl.description && (
                             <>
@@ -384,7 +376,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800 bg-zinc-900/80">
               <div className="flex items-center gap-2 text-xs">
                 <span className="font-semibold text-white">{selected.symbol}</span>
-                <span className="text-zinc-500">{selected.timeframe} · {selected.session}</span>
+                <span className="text-zinc-500">{selected.timeframe} · <T>{selected.session}</T></span>
               </div>
               <button
                 type="button"
@@ -401,7 +393,7 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
             <div className="relative flex-1 min-h-[65vh] sm:min-h-[78vh] w-full bg-zinc-950 flex items-center justify-center p-2">
               <Image
                 src={selected.imageUrl}
-                alt={selected.title}
+                alt={t(selected.title)}
                 fill
                 sizes="100vw"
                 className="object-contain"
@@ -410,15 +402,14 @@ export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
 
             {/* Footer */}
             <div className="px-4 py-2 border-t border-zinc-800 bg-zinc-900/80 flex items-center justify-between text-[11px] text-zinc-500">
-              <span>{selected.title}</span>
+              <span><T>{selected.title}</T></span>
               <a
                 href={selected.imageUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-zinc-300 transition-colors"
               >
-                Open original ↗
-              </a>
+                <T>{"Open original ↗"}</T></a>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { T } from "@/components/i18n/T";
+import { useEffect, useRef } from "react";
 
 interface Particle {
   x: number;
@@ -23,7 +24,8 @@ interface Ripple {
 export function InteractiveHeroBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [coords, setCoords] = useState<{ x: number; y: number } | null>(null);
+  const coordsRef = useRef<HTMLSpanElement | null>(null);
+  const hudRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -96,14 +98,21 @@ export function InteractiveHeroBackground() {
       mouse.targetX = x;
       mouse.targetY = y;
       mouse.active = true;
-      setCoords({ x: Math.round(x), y: Math.round(y) });
+      if (coordsRef.current) {
+        coordsRef.current.textContent = `[${Math.round(x).toString().padStart(4, "0")}, ${Math.round(y).toString().padStart(4, "0")}]`;
+      }
+      if (hudRef.current) {
+        hudRef.current.style.opacity = "1";
+      }
     };
 
     const onPointerLeave = () => {
       mouse.active = false;
       mouse.targetX = -1000;
       mouse.targetY = -1000;
-      setCoords(null);
+      if (hudRef.current) {
+        hudRef.current.style.opacity = "0";
+      }
     };
 
     const onPointerDown = (e: PointerEvent) => {
@@ -345,17 +354,19 @@ export function InteractiveHeroBackground() {
         className="block h-full w-full"
       />
 
-      {/* Subtle live coordinate telemetry badge in bottom corner */}
-      {coords && (
-        <div className="pointer-events-none absolute bottom-4 right-4 hidden font-mono text-[10px] tracking-widest text-zinc-400 sm:block">
-          <span className="opacity-60">GRID.LOC </span>
-          <span className="font-semibold text-zinc-600">
-            [{coords.x.toString().padStart(4, "0")}, {coords.y.toString().padStart(4, "0")}]
-          </span>
-          <span className="ml-2.5 opacity-60">STP.LATENCY </span>
-          <span className="font-semibold text-emerald-600">4.2ms</span>
-        </div>
-      )}
+      {/* Subtle live coordinate telemetry badge in bottom corner (zero React re-renders) */}
+      <div
+        ref={hudRef}
+        style={{ opacity: 0, transition: "opacity 0.2s ease" }}
+        className="pointer-events-none absolute bottom-4 right-4 hidden font-mono text-[10px] tracking-widest text-zinc-400 sm:block"
+      >
+        <span className="opacity-60"><T>{"GRID.LOC"}</T> </span>
+        <span ref={coordsRef} className="font-semibold text-zinc-600">
+          [0000, 0000]
+        </span>
+        <span className="ml-2.5 opacity-60"><T>{"STP.LATENCY"}</T> </span>
+        <span className="font-semibold text-emerald-600"><T>{"4.2ms"}</T></span>
+      </div>
     </div>
   );
 }

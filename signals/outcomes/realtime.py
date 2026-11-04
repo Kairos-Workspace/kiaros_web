@@ -27,6 +27,7 @@ import asyncio
 import json
 import os
 import threading
+import time
 
 import requests
 
@@ -160,7 +161,8 @@ async def run_kraken_ws(watcher: RealtimeWatcher) -> None:
                         price = tick.get("last")
                         if symbol is None or price is None:
                             continue
-                        ts_ms = int(asyncio.get_event_loop().time() * 1000)
+                        # Use true wall-clock UTC epoch milliseconds matching sig.created_at
+                        ts_ms = int(time.time() * 1000)
                         await asyncio.to_thread(
                             watcher.handle_tick, symbol, float(price), ts_ms)
         except Exception as exc:

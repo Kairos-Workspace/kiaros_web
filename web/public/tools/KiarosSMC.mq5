@@ -635,8 +635,13 @@ void OnTick()
      }
 
    datetime barTime = iTime(_Symbol, PERIOD_H1, 1);
-   if(barTime == 0 || barTime == lastEvaluatedBar) return;
-   lastEvaluatedBar = barTime;
+   if(barTime == 0) return;
+
+   static datetime failedBar = 0;
+   static ulong    lastRetryTick = 0;
+
+   if(barTime == lastEvaluatedBar) return;
+   if(barTime == failedBar && GetTickCount64() - lastRetryTick < 15000) return;
 
    int bias = HtfBiasAt(1);
    SmcSetup setup;
@@ -645,11 +650,26 @@ void OnTick()
    if(found)
      {
       PinSignal(setup, 1, true);
-      Publish(setup);
+      bool pubOk = Publish(setup);
+      if(pubOk)
+        {
+         lastEvaluatedBar = barTime;
+         failedBar = 0;
+        }
+      else
+        {
+         failedBar = barTime;
+         lastRetryTick = GetTickCount64();
+         Print("KiarosSMC: Publish failed for bar ", TimeToString(barTime), ". Will retry in 15s.");
+        }
      }
    else
+     {
+      lastEvaluatedBar = barTime;
+      failedBar = 0;
       lastStatus = StringFormat("no setup (H4 %s)",
          bias > 0 ? "up" : (bias < 0 ? "down" : "flat"));
+     }
 
    UpdateComment();
   }

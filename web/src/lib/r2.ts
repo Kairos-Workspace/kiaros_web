@@ -131,8 +131,14 @@ export async function deleteAnalysisImage(key: string): Promise<void> {
   }
 
   if (key.startsWith("local:")) {
-    const fileName = key.replace("local:", "");
-    const filePath = path.join(process.cwd(), "public", "uploads", "analysis", fileName);
+    const rawFileName = key.replace(/^local:/, "");
+    const safeBaseName = path.basename(rawFileName);
+    const targetDir = path.resolve(process.cwd(), "public", "uploads", "analysis");
+    const filePath = path.resolve(targetDir, safeBaseName);
+    if (!filePath.startsWith(targetDir + path.sep)) {
+      console.error("[Security] Path traversal attempt in deleteAnalysisImage:", rawFileName);
+      return;
+    }
     try {
       await unlink(filePath);
     } catch {

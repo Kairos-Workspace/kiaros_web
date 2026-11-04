@@ -126,6 +126,7 @@ export async function getPublishedTools(): Promise<Tool[]> {
       "&order=sort_order.asc,created_at.desc";
     const response = await fetch(url, {
       headers: anonHeaders(cfg.anonKey),
+      signal: AbortSignal.timeout(2500),
       ...SLOW_FETCH,
     });
     if (!response.ok) return [];

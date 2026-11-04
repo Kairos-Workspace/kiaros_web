@@ -1,3 +1,4 @@
+import { T } from "@/components/i18n/T";
 import { SignalsGrid } from "@/components/dashboard/SignalsGrid";
 import { AiStrategyRail } from "@/components/signals/AiStrategyRail";
 import { Pagination } from "@/components/shared/Pagination";
@@ -69,19 +70,17 @@ function ComingSoonStrategy({
   return (
     <section className="space-y-5">
       <div>
-        <h2 className="text-xl font-extrabold tracking-tight text-ink">{label}</h2>
-        <p className="mt-1 text-sm text-slate">{hint}</p>
+        <h2 className="text-xl font-extrabold tracking-tight text-ink"><T>{label}</T></h2>
+        <p className="mt-1 text-sm text-slate"><T>{hint}</T></p>
       </div>
       <div className="rounded-2xl border border-dashed border-line bg-card/60 p-12 text-center backdrop-blur-md">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-card text-ink mb-3">
           <span className="h-4 w-4 rounded-full border-2 border-line-highlight border-t-transparent animate-spin" />
         </div>
         <p className="text-sm font-bold text-ink">
-          Strategy {label} Coming Soon
-        </p>
+          <T values={{ strategy: label }}>{"Strategy {strategy} Coming Soon"}</T></p>
         <p className="mx-auto mt-1.5 max-w-sm text-xs text-slate">
-          Signals will appear here when this quantitative model is deployed.
-        </p>
+          <T>{"Signals will appear here when this quantitative model is deployed."}</T></p>
       </div>
     </section>
   );
@@ -114,8 +113,8 @@ async function SessionBlock({
         <SignalsGrid signals={signals} />
       ) : (
         <div className="rounded-xl border border-dashed border-line bg-card px-6 py-14 text-center">
-          <p className="text-sm font-semibold text-ink">No {title} signals yet</p>
-          <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">{emptyHint}</p>
+          <p className="text-sm font-semibold text-ink"><T values={{ strategy: title }}>{"No {strategy} signals yet"}</T></p>
+          <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate"><T>{emptyHint}</T></p>
         </div>
       )}
     </section>
@@ -185,10 +184,9 @@ export async function SignalsBrowse({
             </>
           ) : (
             <div className="rounded-xl border border-dashed border-line bg-card px-6 py-14 text-center">
-              <p className="text-sm font-semibold text-ink">No signals available yet</p>
+              <p className="text-sm font-semibold text-ink"><T>{"No signals available yet"}</T></p>
               <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">
-                New trade setups will appear here as sessions activate.
-              </p>
+                <T>{"New trade setups will appear here as sessions activate."}</T></p>
             </div>
           )}
         </section>
@@ -208,11 +206,11 @@ export async function SignalsBrowse({
             </>
           ) : (
             <div className="rounded-xl border border-dashed border-line bg-card px-6 py-14 text-center">
-              <p className="text-sm font-semibold text-ink">No AI signals yet</p>
+              <p className="text-sm font-semibold text-ink"><T>{"No AI signals yet"}</T></p>
               <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">
-                {strategy === "all"
+                <T>{strategy === "all"
                   ? "New setups will display here as SEA-LION confirms valid market conditions."
-                  : AI_STRATEGY_META[strategy].emptyHint}
+                  : AI_STRATEGY_META[strategy].emptyHint}</T>
               </p>
             </div>
           )}

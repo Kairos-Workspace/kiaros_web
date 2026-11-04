@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import Image from "next/image";
 import { memo, useCallback, useEffect, useState } from "react";
 
@@ -116,7 +119,7 @@ function DirectionPill({ direction }: { direction: Signal["direction"] }) {
           : "border-rose-200 bg-rose-50 text-rose-800"
       }`}
     >
-      <span>{isLong ? "BUY" : "SELL"}</span>
+      <span><T>{isLong ? "BUY" : "SELL"}</T></span>
       <span className="text-[10px]">{isLong ? "↗" : "↘"}</span>
     </span>
   );
@@ -133,21 +136,19 @@ function StatusPill({
     return (
       <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[11px] font-bold tracking-wide text-emerald-800">
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
-        Open
-      </span>
+        <T>{"Open"}</T></span>
     );
   }
   if (status === "expired") {
     return (
       <span className="inline-flex items-center rounded-md border border-zinc-200 bg-zinc-100 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wide text-zinc-600">
-        Expired
-      </span>
+        <T>{"Expired"}</T></span>
     );
   }
   if ((status === "tp1_hit" || status === "tp2_hit") && !closedAt) {
     return (
       <span className="inline-flex items-center rounded-md border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wide text-emerald-700">
-        {status === "tp1_hit" ? "TP1 Hit" : "TP2 Hit"}
+        <T>{status === "tp1_hit" ? "TP1 Hit" : "TP2 Hit"}</T>
       </span>
     );
   }
@@ -170,7 +171,7 @@ function StatusPill({
           : "border-rose-200 bg-rose-50 text-rose-700"
       }`}
     >
-      {label}
+      <T>{label}</T>
     </span>
   );
 }
@@ -200,19 +201,33 @@ export const SignalCard = memo(function SignalCard({
   adminSlot?: React.ReactNode;
   showLlmBadge?: boolean;
 }) {
+  const { t, locale } = useTranslation();
   const isLong = signal.direction === "long";
   // Pure SL only — closed TP1/TP2 wins are not losses.
   const isSlHit = signal.status === "sl_hit";
-  const Component = onSelect ? "button" : "div";
+  const isButton = Boolean(onSelect && !adminSlot);
+  const Component = isButton ? "button" : "div";
   const chartSrc = signal.outcomeChartUrl || signal.chartUrl;
 
   return (
     <Component
-      type={onSelect ? "button" : undefined}
-      onClick={onSelect ? () => onSelect(signal) : undefined}
+      type={isButton ? "button" : undefined}
+      onClick={onSelect ? (e) => {
+        if (!isButton && e.target !== e.currentTarget && (e.target as HTMLElement).closest('button, a')) return;
+        onSelect(signal);
+      } : undefined}
+      role={onSelect && !isButton ? "button" : undefined}
+      tabIndex={onSelect && !isButton ? 0 : undefined}
+      onKeyDown={onSelect && !isButton ? (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          if ((e.target as HTMLElement).closest('button, a')) return;
+          e.preventDefault();
+          onSelect(signal);
+        }
+      } : undefined}
       className={`group relative w-full overflow-hidden border border-zinc-200 bg-white text-left transition-all duration-200 hover:border-zinc-400 hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 ${
-        isSlHit ? "opacity-60 grayscale hover:opacity-80" : ""
-      }`}
+        onSelect ? "cursor-pointer" : ""
+      } ${isSlHit ? "opacity-60 grayscale hover:opacity-80" : ""}`}
     >
       <div
         className={`absolute bottom-0 left-0 top-0 w-1 ${
@@ -226,7 +241,7 @@ export const SignalCard = memo(function SignalCard({
         <div className="relative aspect-[16/9] overflow-hidden border-b border-zinc-200 bg-zinc-950">
           <Image
             src={chartSrc}
-            alt={`${signal.symbol} ${formatTimeframe(signal.timeframe)} ${signal.direction} chart`}
+            alt={t("{symbol} {timeframe} {direction} chart", { symbol: signal.symbol, timeframe: formatTimeframe(signal.timeframe), direction: t(signal.direction) })}
             loading="lazy"
             fill
             sizes="(min-width: 1536px) 20vw, (min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
@@ -235,7 +250,7 @@ export const SignalCard = memo(function SignalCard({
         </div>
       ) : (
         <div className="flex aspect-[16/9] items-center justify-center border-b border-zinc-200 bg-zinc-100">
-          <span className="font-mono text-xs text-zinc-500">No Chart Available</span>
+          <span className="font-mono text-xs text-zinc-500"><T>{"No Chart Available"}</T></span>
         </div>
       )}
 
@@ -248,8 +263,7 @@ export const SignalCard = memo(function SignalCard({
             <DirectionPill direction={signal.direction} />
             {showLlmBadge ? (
               <span className="rounded border border-zinc-300 bg-zinc-100 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-zinc-900">
-                Algo + LLM
-              </span>
+                <T>{"Algo + LLM"}</T></span>
             ) : null}
           </div>
           <div className="mt-1.5 flex items-center gap-2">
@@ -261,27 +275,26 @@ export const SignalCard = memo(function SignalCard({
         </div>
         <div className="flex flex-col items-end justify-center pt-0.5">
           <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500 mb-1">
-            Confidence
-          </p>
+            <T>{"Confidence"}</T></p>
           <ConfidenceBar value={signal.confidence} compact />
         </div>
       </div>
 
       <div className="relative grid grid-cols-3 gap-2 border-t border-zinc-200 bg-zinc-50/70 px-4 py-3 font-mono">
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5">Entry</p>
+          <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5"><T>{"Entry"}</T></p>
           <p className="text-xs font-bold text-zinc-900">
             {formatPrice(signal.entry)}
           </p>
         </div>
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5">Stop Loss</p>
+          <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5"><T>{"Stop Loss"}</T></p>
           <p className="text-xs font-bold text-rose-600">
             {formatPrice(signal.stopLoss)}
           </p>
         </div>
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5">TP1 / TP2 / TP3</p>
+          <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5"><T>{"TP1 / TP2 / TP3"}</T></p>
           <p className="text-xs font-bold text-emerald-600">
             {formatPrice(signal.takeProfit)}
             {signal.takeProfit2 != null ? ` / ${formatPrice(signal.takeProfit2)}` : ""}
@@ -293,14 +306,13 @@ export const SignalCard = memo(function SignalCard({
       <div className="relative flex items-center justify-between border-t border-zinc-200 bg-zinc-50/70 px-4 py-2.5 font-mono text-xs text-zinc-600">
         <span className="flex items-center gap-1.5 text-[11px] text-zinc-500" suppressHydrationWarning>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          {formatRelativeTime(signal.createdAt)}
+          {formatRelativeTime(signal.createdAt, undefined, locale)}
         </span>
         {adminSlot ? (
           <div className="z-10">{adminSlot}</div>
         ) : onSelect ? (
           <span className="flex items-center gap-1 text-[11px] font-bold text-zinc-950 opacity-80 group-hover:opacity-100 transition-opacity">
-            View Details →
-          </span>
+            <T>{"View Details →"}</T></span>
         ) : null}
       </div>
     </Component>
@@ -327,7 +339,7 @@ function DetailRow({
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-3">
-      <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500">{label}</p>
+      <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500"><T>{label}</T></p>
       <p className={`mt-1 font-mono text-sm font-bold ${toneClass}`}>{value}</p>
     </div>
   );
@@ -340,6 +352,7 @@ function SignalDetailModal({
   signal: Signal;
   onClose: () => void;
 }) {
+  const { t, locale } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [activeChartTab, setActiveChartTab] = useState<"setup" | "outcome">(
     signal.outcomeChartUrl ? "outcome" : "setup"
@@ -388,7 +401,7 @@ function SignalDetailModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-zinc-950/70 backdrop-blur-md animate-in fade-in duration-200">
       <button
         type="button"
-        aria-label="Close dialog backdrop"
+        aria-label={t("Close dialog backdrop")}
         className="absolute inset-0 cursor-default"
         onClick={onClose}
       />
@@ -417,7 +430,7 @@ function SignalDetailModal({
             <StatusPill status={signal.status} closedAt={signal.closedAt} />
             <span className="hidden sm:inline-flex items-center gap-1.5 font-mono text-xs text-zinc-400">
               <span className="text-zinc-300">•</span>
-              <span>Opened {formatDateTime(signal.createdAt)}</span>
+              <span><T>{"Opened"}</T>{" "}{formatDateTime(signal.createdAt, locale)}</span>
             </span>
           </div>
 
@@ -425,7 +438,7 @@ function SignalDetailModal({
             type="button"
             onClick={onClose}
             className="rounded-xl border border-zinc-200 bg-white p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950 transition-colors shadow-2xs cursor-pointer"
-            aria-label="Close"
+            aria-label={t("Close")}
           >
             <CloseIcon />
           </button>
@@ -439,12 +452,10 @@ function SignalDetailModal({
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-900">
-                  Algo + LLM Dual-Engine Confidence
-                </span>
+                  <T>{"Algo + LLM Dual-Engine Confidence"}</T></span>
               </div>
               <span className="text-xs text-zinc-500 mt-0.5 block">
-                Quant model validation with real-time liquidity analysis
-              </span>
+                <T>{"Quant model validation with real-time liquidity analysis"}</T></span>
             </div>
             <div className="flex items-center gap-3">
               <div className="h-2 w-32 sm:w-40 overflow-hidden rounded-full bg-zinc-200">
@@ -461,39 +472,37 @@ function SignalDetailModal({
           <div>
             <div className="flex items-center justify-between mb-2 font-mono">
               <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                Execution Parameters
-              </span>
+                <T>{"Execution Parameters"}</T></span>
               <span className="text-[10px] text-zinc-400 font-semibold uppercase">
-                STP Level
-              </span>
+                <T>{"STP Level"}</T></span>
             </div>
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6 font-mono">
               <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">Entry</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block"><T>{"Entry"}</T></span>
                 <span className="mt-1 text-base font-black text-zinc-950 block">{formatPrice(signal.entry)}</span>
               </div>
               <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block">Stop Loss</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block"><T>{"Stop Loss"}</T></span>
                 <span className="mt-1 text-base font-black text-rose-600 block">{formatPrice(signal.stopLoss)}</span>
               </div>
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Target 1</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block"><T>{"Target 1"}</T></span>
                 <span className="mt-1 text-base font-black text-emerald-600 block">{formatPrice(signal.takeProfit)}</span>
               </div>
               {signal.takeProfit2 != null && (
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Target 2</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block"><T>{"Target 2"}</T></span>
                   <span className="mt-1 text-base font-black text-emerald-600 block">{formatPrice(signal.takeProfit2)}</span>
                 </div>
               )}
               {signal.takeProfit3 != null && (
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">Target 3</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block"><T>{"Target 3"}</T></span>
                   <span className="mt-1 text-base font-black text-emerald-600 block">{formatPrice(signal.takeProfit3)}</span>
                 </div>
               )}
               <div className="rounded-xl border border-zinc-300 bg-zinc-950 p-3 text-white shadow-2xs">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">Risk / Reward</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block"><T>{"Risk / Reward"}</T></span>
                 <span className="mt-1 text-base font-black text-white block">{riskReward(signal)}</span>
               </div>
             </div>
@@ -504,8 +513,7 @@ function SignalDetailModal({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                  Chart Telemetry
-                </span>
+                  <T>{"Chart Telemetry"}</T></span>
 
                 {hasBothCharts && (
                   <div className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-100 p-0.5 font-mono text-xs">
@@ -518,8 +526,7 @@ function SignalDetailModal({
                           : "text-zinc-600 hover:text-zinc-950"
                       }`}
                     >
-                      Setup Chart
-                    </button>
+                      <T>{"Setup Chart"}</T></button>
                     <button
                       type="button"
                       onClick={() => setActiveChartTab("outcome")}
@@ -529,8 +536,7 @@ function SignalDetailModal({
                           : "text-zinc-600 hover:text-zinc-950"
                       }`}
                     >
-                      Outcome Chart
-                    </button>
+                      <T>{"Outcome Chart"}</T></button>
                   </div>
                 )}
               </div>
@@ -539,7 +545,7 @@ function SignalDetailModal({
                 {currentChartUrl && (
                   <Image
                     src={currentChartUrl}
-                    alt={`${signal.symbol} ${signal.timeframe} ${signal.direction} ${activeChartTab === "outcome" ? "outcome" : "setup"}`}
+                    alt={t("{symbol} {timeframe} {direction} {chart}", { symbol: signal.symbol, timeframe: signal.timeframe, direction: t(signal.direction), chart: t(activeChartTab === "outcome" ? "Outcome Chart" : "Setup Chart") })}
                     loading="lazy"
                     width={1280}
                     height={720}
@@ -547,7 +553,7 @@ function SignalDetailModal({
                   />
                 )}
                 <div className="absolute bottom-2.5 right-2.5 rounded-md bg-zinc-950/80 backdrop-blur-sm px-2 py-1 font-mono text-[10px] font-bold text-zinc-300 border border-zinc-800">
-                  {activeChartTab === "outcome" ? "Realized Outcome" : "Initial Order Setup"}
+                  <T>{activeChartTab === "outcome" ? "Realized Outcome" : "Initial Order Setup"}</T>
                 </div>
               </div>
             </div>
@@ -561,15 +567,13 @@ function SignalDetailModal({
                   ✨
                 </span>
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-950">
-                  AI Rationale
-                </span>
+                  <T>{"AI Rationale"}</T></span>
               </div>
               <span className="rounded border border-zinc-200 bg-white px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-zinc-600">
-                Gemini Reasoning
-              </span>
+                <T>{"Gemini Reasoning"}</T></span>
             </div>
             <p className="text-sm leading-relaxed text-zinc-800 font-sans">
-              {signal.rationale}
+              <T>{signal.rationale}</T>
             </p>
           </div>
 
@@ -577,8 +581,7 @@ function SignalDetailModal({
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500">
-                Strategy Indicators & Telemetry
-              </span>
+                <T>{"Strategy Indicators & Telemetry"}</T></span>
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 font-mono">
               {indicatorRows(signal).map((row) => (
@@ -587,10 +590,10 @@ function SignalDetailModal({
                   className="rounded-lg border border-zinc-200 bg-zinc-50/80 p-2.5"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
-                    {row.label}
+                    <T>{row.label}</T>
                   </span>
                   <span className="mt-0.5 text-xs font-bold text-zinc-950 block truncate">
-                    {row.value}
+                    <T>{row.value}</T>
                   </span>
                 </div>
               ))}
@@ -601,7 +604,7 @@ function SignalDetailModal({
           {signal.newsHeadlines.length > 0 && (
             <div>
               <p className="mb-2 text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-500">
-                Headlines Checked ({signal.newsHeadlines.length})
+                <T>{"Headlines Checked ("}</T>{signal.newsHeadlines.length})
               </p>
               <ul className="space-y-1.5 font-mono">
                 {signal.newsHeadlines.map((headline) => (
@@ -610,7 +613,7 @@ function SignalDetailModal({
                     className="flex items-start gap-2.5 rounded-lg border border-zinc-200 bg-zinc-50/60 p-2.5 text-xs text-zinc-700"
                   >
                     <span className="text-zinc-400 mt-0.5">•</span>
-                    <span className="leading-snug text-zinc-800">{headline}</span>
+                    <span className="leading-snug text-zinc-800"><T>{headline}</T></span>
                   </li>
                 ))}
               </ul>
@@ -622,9 +625,9 @@ function SignalDetailModal({
         <div className="flex items-center justify-between border-t border-zinc-200 bg-zinc-50/80 px-5 sm:px-6 py-3.5">
           <div className="hidden sm:flex items-center gap-2 font-mono text-[11px] text-zinc-500">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span>STP-ECN Execution Desk</span>
+            <span><T>{"STP-ECN Execution Desk"}</T></span>
             <span className="text-zinc-300">•</span>
-            <span>Zero Slippage Protocol</span>
+            <span><T>{"Zero Slippage Protocol"}</T></span>
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
@@ -638,13 +641,13 @@ function SignalDetailModal({
               }`}
             >
               {copied ? (
-                <span>✓ Copied</span>
+                <span><T>{"✓ Copied"}</T></span>
               ) : (
                 <>
                   <svg className="h-3.5 w-3.5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
-                  <span>Copy Parameters</span>
+                  <span><T>{"Copy Parameters"}</T></span>
                 </>
               )}
             </button>
@@ -653,8 +656,7 @@ function SignalDetailModal({
               onClick={onClose}
               className="rounded-lg border border-zinc-200 bg-zinc-950 px-4 py-1.5 font-mono text-xs font-bold text-white hover:bg-zinc-800 transition-colors cursor-pointer shadow-2xs"
             >
-              Dismiss
-            </button>
+              <T>{"Dismiss"}</T></button>
           </div>
         </div>
       </div>

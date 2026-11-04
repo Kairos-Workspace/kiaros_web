@@ -1,5 +1,8 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -9,12 +12,13 @@ const tabs = [
 ];
 
 export function OverviewSubNav() {
+  const { t } = useTranslation();
   const pathname = usePathname();
 
   return (
     <nav
       className="mt-6 flex gap-1 border-b border-line"
-      aria-label="Overview sections"
+      aria-label={t("Overview sections")}
     >
       {tabs.map((tab) => {
         const active = tab.exact
@@ -30,7 +34,7 @@ export function OverviewSubNav() {
                 : "border-transparent text-slate hover:border-line hover:text-ink"
             }`}
           >
-            {tab.label}
+            <T>{tab.label}</T>
           </Link>
         );
       })}

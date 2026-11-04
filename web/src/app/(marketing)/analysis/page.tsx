@@ -1,13 +1,15 @@
-import type { Metadata } from "next";
+import { getTranslations } from "@/lib/i18n/server";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { AnalysisView } from "@/components/analysis/AnalysisView";
 import { listPublishedAnalyses } from "@/lib/analysis";
 
-export const metadata: Metadata = {
-  title: "Gold (XAUUSD) Technical Analysis · Kiaros Quant",
-  description:
-    "Institutional multi-timeframe orderflow blueprints, liquidity maps, and daily session execution playbooks for Gold (XAUUSD).",
-};
+export async function generateMetadata() {
+  const { t } = await getTranslations();
+  return {
+    title: t("Gold (XAUUSD) Technical Analysis · Kiaros Quant"),
+    description: t("Institutional multi-timeframe orderflow blueprints, liquidity maps, and daily session execution playbooks for Gold (XAUUSD)."),
+  };
+}
 
 export const revalidate = 60;
 

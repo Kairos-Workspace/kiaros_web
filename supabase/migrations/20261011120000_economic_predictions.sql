@@ -32,8 +32,5 @@ create policy "public read economic predictions"
     on public.economic_predictions for select
     using (true);
 
-drop policy if exists "service role full access to economic predictions" on public.economic_predictions;
-create policy "service role full access to economic predictions"
-    on public.economic_predictions for all
-    using (true)
-    with check (true);
+-- Note: In Supabase, the service_role key automatically bypasses RLS.
+-- No permissive public write policy is needed.

@@ -45,8 +45,8 @@ def try_acquire_engine_lock(
         rows = response.json()
         return bool(rows)
     except Exception as exc:
-        print(f"engine_lock acquire failed ({type(exc).__name__}), continuing without lock")
-        return True
+        print(f"engine_lock acquire failed ({type(exc).__name__}): {exc}. Failing closed to prevent concurrent runs.")
+        return False
 
 
 def release_engine_lock(

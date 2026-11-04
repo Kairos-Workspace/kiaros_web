@@ -1,5 +1,9 @@
 "use client";
 
+import { useTranslation } from "@/components/i18n/LanguageProvider";
+
+import { T } from "@/components/i18n/T";
+
 import { useState } from "react";
 import { formatDateTime } from "@/lib/format";
 import type { CronWorkflowStatus, WorkflowRunSummary } from "@/lib/github-engine";
@@ -45,6 +49,7 @@ export function AdminCronSections({
   alertsConfigured,
   defaultTab = "workflows",
 }: Props) {
+  const { t, locale } = useTranslation();
   const [activeTab, setActiveTab] = useState<"workflows" | "watchdog">(defaultTab);
 
   const healthyPipelines = statuses.filter(
@@ -76,7 +81,7 @@ export function AdminCronSections({
             >
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
             </svg>
-            <span>Workflow Pipelines</span>
+            <span><T>{"Workflow Pipelines"}</T></span>
             <span
               className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold ${
                 activeTab === "workflows"
@@ -108,7 +113,7 @@ export function AdminCronSections({
             >
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <span>Watchdog & Telemetry</span>
+            <span><T>{"Watchdog & Telemetry"}</T></span>
             <span
               className={`rounded-full px-1.5 py-0.5 font-mono text-[9px] font-bold ${
                 xau?.isHealthy
@@ -116,7 +121,7 @@ export function AdminCronSections({
                   : "bg-amber-100 text-amber-800"
               }`}
             >
-              {xau?.isHealthy ? "HEALTHY" : "STALE"}
+              <T>{xau?.isHealthy ? "HEALTHY" : "STALE"}</T>
             </span>
           </button>
         </div>
@@ -124,10 +129,9 @@ export function AdminCronSections({
         {/* Telemetry Summary Pill */}
         <div className="flex items-center gap-2">
           <span className="font-mono text-[11px] text-zinc-500">
-            Pipeline Health:{" "}
+            <T>{"Pipeline Health:"}</T>{" "}
             <strong className="text-zinc-950">
-              {healthyPipelines}/{statuses.length} Active
-            </strong>
+              {healthyPipelines}/{statuses.length}  <T>{"Active"}</T> </strong>
           </span>
         </div>
       </div>
@@ -147,7 +151,7 @@ export function AdminCronSections({
                     <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-zinc-100 pb-3">
                       <div>
                         <h3 className="text-sm font-bold text-zinc-950">
-                          {wf.label}
+                          <T>{wf.label}</T>
                         </h3>
                         <p className="mt-0.5 font-mono text-[11px] text-zinc-400">
                           {wf.trigger} · {wf.file}
@@ -160,19 +164,18 @@ export function AdminCronSections({
                             latest,
                           )}`}
                         >
-                          {runLabel(latest)}
+                          <T>{runLabel(latest)}</T>
                         </span>
                       ) : null}
                     </div>
 
                     {wf.error ? (
                       <p className="mt-3 text-xs text-rose-600 font-mono">
-                        {wf.error}
+                        <T>{wf.error}</T>
                       </p>
                     ) : wf.runs.length === 0 ? (
                       <p className="mt-4 text-xs text-zinc-400 font-mono">
-                        No workflow runs recorded yet.
-                      </p>
+                        <T>{"No workflow runs recorded yet."}</T> </p>
                     ) : (
                       <ul className="mt-3 divide-y divide-zinc-100">
                         {wf.runs.map((run) => (
@@ -200,13 +203,13 @@ export function AdminCronSections({
                                   run,
                                 )}`}
                               >
-                                {runLabel(run)}
+                                <T>{runLabel(run)}</T>
                               </span>
                               <time
                                 className="font-mono text-[10px] text-zinc-500"
                                 dateTime={run.created_at}
                               >
-                                {formatDateTime(run.created_at)}
+                                {formatDateTime(run.created_at, locale)}
                               </time>
                             </div>
                           </li>
@@ -230,15 +233,13 @@ export function AdminCronSections({
               <div>
                 <div className="mb-1 inline-flex items-center gap-1.5 font-mono text-[10px] font-bold text-emerald-700 uppercase">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                  <span>CRITICAL HEARTBEAT MONITOR</span>
+                  <span><T>{"CRITICAL HEARTBEAT MONITOR"}</T></span>
                 </div>
                 <h3 className="text-lg font-black tracking-tight text-zinc-950">
-                  XAUUSD 1M Scalper Watchdog
-                </h3>
+                  <T>{"XAUUSD 1M Scalper Watchdog"}</T> </h3>
                 <p className="mt-1 text-xs text-zinc-500">
-                  Monitors active bar dispatch from the MT5 tick listener. If scans become stale,{" "}
-                  <code className="font-mono text-zinc-800">/api/cron/xau-watchdog</code> automatically restarts the workflow.
-                </p>
+                  <T>{"Monitors active bar dispatch from the MT5 tick listener. If scans become stale,"}</T>{" "}
+                  <code className="font-mono text-zinc-800">/api/cron/xau-watchdog</code>  <T>{"automatically restarts the workflow."}</T> </p>
               </div>
 
               <span
@@ -253,7 +254,7 @@ export function AdminCronSections({
                     xau?.isHealthy ? "bg-emerald-600 animate-pulse" : "bg-rose-600"
                   }`}
                 />
-                {xau?.isHealthy ? "SYSTEM HEALTHY" : "CRITICAL STALE"}
+                <T>{xau?.isHealthy ? "SYSTEM HEALTHY" : "CRITICAL STALE"}</T>
               </span>
             </div>
 
@@ -261,54 +262,48 @@ export function AdminCronSections({
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4">
                   <span className="font-mono text-[10px] uppercase font-bold text-zinc-500">
-                    Execution State
-                  </span>
+                    <T>{"Execution State"}</T> </span>
                   <div
                     className={`mt-1 font-mono text-base font-black ${
                       xau.isHealthy ? "text-emerald-700" : "text-rose-700"
                     }`}
                   >
-                    {xau.isHealthy ? "● Synchronized" : "▼ Delayed / Stale"}
+                    <T>{xau.isHealthy ? "● Synchronized" : "▼ Delayed / Stale"}</T>
                   </div>
                 </div>
 
                 <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4">
                   <span className="font-mono text-[10px] uppercase font-bold text-zinc-500">
-                    Heartbeat Latency Age
-                  </span>
+                    <T>{"Heartbeat Latency Age"}</T> </span>
                   <div className="mt-1 font-mono text-base font-black text-zinc-950">
-                    {xau.ageMinutes != null ? `${xau.ageMinutes.toFixed(1)} min ago` : "—"}
+                    {xau.ageMinutes != null ? t("{minutes} min ago", { minutes: xau.ageMinutes.toFixed(1) }) : "—"}
                   </div>
                 </div>
 
                 <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4">
                   <span className="font-mono text-[10px] uppercase font-bold text-zinc-500">
-                    Last Finished Scan
-                  </span>
+                    <T>{"Last Finished Scan"}</T> </span>
                   <div className="mt-1 font-mono text-xs font-bold text-zinc-800">
-                    {xau.finishedAt ? formatDateTime(xau.finishedAt) : "—"}
+                    {xau.finishedAt ? formatDateTime(xau.finishedAt, locale) : "—"}
                   </div>
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-zinc-500 font-mono">No XAU scan status recorded.</p>
+              <p className="text-xs text-zinc-500 font-mono"><T>{"No XAU scan status recorded."}</T></p>
             )}
           </div>
 
           {/* Telegram Ops Alert Channel */}
           <div className="card-surface p-6">
             <h4 className="text-sm font-bold text-zinc-950">
-              Ops Channel Failover Alerting
-            </h4>
+              <T>{"Ops Channel Failover Alerting"}</T> </h4>
             <p className="mt-1 text-xs text-zinc-500">
-              Automated notifications sent directly to the Telegram operations channel whenever any cron job experiences errors or times out.
-            </p>
+              <T>{"Automated notifications sent directly to the Telegram operations channel whenever any cron job experiences errors or times out."}</T> </p>
 
             <div className="mt-4 flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50/50 p-4">
               <div>
                 <span className="font-mono text-xs font-bold text-zinc-800">
-                  Telegram Dispatch Bot
-                </span>
+                  <T>{"Telegram Dispatch Bot"}</T> </span>
                 <p className="font-mono text-[11px] text-zinc-400">
                   TELEGRAM_ALERTS_CHAT_ID
                 </p>
@@ -321,7 +316,7 @@ export function AdminCronSections({
                     : "bg-rose-50 text-rose-800 border-rose-300"
                 }`}
               >
-                {alertsConfigured ? "● DISPATCH ACTIVE" : "○ NOT CONFIGURED"}
+                <T>{alertsConfigured ? "● DISPATCH ACTIVE" : "○ NOT CONFIGURED"}</T>
               </span>
             </div>
           </div>

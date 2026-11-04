@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -174,13 +175,10 @@ export function SignalsPreview({ signals = [] }: { signals: Signal[] }) {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
           <div>
             <h2 className="text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
-              High-Confluence Trade Dispatches
-            </h2>
+              <T>{"High-Confluence Trade Dispatches"}</T> </h2>
 
             <p className="mt-3 text-sm text-zinc-600 max-w-2xl leading-relaxed sm:text-base">
-              Mathematically validated by our Algo + LLM dual-engine across active trading sessions. Precise entry, 
-              risk-managed stop-loss, and multi-tier profit targets with zero repaint.
-            </p>
+              <T>{"Mathematically validated by our Algo + LLM dual-engine across active trading sessions. Precise entry, risk-managed stop-loss, and multi-tier profit targets with zero repaint."}</T> </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -204,7 +202,7 @@ export function SignalsPreview({ signals = [] }: { signals: Signal[] }) {
                       : "text-zinc-600 hover:text-zinc-950"
                   }`}
                 >
-                  {tab.label}
+                  <T>{tab.label}</T>
                 </button>
               ))}
             </div>
@@ -213,7 +211,7 @@ export function SignalsPreview({ signals = [] }: { signals: Signal[] }) {
               href="/signals"
               className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2 font-mono text-xs font-bold text-zinc-900 transition-all hover:bg-zinc-50 hover:border-zinc-300 shadow-2xs"
             >
-              <span>FULL TERMINAL</span>
+              <span><T>{"FULL TERMINAL"}</T></span>
               <span>→</span>
             </Link>
           </div>
@@ -238,11 +236,9 @@ export function SignalsPreview({ signals = [] }: { signals: Signal[] }) {
             </div>
             <div>
               <p className="font-mono text-sm font-bold text-zinc-950">
-                Never Miss a Fast Session Dispatch
-              </p>
+                <T>{"Never Miss a Fast Session Dispatch"}</T> </p>
               <p className="text-xs text-zinc-500 mt-0.5">
-                Signals are pushed straight to the Telegram Quant Syndicate under 14ms latency.
-              </p>
+                <T>{"Signals are pushed straight to the Telegram Quant Syndicate under 14ms latency."}</T> </p>
             </div>
           </div>
 
@@ -252,7 +248,7 @@ export function SignalsPreview({ signals = [] }: { signals: Signal[] }) {
             rel="noopener noreferrer"
             className="btn-telegram py-2.5 px-6 font-mono text-xs font-bold text-white shrink-0 shadow-sm"
           >
-            <span>JOIN FREE TELEGRAM</span>
+            <span><T>{"JOIN FREE TELEGRAM"}</T></span>
             <span>→</span>
           </a>
         </div>

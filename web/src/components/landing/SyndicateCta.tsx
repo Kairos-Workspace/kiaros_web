@@ -1,3 +1,4 @@
+import { T } from "@/components/i18n/T";
 import { TELEGRAM_GROUP_URL } from "@/lib/constants";
 
 export function SyndicateCta() {
@@ -13,28 +14,24 @@ export function SyndicateCta() {
 
           <div className="relative z-10 mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
-              Elevate Your Edge With Instant Signal Dispatches
-            </h2>
+              <T>{"Elevate Your Edge With Instant Signal Dispatches"}</T> </h2>
 
             <p className="mt-4 text-sm leading-relaxed text-zinc-300 sm:text-base">
-              Receive instant real-time signal dispatches straight to your phone the millisecond our 
-              Algo + LLM dual-engine confirms an orderflow setup. Free forever — zero monthly subscriptions, 
-              zero paywalled alpha.
-            </p>
+              <T>{"Receive instant real-time signal dispatches straight to your phone the millisecond our Algo + LLM dual-engine confirms an orderflow setup. Free forever — zero monthly subscriptions, zero paywalled alpha."}</T> </p>
 
             {/* Quick Metrics */}
             <div className="mt-8 grid grid-cols-3 gap-3 font-mono text-center">
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-4 shadow-sm">
                 <span className="block text-xl font-black text-white sm:text-3xl">1,250+</span>
-                <span className="text-[10px] uppercase tracking-wider text-zinc-400">Active Quants</span>
+                <span className="text-[10px] uppercase tracking-wider text-zinc-400"><T>{"Active Quants"}</T></span>
               </div>
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-4 shadow-sm">
-                <span className="block text-xl font-black text-emerald-400 sm:text-3xl">&lt; 14ms</span>
-                <span className="text-[10px] uppercase tracking-wider text-zinc-400">Push Latency</span>
+                <span className="block text-xl font-black text-emerald-400 sm:text-3xl"><T>{"< 14ms"}</T></span>
+                <span className="text-[10px] uppercase tracking-wider text-zinc-400"><T>{"Push Latency"}</T></span>
               </div>
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-4 shadow-sm">
-                <span className="block text-xl font-black text-white sm:text-3xl">$0 / mo</span>
-                <span className="text-[10px] uppercase tracking-wider text-zinc-400">100% Free Access</span>
+                <span className="block text-xl font-black text-white sm:text-3xl"><T>{"$0 / mo"}</T></span>
+                <span className="text-[10px] uppercase tracking-wider text-zinc-400"><T>{"100% Free Access"}</T></span>
               </div>
             </div>
 
@@ -46,14 +43,13 @@ export function SyndicateCta() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-black tracking-tight text-zinc-950 transition-all hover:bg-zinc-100 shadow-lg group cursor-pointer"
               >
-                <span>Join Official Telegram Syndicate</span>
+                <span><T>{"Join Official Telegram Syndicate"}</T></span>
                 <span className="transition-transform group-hover:translate-x-1 font-mono">→</span>
               </a>
             </div>
 
             <p className="mt-4 font-mono text-[11px] text-zinc-400">
-              ⚡ Compatible with MetaTrader 5 (MT5), MT4, TradingView & Telegram Mobile.
-            </p>
+              <T>{"⚡ Compatible with MetaTrader 5 (MT5), MT4, TradingView & Telegram Mobile."}</T> </p>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { getTranslations } from "@/lib/i18n/server";
 import { TrackRecordTabs } from "@/components/track-record/TrackRecordTabs";
 import { getDailyPnLStats } from "@/lib/signals";
 import { serviceRoleToken } from "@/lib/supabase/admin";
@@ -5,10 +6,13 @@ import { getTrackRecord } from "@/lib/track-record";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Audited Performance · Kiaros Quant",
-  description: "Complete log of every signal outcome — wins and losses. Real STP/ECN execution data updated automatically.",
-};
+export async function generateMetadata() {
+  const { t } = await getTranslations();
+  return {
+    title: t("Audited Performance · Kiaros Quant"),
+    description: t("Complete log of every signal outcome — wins and losses. Real STP/ECN execution data updated automatically."),
+  };
+}
 
 export default async function TrackRecordPage() {
   const token = serviceRoleToken();

@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
 import { useState } from "react";
 
 import type { Stats } from "@/lib/signals";
@@ -24,7 +25,7 @@ function StatBar({
   return (
     <div>
       <div className="flex items-center justify-between text-xs">
-        <span className="font-medium text-slate">{label}</span>
+        <span className="font-medium text-slate"><T>{label}</T></span>
         <span
           className={`font-mono font-bold ${
             tone === "long" ? "text-long" : "text-ink"
@@ -56,12 +57,10 @@ export function HowAiWorks({ stats }: { stats: Stats }) {
     >
       <div className="flex items-center justify-between px-4 py-3">
         <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
-          ALGO + LLM PIPELINE
-        </p>
+          <T>{"ALGO + LLM PIPELINE"}</T> </p>
         <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-long">
           <span className="h-1.5 w-1.5 rounded-full bg-long" aria-hidden />
-          LIVE
-        </span>
+          <T>{"LIVE"}</T> </span>
       </div>
 
       <ol className="grid grid-cols-5 gap-px border-y border-line bg-line">
@@ -82,7 +81,7 @@ export function HowAiWorks({ stats }: { stats: Stats }) {
               <span className="hero-step-index flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold">
                 {index + 1}
               </span>
-              <span className="text-[10px] font-semibold leading-tight text-ink">{s.label}</span>
+              <span className="text-[10px] font-semibold leading-tight text-ink"><T>{s.label}</T></span>
             </button>
           </li>
         ))}
@@ -91,19 +90,18 @@ export function HowAiWorks({ stats }: { stats: Stats }) {
       <div className="p-4">
         <div id="hero-step-detail" className="hero-step-detail mb-5">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-wide text-long">
-            STEP {selectedStep + 1} / {STEPS.length}
+            <T>{"STEP"}</T> {selectedStep + 1} / {STEPS.length}
           </p>
-          <p className="mt-1 text-sm font-semibold text-ink">{activeStep.label}</p>
-          <p className="mt-1 text-xs leading-relaxed text-slate">{activeStep.detail}</p>
+          <p className="mt-1 text-sm font-semibold text-ink"><T>{activeStep.label}</T></p>
+          <p className="mt-1 text-xs leading-relaxed text-slate"><T>{activeStep.detail}</T></p>
         </div>
         <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-wide text-slate">
-          AUDITED SYSTEM PERFORMANCE
-        </p>
+          <T>{"AUDITED SYSTEM PERFORMANCE"}</T> </p>
         <div className="mb-4 flex items-baseline gap-1.5">
           <span className="font-mono text-2xl font-bold text-ink">
             {stats.total}
           </span>
-          <span className="text-xs text-slate">signals logged</span>
+          <span className="text-xs text-slate"><T>{"signals logged"}</T></span>
         </div>
         <div className="flex flex-col gap-3">
           <StatBar label="Avg Confidence" value={stats.avgConfidence} />

@@ -1,3 +1,5 @@
+import { T } from "@/components/i18n/T";
+import { LanguageSwitch } from "@/components/i18n/LanguageSwitch";
 import Link from "next/link";
 
 import { signout } from "@/app/auth/actions";
@@ -35,7 +37,7 @@ export async function DashboardShell({
           <div className="mt-3 flex items-center justify-between">
             <form action={signout}>
               <button type="submit" className="btn-ghost text-xs">
-                Sign Out
+                <T>{"Sign Out"}</T>
               </button>
             </form>
           </div>
@@ -47,18 +49,19 @@ export async function DashboardShell({
             <Logo />
           </div>
           <div className="hidden min-w-0 lg:block">
-            <h1 className="text-lg font-bold">{title}</h1>
+            <h1 className="text-lg font-bold"><T>{title}</T></h1>
             {subtitle ? (
-              <p className="text-xs text-slate">{subtitle}</p>
+              <p className="text-xs text-slate"><T>{subtitle}</T></p>
             ) : null}
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <LanguageSwitch />
             {actions ? (
               <div className="hidden lg:block">{actions}</div>
             ) : null}
             <div className="flex items-center gap-2 lg:hidden">
             <Link href="/" className="btn-ghost text-sm">
-              Home
+              <T>{"Home"}</T>
             </Link>
             </div>
           </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import { T } from "@/components/i18n/T";
+import { useTranslation } from "@/components/i18n/LanguageProvider";
 import Image from "next/image";
 import { useId, useState } from "react";
 
@@ -88,6 +90,7 @@ const CERTIFICATES: Certificate[] = [
 ];
 
 export function Certificates() {
+  const { t } = useTranslation();
   const titleId = useId();
   const [active, setActive] = useState<Certificate | null>(null);
 
@@ -104,12 +107,12 @@ export function Certificates() {
               type="button"
               onClick={() => setActive(cert)}
               className="relative block w-full text-left cursor-pointer bg-zinc-100"
-              aria-label={`View ${cert.issuer} — ${cert.title}`}
+              aria-label={t("View {issuer} — {title}", { issuer: cert.issuer, title: t(cert.title) })}
             >
               <div className="relative aspect-[4/3] w-full">
                 <Image
                   src={cert.src}
-                  alt={`${cert.issuer}: ${cert.title}`}
+                  alt={`${cert.issuer}: ${t(cert.title)}`}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   className="object-cover"
@@ -138,20 +141,19 @@ export function Certificates() {
                 <p id={titleId} className="font-mono text-base font-bold text-zinc-950">
                   {active.issuer}
                 </p>
-                <p className="mt-0.5 text-xs text-zinc-600">{active.title}</p>
+                <p className="mt-0.5 text-xs text-zinc-600"><T>{active.title}</T></p>
               </div>
               <button
                 type="button"
                 onClick={() => setActive(null)}
                 className="btn-secondary px-4 py-2 text-xs"
               >
-                Close
-              </button>
+                <T>{"Close"}</T> </button>
             </div>
             <div className="relative h-[72vh] sm:h-[78vh] w-full bg-zinc-100">
               <Image
                 src={active.src}
-                alt={`${active.issuer}: ${active.title}`}
+                alt={`${active.issuer}: ${t(active.title)}`}
                 fill
                 sizes="(max-width: 1024px) 100vw, 896px"
                 className="object-contain p-3"
