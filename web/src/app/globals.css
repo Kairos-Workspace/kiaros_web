@@ -2,6 +2,34 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Kantumruy Pro Variable — same family as form.gov.kh (self-hosted; Google Fonts blocked) */
+@font-face {
+  font-family: "Kantumruy Pro";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 700;
+  src: url("../fonts/kantumruy-pro/khmer-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+1780-17FF, U+19E0-19FF, U+200C-200D, U+25CC;
+}
+
+@font-face {
+  font-family: "Kantumruy Pro";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 700;
+  src: url("../fonts/kantumruy-pro/latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Kantumruy Pro";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 700;
+  src: url("../fonts/kantumruy-pro/latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* ==========================================================================
    KIAROS MINIMAL GRAY & BLACK LIGHT MODE
    Clean studio palette (#FAFAFA, #FFFFFF, #09090B), high-contrast typography
@@ -9,6 +37,7 @@
 
 :root {
   color-scheme: light;
+  --font-kantumruy: "Kantumruy Pro", sans-serif;
   --paper: #fafafa;
   --paper-elevated: #ffffff;
   --card: rgba(255, 255, 255, 0.95);
@@ -68,9 +97,9 @@
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
   --color-gold-glow: var(--gold-glow);
-  --font-display: var(--font-plus-jakarta), var(--font-khmer), sans-serif;
-  --font-sans: var(--font-plus-jakarta), var(--font-khmer), sans-serif;
-  --font-mono: var(--font-jetbrains), var(--font-khmer), monospace;
+  --font-display: var(--font-kantumruy), sans-serif;
+  --font-sans: var(--font-kantumruy), sans-serif;
+  --font-mono: var(--font-jetbrains), var(--font-kantumruy), monospace;
 }
 
 /* ==========================================================================
@@ -80,7 +109,7 @@
 body {
   background-color: var(--paper);
   color: var(--ink);
-  font-family: var(--font-plus-jakarta), var(--font-khmer), system-ui, sans-serif;
+  font-family: var(--font-kantumruy), system-ui, sans-serif;
   line-height: 1.6;
   overflow-x: hidden;
   background-attachment: fixed;
@@ -90,7 +119,7 @@ body {
     radial-gradient(circle at 15% 45%, rgba(0, 0, 0, 0.015), transparent 40%);
 }
 
-/* Khmer combining marks need a Khmer font, natural spacing and taller lines. */
+/* Khmer combining marks need natural spacing and taller lines. */
 html[lang="km"] body,
 html[lang="km"] .font-sans,
 html[lang="km"] .font-display,
@@ -99,7 +128,7 @@ html[lang="km"] input,
 html[lang="km"] select,
 html[lang="km"] textarea,
 html[lang="km"] button {
-  font-family: var(--font-khmer), var(--font-plus-jakarta), sans-serif;
+  font-family: var(--font-kantumruy), sans-serif;
   letter-spacing: normal;
 }
 
@@ -114,7 +143,7 @@ html[lang="km"] :where(*) {
 /* The Khmer hero needs its own scale rather than the 72px Latin headline. */
 html[lang="km"] .hero-heading {
   font-size: clamp(1.75rem, 3vw, 2.75rem);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.5;
 }
 
@@ -135,13 +164,20 @@ html[lang="km"] .hero-description {
 
 .page-container {
   margin-inline: auto;
+  width: 100%;
   max-width: 82rem;
-  padding-inline: 1.25rem;
+  padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
 }
 
 @media (min-width: 640px) {
   .page-container {
-    padding-inline: 2rem;
+    padding-inline: max(1.5rem, env(safe-area-inset-left)) max(1.5rem, env(safe-area-inset-right));
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-container {
+    padding-inline: max(2rem, env(safe-area-inset-left)) max(2rem, env(safe-area-inset-right));
   }
 }
 
@@ -448,7 +484,7 @@ html[lang="km"] .hero-description {
 
 .stat-tile-label {
   font-size: 0.6875rem;
-  font-family: var(--font-jetbrains), var(--font-khmer), monospace;
+  font-family: var(--font-jetbrains), var(--font-kantumruy), monospace;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -458,9 +494,66 @@ html[lang="km"] .hero-description {
 .stat-tile-value {
   margin-top: 0.375rem;
   font-size: 1.5rem;
-  font-family: var(--font-jetbrains), var(--font-khmer), monospace;
-  font-weight: 800;
+  font-family: var(--font-jetbrains), var(--font-kantumruy), monospace;
+  font-weight: 700;
   color: #09090b;
   letter-spacing: -0.02em;
+}
+
+/* Feature page header motion */
+@keyframes orbFloat1 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(50px, 35px, 0) scale(1.15); }
+  100% { transform: translate3d(-35px, 20px, 0) scale(0.95); }
+}
+
+@keyframes orbFloat2 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-60px, 40px, 0) scale(1.1); }
+  100% { transform: translate3d(40px, -25px, 0) scale(0.92); }
+}
+
+@keyframes orbFloat3 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-30px, -40px, 0) scale(1.2); }
+  100% { transform: translate3d(35px, -15px, 0) scale(0.9); }
+}
+
+@keyframes headerFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes headerPulse {
+  0% { opacity: 0.85; transform: scale(0.92); }
+  70% { opacity: 0; transform: scale(1.35); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+
+@keyframes headerDraw {
+  from { stroke-dasharray: 280; stroke-dashoffset: 280; }
+  to { stroke-dasharray: 280; stroke-dashoffset: 0; }
+}
+
+.header-orb-a { animation: orbFloat1 18s ease-in-out infinite alternate; }
+.header-orb-b { animation: orbFloat2 24s ease-in-out infinite alternate; }
+.header-orb-c { animation: orbFloat3 20s ease-in-out infinite alternate; }
+.header-float { animation: headerFloat 5.5s ease-in-out infinite; }
+.header-float-slow { animation: headerFloat 6.5s ease-in-out infinite reverse; }
+.header-float-fast { animation: headerFloat 4.5s ease-in-out infinite; }
+.header-pulse { animation: headerPulse 2.4s ease-out infinite; transform-origin: center; }
+.header-draw { animation: headerDraw 3.2s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .header-orb-a,
+  .header-orb-b,
+  .header-orb-c,
+  .header-float,
+  .header-float-slow,
+  .header-float-fast,
+  .header-pulse,
+  .header-draw {
+    animation: none !important;
+  }
 }
 

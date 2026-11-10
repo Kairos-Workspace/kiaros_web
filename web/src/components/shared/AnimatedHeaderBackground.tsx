@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import {
+  PAGE_HEADER_THEMES,
+  type PageHeaderTheme,
+  type ParticleTone,
+} from "@/components/shared/page-header-themes";
 
 interface Particle {
   x: number;
@@ -11,7 +16,7 @@ interface Particle {
   baseAlpha: number;
   pulseSpeed: number;
   pulsePhase: number;
-  color: "white" | "emerald" | "cyan";
+  color: ParticleTone;
 }
 
 interface Ripple {
@@ -22,9 +27,16 @@ interface Ripple {
   alpha: number;
 }
 
-export function AnimatedHeaderBackground() {
+interface AnimatedHeaderBackgroundProps {
+  theme?: PageHeaderTheme;
+}
+
+export function AnimatedHeaderBackground({
+  theme = "signals",
+}: AnimatedHeaderBackgroundProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const themeConfig = PAGE_HEADER_THEMES[theme];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -43,7 +55,6 @@ export function AnimatedHeaderBackground() {
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    // Mouse tracking
     const mouse = {
       x: -1000,
       y: -1000,
@@ -56,12 +67,14 @@ export function AnimatedHeaderBackground() {
     const ripples: Ripple[] = [];
     const PARTICLE_COUNT = 45;
     const CONNECT_DIST = 95;
+    const { particlePrimary, particleSecondary, ripple, line } = themeConfig;
 
     const initParticles = () => {
       particles.length = 0;
       for (let i = 0; i < PARTICLE_COUNT; i++) {
         const rand = Math.random();
-        const color = rand > 0.8 ? "emerald" : rand > 0.65 ? "cyan" : "white";
+        const color: ParticleTone =
+          rand > 0.78 ? "primary" : rand > 0.58 ? "secondary" : "white";
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
@@ -87,7 +100,7 @@ export function AnimatedHeaderBackground() {
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
 
-      ctx.scale(dpr, dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       if (particles.length === 0) {
         initParticles();
@@ -100,6 +113,7 @@ export function AnimatedHeaderBackground() {
     resizeObserver.observe(container);
 
     let isRunning = false;
+    let lastTime = performance.now();
 
     const startLoop = () => {
       if (!isRunning && isVisible) {
@@ -155,8 +169,6 @@ export function AnimatedHeaderBackground() {
     container.addEventListener("pointerleave", onPointerLeave);
     container.addEventListener("pointerdown", onPointerDown);
 
-    let lastTime = performance.now();
-
     const render = (time: number) => {
       if (!isVisible) {
         isRunning = false;
@@ -168,7 +180,6 @@ export function AnimatedHeaderBackground() {
 
       ctx.clearRect(0, 0, width, height);
 
-      // Smooth mouse lerp
       if (mouse.active) {
         mouse.x += (mouse.targetX - mouse.x) * 0.15;
         mouse.y += (mouse.targetY - mouse.y) * 0.15;
@@ -177,7 +188,6 @@ export function AnimatedHeaderBackground() {
         mouse.y = -1000;
       }
 
-      // Draw and update ripples
       for (let i = ripples.length - 1; i >= 0; i--) {
         const r = ripples[i];
         r.radius += 3.5 * delta;
@@ -191,13 +201,12 @@ export function AnimatedHeaderBackground() {
         ctx.save();
         ctx.beginPath();
         ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(52, 211, 153, ${Math.max(0, r.alpha * 0.25)})`;
+        ctx.strokeStyle = `rgba(${ripple}, ${Math.max(0, r.alpha * 0.25)})`;
         ctx.lineWidth = 1.5;
         ctx.stroke();
         ctx.restore();
       }
 
-      // Update and draw particles
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
@@ -206,13 +215,11 @@ export function AnimatedHeaderBackground() {
           p.y += p.vy * delta;
           p.pulsePhase += p.pulseSpeed * delta;
 
-          // Wrap edges smoothly
           if (p.x < -10) p.x = width + 10;
           if (p.x > width + 10) p.x = -10;
           if (p.y < -10) p.y = height + 10;
           if (p.y > height + 10) p.y = -10;
 
-          // Interactive mouse repulsion/drift
           if (mouse.active) {
             const dx = p.x - mouse.x;
             const dy = p.y - mouse.y;
@@ -231,27 +238,24 @@ export function AnimatedHeaderBackground() {
 
         let fillStyle = `rgba(244, 244, 245, ${finalAlpha})`;
         let glowStyle = `rgba(244, 244, 245, ${finalAlpha * 0.4})`;
-        if (p.color === "emerald") {
-          fillStyle = `rgba(52, 211, 153, ${finalAlpha * 1.2})`;
-          glowStyle = `rgba(16, 185, 129, ${finalAlpha * 0.6})`;
-        } else if (p.color === "cyan") {
-          fillStyle = `rgba(56, 189, 248, ${finalAlpha * 1.1})`;
-          glowStyle = `rgba(6, 182, 212, ${finalAlpha * 0.5})`;
+        if (p.color === "primary") {
+          fillStyle = `rgba(${particlePrimary}, ${finalAlpha * 1.2})`;
+          glowStyle = `rgba(${particlePrimary}, ${finalAlpha * 0.55})`;
+        } else if (p.color === "secondary") {
+          fillStyle = `rgba(${particleSecondary}, ${finalAlpha * 1.1})`;
+          glowStyle = `rgba(${particleSecondary}, ${finalAlpha * 0.45})`;
         }
 
-        // Draw soft glow aura
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius * 2.2, 0, Math.PI * 2);
         ctx.fillStyle = glowStyle;
         ctx.fill();
 
-        // Draw particle node
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = fillStyle;
         ctx.fill();
 
-        // Constellation lines between nearby particles
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dx = p.x - p2.x;
@@ -259,11 +263,11 @@ export function AnimatedHeaderBackground() {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < CONNECT_DIST) {
-            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.12;
+            const lineAlpha = (1 - dist / CONNECT_DIST) * 0.14;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${lineAlpha})`;
+            ctx.strokeStyle = `rgba(${line}, ${lineAlpha})`;
             ctx.lineWidth = 0.75;
             ctx.stroke();
           }
@@ -283,7 +287,7 @@ export function AnimatedHeaderBackground() {
       container.removeEventListener("pointerleave", onPointerLeave);
       container.removeEventListener("pointerdown", onPointerDown);
     };
-  }, []);
+  }, [themeConfig]);
 
   return (
     <div
@@ -291,27 +295,16 @@ export function AnimatedHeaderBackground() {
       className="pointer-events-auto absolute inset-0 overflow-hidden touch-pan-y"
       aria-hidden
     >
-      {/* Floating Animated Ambient Glow Orbs */}
       <div
-        className="pointer-events-none absolute -top-24 left-[12%] h-80 w-80 rounded-full bg-emerald-500/12 blur-[100px]"
-        style={{
-          animation: "orbFloat1 18s ease-in-out infinite alternate",
-        }}
+        className={`header-orb-a pointer-events-none absolute -top-24 left-[12%] h-80 w-80 rounded-full ${themeConfig.orbA} blur-[100px]`}
       />
       <div
-        className="pointer-events-none absolute top-[5%] right-[10%] h-96 w-96 rounded-full bg-indigo-500/15 blur-[120px]"
-        style={{
-          animation: "orbFloat2 24s ease-in-out infinite alternate",
-        }}
+        className={`header-orb-b pointer-events-none absolute top-[5%] right-[10%] h-96 w-96 rounded-full ${themeConfig.orbB} blur-[120px]`}
       />
       <div
-        className="pointer-events-none absolute -bottom-20 left-[45%] h-72 w-72 rounded-full bg-cyan-500/10 blur-[90px]"
-        style={{
-          animation: "orbFloat3 20s ease-in-out infinite alternate",
-        }}
+        className={`header-orb-c pointer-events-none absolute -bottom-20 left-[45%] h-72 w-72 rounded-full ${themeConfig.orbC} blur-[90px]`}
       />
 
-      {/* Subtle Micro-Grid Technical Layer */}
       <div
         className="pointer-events-none absolute inset-0 opacity-20"
         style={{
@@ -321,48 +314,10 @@ export function AnimatedHeaderBackground() {
         }}
       />
 
-      {/* Interactive Floating Quant Particles Canvas */}
       <canvas
         ref={canvasRef}
         className="pointer-events-none absolute inset-0 h-full w-full opacity-80"
       />
-
-      {/* CSS Keyframes for the Floating Orbs */}
-      <style jsx>{`
-        @keyframes orbFloat1 {
-          0% {
-            transform: translate3d(0, 0, 0) scale(1);
-          }
-          50% {
-            transform: translate3d(50px, 35px, 0) scale(1.15);
-          }
-          100% {
-            transform: translate3d(-35px, 20px, 0) scale(0.95);
-          }
-        }
-        @keyframes orbFloat2 {
-          0% {
-            transform: translate3d(0, 0, 0) scale(1);
-          }
-          50% {
-            transform: translate3d(-60px, 40px, 0) scale(1.1);
-          }
-          100% {
-            transform: translate3d(40px, -25px, 0) scale(0.92);
-          }
-        }
-        @keyframes orbFloat3 {
-          0% {
-            transform: translate3d(0, 0, 0) scale(1);
-          }
-          50% {
-            transform: translate3d(-30px, -40px, 0) scale(1.2);
-          }
-          100% {
-            transform: translate3d(35px, -15px, 0) scale(0.9);
-          }
-        }
-      `}</style>
     </div>
   );
 }

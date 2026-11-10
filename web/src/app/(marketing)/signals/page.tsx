@@ -34,11 +34,12 @@ export default async function SignalsPage({
   return (
     <main className="flex min-h-[calc(100svh-4rem)] flex-1 flex-col bg-[#fafafa] relative text-zinc-900">
       <PageHeader
+        theme="signals"
         title="Live Signals Terminal"
         subtitle="Real-time systematic setups across active trading sessions — precise entry levels, stop loss (SL), multi-target profit ladders (TP), and quantitative Algo + LLM neural validation."
       />
 
-      <div className="w-full flex-1 px-4 py-8 sm:px-6 lg:px-8 xl:px-12 page-container relative z-10">
+      <div className="page-container relative z-10 w-full flex-1 py-6 sm:py-8 lg:py-10">
 
         <SignalsBrowse
           tab={currentTab}

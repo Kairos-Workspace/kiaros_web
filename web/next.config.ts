@@ -19,6 +19,9 @@ const r2PublicHost = process.env.R2_PUBLIC_URL
   : undefined;
 
 const nextConfig: NextConfig = {
+  // Cursor/local tooling often hits the app via 127.0.0.1 while Next serves
+  // as localhost — allow both in dev so HMR + dynamic chunks load.
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   // Keep soft-navigated pages warm in the client router so back/forward and
   // revisiting admin tabs feel instant instead of refetching immediately.
   experimental: {

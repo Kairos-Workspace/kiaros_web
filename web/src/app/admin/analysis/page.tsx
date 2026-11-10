@@ -26,10 +26,11 @@ export default async function AdminAnalysisPage({
     saved?: string;
     deleted?: string;
     tab?: string;
+    generated?: string;
   }>;
 }) {
   await requireAdminPage();
-  const { error, saved, deleted, tab } = await searchParams;
+  const { error, saved, deleted, tab, generated } = await searchParams;
   const analyses = await listAllAnalysesForAdmin();
   const r2Active = isR2Configured();
 
@@ -38,7 +39,12 @@ export default async function AdminAnalysisPage({
   return (
     <div className="flex w-full flex-col gap-5">
       {error ? <Notice tone="error"><T>{error}</T></Notice> : null}
-      {saved ? <Notice tone="success"><T>{"Daily analysis published / updated successfully."}</T></Notice> : null}
+      {generated ? (
+        <Notice tone="success">
+          <T>{"AI analysis generated and published to /analysis."}</T>
+        </Notice>
+      ) : null}
+      {saved && !generated ? <Notice tone="success"><T>{"Daily analysis published / updated successfully."}</T></Notice> : null}
       {deleted ? <Notice tone="success"><T>{"Analysis record deleted successfully."}</T></Notice> : null}
 
       {/* Tabbed Sections: Library & Upload */}

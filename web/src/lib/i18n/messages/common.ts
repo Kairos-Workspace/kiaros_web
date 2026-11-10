@@ -80,6 +80,8 @@ export const commonMessages: Record<string, string> = {
   "GOLD (XAUUSD) ORDERFLOW": "លំហូរបញ្ជាទិញមាស (XAUUSD)",
   "Gold (XAUUSD) Technical Analysis": "ការវិភាគបច្ចេកទេសមាស (XAUUSD)",
   "Institutional multi-timeframe orderflow blueprints, liquidity maps, and daily session execution playbooks exclusively for Gold (XAUUSD).": "ផែនការលំហូរបញ្ជាទិញតាមច្រើនក្របខណ្ឌពេលវេលា ផែនទីសាច់ប្រាក់ងាយស្រួល និងផែនការជួញដូរប្រចាំថ្ងៃ សម្រាប់មាស (XAUUSD)។",
+  "Daily Gold signal with the important POI zones to watch — bias, entry area, stop, and targets.": "សញ្ញាមាសប្រចាំថ្ងៃជាមួយតំបន់ POI សំខាន់ៗ — ទិសដៅ តំបន់ចូល stop និងគោលដៅ។",
+  "Daily Gold analysis focused on the important POI zones to watch — no trade calls.": "ការវិភាគមាសប្រចាំថ្ងៃផ្តោតលើតំបន់ POI សំខាន់ៗ — មិនមានការហៅទិញ/លក់។",
   "High-impact macroeconomic releases, central bank rate decisions, and volatility catalysts monitored by Kiaros neural risk filters and Gemini AI macro projections to shield funded capital.": "តាមដានព័ត៌មានម៉ាក្រូសេដ្ឋកិច្ចសំខាន់ៗ ការសម្រេចអត្រាការប្រាក់របស់ធនាគារកណ្តាល និងកត្តាបង្កការប្រែប្រួល ដោយប្រើប្រព័ន្ធត្រងហានិភ័យ Kiaros និងការព្យាកររបស់ Gemini AI ដើម្បីការពារដើមទុន។",
   "Live Signals Terminal": "ផ្ទាំងសញ្ញាជួញដូរផ្ទាល់",
   "Real-time systematic setups across active trading sessions — precise entry levels, stop loss (SL), multi-target profit ladders (TP), and quantitative Algo + LLM neural validation.": "ឱកាសជួញដូរផ្ទាល់តាមវគ្គសកម្ម ជាមួយតម្លៃចូលច្បាស់លាស់ កម្រិតកាត់ខាត (SL) គោលដៅចំណេញច្រើនកម្រិត (TP) និងការផ្ទៀងផ្ទាត់ដោយ Algo + LLM។",

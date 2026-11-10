@@ -1,513 +1,249 @@
 "use client";
 
 import { T } from "@/components/i18n/T";
-import { useTranslation } from "@/components/i18n/LanguageProvider";
-
 import { useState } from "react";
-import Image from "next/image";
 import type { DailyAnalysis } from "@/lib/analysis";
-import { TELEGRAM_GROUP_URL } from "@/lib/constants";
-import { formatRelativeTime } from "@/lib/format";
-import { useModalDismiss } from "@/lib/use-modal-dismiss";
-import { TelegramIcon } from "@/components/shared/TelegramIcon";
+import type { MarketCandle } from "@/lib/markets/kraken";
+import { poiLineColor } from "@/lib/analysis-poi";
+import { PoiAnalysisChart } from "@/components/analysis/PoiAnalysisChart";
 
 interface AnalysisViewProps {
   analyses?: DailyAnalysis[];
+  candles?: MarketCandle[];
 }
 
-type ExtractedPlan = {
-  trigger?: string;
-  entry?: string;
-  stopLoss?: string;
-  targets: string[];
-  riskReward?: string;
-};
+function isGoldSymbol(sym: string) {
+  const s = (sym || "").toUpperCase();
+  return s === "XAUUSD" || s.includes("XAU") || s.includes("GOLD");
+}
 
-function extractExecutionPlan(raw: string): ExtractedPlan {
-  const plan: ExtractedPlan = { targets: [] };
-  if (!raw) return plan;
-
-  const lines = raw.split("\n");
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed.startsWith("- **") && !trimmed.startsWith("* **")) continue;
-    const match = trimmed.match(/^[-*]\s+\*\*([^:]+):\*\*\s*(.+)$/i);
-    if (!match) continue;
-    const key = match[1].toLowerCase().trim();
-    const val = match[2].trim();
-    if (key.includes("trigger") || key.includes("bias")) {
-      plan.trigger = val;
-    } else if (key.includes("entry")) {
-      plan.entry = val;
-    } else if (key.includes("stop")) {
-      plan.stopLoss = val;
-    } else if (key.includes("target") || key.includes("take profit") || key.includes("tp")) {
-      plan.targets.push(val);
-    } else if (key.includes("risk") || key.includes("reward") || key.includes("r:r")) {
-      plan.riskReward = val;
-    }
+function biasTone(bias: DailyAnalysis["bias"]) {
+  if (bias === "BULLISH") {
+    return "bg-emerald-500/10 text-emerald-700 ring-emerald-200/80";
   }
-  return plan;
+  if (bias === "BEARISH") {
+    return "bg-rose-500/10 text-rose-700 ring-rose-200/80";
+  }
+  return "bg-zinc-100 text-zinc-600 ring-zinc-200";
 }
 
-export function AnalysisView({ analyses = [] }: AnalysisViewProps) {
-  const { t, locale } = useTranslation();
-  const isGold = (sym: string) => {
-    const s = (sym || "").toUpperCase();
-    return s === "XAUUSD" || s.includes("XAU") || s.includes("GOLD");
-  };
+function formatPublishedAt(iso: string) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  // Fixed UTC format avoids SSR/client locale hydration mismatch
+  return `${d.toISOString().slice(0, 16).replace("T", " ")} UTC`;
+}
 
-  const goldAnalyses = analyses.filter((a) => isGold(a.symbol));
-  const activeAnalyses = goldAnalyses;
+export function AnalysisView({ analyses = [], candles = [] }: AnalysisViewProps) {
+  const activeAnalyses = analyses.filter((a) => isGoldSymbol(a.symbol));
 
   const [selectedId, setSelectedId] = useState<string>(
-    activeAnalyses.length > 0 ? activeAnalyses[0].id : ""
+    activeAnalyses.length > 0 ? activeAnalyses[0].id : "",
   );
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
-
-  // Hook for ESC key dismissal and scroll locking
-  useModalDismiss(isLightboxOpen, () => setIsLightboxOpen(false));
 
   if (!activeAnalyses || activeAnalyses.length === 0) {
     return (
-      <div className="w-full rounded-xl border border-zinc-200 bg-white p-16 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
-          <svg className="h-5 w-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      <div className="mx-auto max-w-lg rounded-2xl border border-zinc-200/80 bg-white px-8 py-16 text-center shadow-sm">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 ring-1 ring-amber-100">
+          <svg className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
           </svg>
         </div>
-        <h3 className="mt-4 text-sm font-bold text-zinc-900">
-          <T>{"No Analysis Published Yet"}</T></h3>
-        <p className="mt-1.5 text-xs text-zinc-500 max-w-sm mx-auto leading-relaxed">
-          <T>{"Daily Gold (XAUUSD) analysis will appear here once published. New blueprints are posted ahead of London and New York sessions."}</T></p>
+        <h3 className="mt-5 text-base font-bold text-zinc-950">
+          <T>{"No Analysis Published Yet"}</T>
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-zinc-500">
+          <T>
+            {
+              "Daily Gold (XAUUSD) analysis will appear here once published. New blueprints are posted ahead of London and New York sessions."
+            }
+          </T>
+        </p>
       </div>
     );
   }
 
   const selected = activeAnalyses.find((a) => a.id === selectedId) ?? activeAnalyses[0];
-  const executionPlan = extractExecutionPlan(selected.description);
-
-  const handleCopyLink = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000);
-    }
-  };
-
-  const biasColor =
-    selected.bias === "BULLISH"
-      ? { text: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", dot: "bg-emerald-500" }
-      : selected.bias === "BEARISH"
-      ? { text: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", dot: "bg-rose-500" }
-      : { text: "text-zinc-600", bg: "bg-zinc-100", border: "border-zinc-200", dot: "bg-zinc-400" };
+  const poiLevels = (selected.keyLevels || []).slice(0, 5);
+  const note = selected.description?.trim() || "";
+  const last = candles.length ? candles[candles.length - 1]?.close : null;
 
   return (
-    <div className="w-full space-y-5">
-      {/* Session Switcher */}
-      {activeAnalyses.length > 1 && (
-        <div className="flex items-center gap-1 p-1 rounded-lg bg-zinc-100/80 w-fit">
-          {activeAnalyses.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setSelectedId(item.id)}
-              className={`px-3.5 py-1.5 text-[11px] font-semibold rounded-md transition-all cursor-pointer ${
-                item.id === selected.id
-                  ? "bg-white text-zinc-950 shadow-sm"
-                  : "text-zinc-500 hover:text-zinc-800"
-              }`}
-            >
-              <T>{item.session}</T> · {new Date(item.createdAt).toLocaleDateString(locale === "km" ? "km-KH" : "en-US", { month: "short", day: "numeric" })}
-            </button>
-          ))}
-        </div>
-      )}
+    <div className="w-full space-y-5 sm:space-y-6">
+      {/* Desk header */}
+      <section className="overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-sm">
+        <div className="border-b border-zinc-100 bg-gradient-to-r from-zinc-50 via-white to-amber-50/40 px-4 py-4 sm:px-6 sm:py-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0 max-w-3xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-md bg-zinc-950 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white">
+                  {selected.symbol}
+                </span>
+                <span className="text-[11px] font-medium text-zinc-500">
+                  {selected.timeframe}
+                </span>
+                <span className="text-zinc-300">·</span>
+                <span className="text-[11px] font-medium text-zinc-500">
+                  <T>{selected.session}</T>
+                </span>
+                <span
+                  className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ring-1 ${biasTone(selected.bias)}`}
+                >
+                  <T>{selected.bias}</T>
+                </span>
+              </div>
 
-      {/* ── Header ── */}
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-zinc-950 tracking-tight">
-              {selected.symbol}
-            </h1>
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-md ${biasColor.bg} ${biasColor.text} ${biasColor.border} border`}>
-              <span className={`h-1.5 w-1.5 rounded-full ${biasColor.dot}`} />
-              <T>{selected.bias}</T>
-            </span>
-            <span className="text-xs text-zinc-400 font-medium">{selected.timeframe}</span>
-            <span className="text-xs text-zinc-400">·</span>
-            <span className="text-xs text-zinc-400 font-medium"><T>{selected.session}</T></span>
+              <h2 className="mt-3 text-xl font-bold tracking-tight text-zinc-950 sm:text-2xl">
+                <T>{selected.title}</T>
+              </h2>
+
+              {note ? (
+                <p className="mt-2 text-[13px] leading-relaxed text-zinc-600 sm:text-sm">
+                  {note}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center lg:flex-col lg:items-end">
+              {last != null ? (
+                <div className="rounded-xl bg-zinc-950 px-3.5 py-2.5 text-right text-white shadow-sm">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
+                    <T>{"Last price"}</T>
+                  </p>
+                  <p className="mt-0.5 font-mono text-lg font-bold tabular-nums">
+                    ${last.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                </div>
+              ) : null}
+              <p className="text-[11px] text-zinc-400">
+                <T>{"Updated"}</T> {formatPublishedAt(selected.updatedAt || selected.createdAt)}
+                {selected.author ? (
+                  <span className="text-zinc-300">
+                    {" · "}
+                    {selected.author}
+                  </span>
+                ) : null}
+              </p>
+            </div>
           </div>
-          <h2 className="text-sm font-medium text-zinc-700 max-w-2xl leading-relaxed">
-            <T>{selected.title}</T>
-          </h2>
-          <div className="flex items-center gap-2 text-[11px] text-zinc-400">
-            <span>{selected.author}</span>
-            <span>·</span>
-            <span>{formatRelativeTime(selected.createdAt, undefined, locale)}</span>
-            <span>·</span>
-            <span>
-              {new Date(selected.createdAt).toLocaleDateString(locale === "km" ? "km-KH" : "en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
+
+          {activeAnalyses.length > 1 ? (
+            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4">
+              {activeAnalyses.map((item) => {
+                const active = item.id === selected.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setSelectedId(item.id)}
+                    className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition-all cursor-pointer ring-1 ${
+                      active
+                        ? "bg-zinc-950 text-white ring-zinc-950"
+                        : "bg-white text-zinc-600 ring-zinc-200 hover:ring-zinc-300 hover:text-zinc-900"
+                    }`}
+                  >
+                    <T>{item.session}</T>
+                    <span className="text-zinc-400">
+                      {" · "}
+                      {new Date(item.createdAt).toISOString().slice(0, 10)}
+                    </span>
+                  </button>
+                );
               })}
-            </span>
-          </div>
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      {/* Chart + POI map */}
+      <div className="grid grid-cols-1 items-start gap-4 sm:gap-5 lg:grid-cols-12">
+        <div className="lg:col-span-8 xl:col-span-8">
+          <PoiAnalysisChart
+            candles={candles}
+            levels={poiLevels}
+            symbol={selected.symbol}
+          />
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={handleCopyLink}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-[11px] font-medium text-zinc-600 bg-white border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors cursor-pointer"
-          >
-            {copiedLink ? (
-              <>
-                <svg className="h-3.5 w-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <T>{"Copied"}</T></>
-            ) : (
-              <>
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                <T>{"Share"}</T></>
-            )}
-          </button>
-          <a
-            href={TELEGRAM_GROUP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 bg-zinc-900 px-3.5 py-2 text-[11px] font-semibold text-white rounded-lg hover:bg-zinc-800 transition-colors cursor-pointer"
-          >
-            <TelegramIcon size={13} />
-            <T>{"Live Alerts"}</T></a>
-        </div>
-      </div>
-
-      {/* ── Main Layout ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-
-        {/* LEFT: Chart + Analysis */}
-        <div className="lg:col-span-7 xl:col-span-8 space-y-5">
-
-          {/* Chart */}
-          <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-            <div
-              onClick={() => setIsLightboxOpen(true)}
-              className="group relative w-full aspect-[16/10] bg-zinc-50 cursor-zoom-in overflow-hidden"
-            >
-              <Image
-                src={selected.imageUrl}
-                alt={t(selected.title)}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 840px"
-                className="object-contain transition-transform duration-300 group-hover:scale-[1.01]"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 text-white text-[11px] font-medium px-3 py-1.5 rounded-full backdrop-blur-sm">
-                  <T>{"Click to enlarge"}</T></span>
+        <aside className="lg:col-span-4 xl:col-span-4 lg:sticky lg:top-24">
+          <section className="overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-sm">
+            <div className="border-b border-zinc-100 px-4 py-4 sm:px-5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">
+                <T>{"Market Map"}</T>
+              </p>
+              <div className="mt-1 flex items-end justify-between gap-3">
+                <h3 className="text-sm font-bold text-zinc-950">
+                  <T>{"Important POI Zones"}</T>
+                </h3>
+                <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-[10px] font-bold text-zinc-600">
+                  {poiLevels.length} <T>{"zones"}</T>
+                </span>
               </div>
             </div>
-            <div className="flex items-center justify-between border-t border-zinc-100 px-4 py-2 text-[11px] text-zinc-400">
-              <span>{selected.symbol} · {selected.timeframe} · <T>{selected.session}</T></span>
-              <a
-                href={selected.imageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-zinc-700 transition-colors"
-              >
-                <T>{"Open image ↗"}</T></a>
-            </div>
-          </div>
 
-          {/* Technical Analysis */}
-          <div className="rounded-xl border border-zinc-200 bg-white p-6">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-4">
-              <T>{"Technical Analysis"}</T></h3>
-            <div className="space-y-3 text-[13px] leading-relaxed text-zinc-700">
-              {formatDescription(selected.description)}
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT: Execution + Levels */}
-        <div className="lg:col-span-5 xl:col-span-4 space-y-5">
-
-          {/* Execution Blueprint */}
-          <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-            <div className="flex items-center justify-between bg-zinc-900 px-4 py-3">
-              <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
-                <T>{"Execution Plan"}</T></h3>
-              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
-                selected.bias === "BULLISH"
-                  ? "bg-emerald-500/20 text-emerald-300"
-                  : selected.bias === "BEARISH"
-                  ? "bg-rose-500/20 text-rose-300"
-                  : "bg-zinc-700 text-zinc-300"
-              }`}>
-                <T>{selected.bias}</T>
-              </span>
-            </div>
-
-            <div className="p-4 space-y-3">
-              {/* Trigger */}
-              {executionPlan.trigger && (
-                <div className="bg-zinc-50 rounded-lg p-3">
-                  <span className="text-[10px] font-medium text-zinc-400 uppercase block"><T>{"Trigger"}</T></span>
-                  <span className="text-[13px] font-semibold text-zinc-900 mt-0.5 block">{executionPlan.trigger}</span>
-                </div>
-              )}
-
-              {/* Entry */}
-              {executionPlan.entry && (
-                <div className="flex items-center justify-between rounded-lg border border-zinc-200 p-3">
-                  <span className="text-[11px] font-medium text-zinc-500"><T>{"Entry Zone"}</T></span>
-                  <span className="text-sm font-bold text-zinc-900">{executionPlan.entry}</span>
-                </div>
-              )}
-
-              {/* Stop Loss */}
-              {executionPlan.stopLoss && (
-                <div className="flex items-center justify-between rounded-lg border border-rose-100 bg-rose-50/50 p-3">
-                  <span className="text-[11px] font-medium text-rose-600"><T>{"Stop Loss"}</T></span>
-                  <span className="text-sm font-bold text-rose-700">{executionPlan.stopLoss}</span>
-                </div>
-              )}
-
-              {/* Targets */}
-              {executionPlan.targets.length > 0 && (
-                <div className="space-y-1.5">
-                  {executionPlan.targets.map((tp, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between rounded-lg border border-emerald-100 bg-emerald-50/50 p-3"
-                    >
-                      <span className="text-[11px] font-medium text-emerald-600"><T>{"TP"}</T>{" "}{idx + 1}</span>
-                      <span className="text-sm font-bold text-emerald-700">{tp}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Risk/Reward */}
-              {executionPlan.riskReward && (
-                <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 p-3">
-                  <span className="text-[11px] font-medium text-zinc-500"><T>{"R:R"}</T></span>
-                  <span className="text-sm font-bold text-zinc-900">{executionPlan.riskReward}</span>
-                </div>
-              )}
-
-              {/* Fallback if no execution data */}
-              {!executionPlan.trigger && !executionPlan.entry && !executionPlan.stopLoss && executionPlan.targets.length === 0 && (
-                <p className="text-[11px] text-zinc-400 text-center py-4">
-                  <T>{"Execution details are embedded in the analysis breakdown."}</T></p>
-              )}
-            </div>
-          </div>
-
-          {/* Key Price Levels */}
-          {selected.keyLevels && selected.keyLevels.length > 0 && (
-            <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  <T>{"Key Levels"}</T></h3>
-                <span className="text-[10px] font-medium text-zinc-400">
-                  {selected.keyLevels.length} <T>{"levels"}</T></span>
-              </div>
-
+            {poiLevels.length > 0 ? (
               <div className="divide-y divide-zinc-100">
-                {selected.keyLevels.map((lvl, idx) => {
-                  const isResistance = lvl.type === "resistance";
-                  const isSupport = lvl.type === "support";
-                  const isInvalidation = lvl.type === "invalidation";
-
-                  return (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between px-4 py-3 hover:bg-zinc-50/50 transition-colors"
-                    >
-                      <div className="min-w-0">
-                        <span className="text-[13px] font-semibold text-zinc-800 block truncate">
+                {poiLevels.map((lvl, idx) => (
+                  <div
+                    key={`${lvl.label}-${lvl.level}-${idx}`}
+                    className="relative flex items-start gap-3 px-4 py-4 sm:px-5"
+                  >
+                    <span
+                      className="mt-1.5 h-9 w-1 shrink-0 rounded-full"
+                      style={{ background: poiLineColor(lvl.type) }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="min-w-0 text-[13px] font-semibold leading-snug text-zinc-900">
                           <T>{lvl.label}</T>
+                        </p>
+                        <span
+                          className="shrink-0 font-mono text-[13px] font-bold tabular-nums"
+                          style={{ color: poiLineColor(lvl.type) }}
+                        >
+                          {lvl.level}
                         </span>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className={`text-[10px] font-medium capitalize ${
-                            isResistance ? "text-rose-500" : isSupport ? "text-emerald-500" : isInvalidation ? "text-amber-500" : "text-zinc-400"
-                          }`}>
-                            <T>{lvl.type}</T>
-                          </span>
-                          {lvl.description && (
-                            <>
-                              <span className="text-zinc-200">·</span>
-                              <span className="text-[10px] text-zinc-400 truncate max-w-[140px]">{lvl.description}</span>
-                            </>
-                          )}
-                        </div>
                       </div>
-                      <span className={`text-sm font-bold tabular-nums shrink-0 ml-3 ${
-                        isResistance ? "text-rose-600" : isSupport ? "text-emerald-600" : isInvalidation ? "text-amber-600" : "text-zinc-800"
-                      }`}>
-                        {lvl.level}
-                      </span>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                        <span
+                          className="rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white"
+                          style={{ background: poiLineColor(lvl.type) }}
+                        >
+                          <T>{lvl.type}</T>
+                        </span>
+                        {lvl.description ? (
+                          <span className="min-w-0 text-[11px] leading-snug text-zinc-500">
+                            {lvl.description}
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
+            ) : (
+              <p className="px-5 py-10 text-center text-sm text-zinc-400">
+                <T>{"No POI zones published for this session."}</T>
+              </p>
+            )}
+
+            <div className="border-t border-zinc-100 bg-zinc-50/70 px-4 py-3 sm:px-5">
+              <p className="text-[11px] leading-relaxed text-zinc-500">
+                <T>
+                  {
+                    "Lines on the chart mark the same POI zones. This is market structure context — not a buy or sell call."
+                  }
+                </T>
+              </p>
             </div>
-          )}
-        </div>
+          </section>
+        </aside>
       </div>
-
-      {/* ── Fullscreen Lightbox ── */}
-      {isLightboxOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setIsLightboxOpen(false)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 cursor-zoom-out"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative flex flex-col max-w-7xl max-h-[95vh] w-full bg-zinc-950 overflow-hidden rounded-xl border border-zinc-800 cursor-default"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800 bg-zinc-900/80">
-              <div className="flex items-center gap-2 text-xs">
-                <span className="font-semibold text-white">{selected.symbol}</span>
-                <span className="text-zinc-500">{selected.timeframe} · <T>{selected.session}</T></span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsLightboxOpen(false)}
-                className="h-7 w-7 flex items-center justify-center rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
-              >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Image */}
-            <div className="relative flex-1 min-h-[65vh] sm:min-h-[78vh] w-full bg-zinc-950 flex items-center justify-center p-2">
-              <Image
-                src={selected.imageUrl}
-                alt={t(selected.title)}
-                fill
-                sizes="100vw"
-                className="object-contain"
-              />
-            </div>
-
-            {/* Footer */}
-            <div className="px-4 py-2 border-t border-zinc-800 bg-zinc-900/80 flex items-center justify-between text-[11px] text-zinc-500">
-              <span><T>{selected.title}</T></span>
-              <a
-                href={selected.imageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-zinc-300 transition-colors"
-              >
-                <T>{"Open original ↗"}</T></a>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
-}
-
-/**
- * Format markdown lines into structured HTML elements.
- */
-function formatDescription(raw: string) {
-  if (!raw) return null;
-
-  const lines = raw.split("\n");
-  const elements: React.ReactNode[] = [];
-  let bulletGroup: string[] = [];
-
-  const flushBullets = () => {
-    if (bulletGroup.length > 0) {
-      elements.push(
-        <ul key={`ul-${elements.length}`} className="space-y-1.5 my-2">
-          {bulletGroup.map((b, i) => (
-            <li key={i} className="flex items-start gap-2 text-zinc-700">
-              <span className="text-zinc-300 select-none mt-0.5">•</span>
-              <span className="leading-relaxed">{renderInlineFormatting(b)}</span>
-            </li>
-          ))}
-        </ul>
-      );
-      bulletGroup = [];
-    }
-  };
-
-  lines.forEach((line, idx) => {
-    const trimmed = line.trim();
-
-    if (!trimmed) {
-      flushBullets();
-      return;
-    }
-
-    if (trimmed.startsWith("### ")) {
-      flushBullets();
-      elements.push(
-        <h4
-          key={`h4-${idx}`}
-          className="text-xs font-semibold uppercase tracking-wider text-zinc-500 pt-4 pb-1"
-        >
-          {trimmed.replace(/^###\s+/, "")}
-        </h4>
-      );
-      return;
-    }
-
-    if (trimmed.startsWith("## ")) {
-      flushBullets();
-      elements.push(
-        <h3
-          key={`h3-${idx}`}
-          className="text-sm font-bold text-zinc-900 pt-4 pb-1"
-        >
-          {trimmed.replace(/^##\s+/, "")}
-        </h3>
-      );
-      return;
-    }
-
-    if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-      bulletGroup.push(trimmed.replace(/^[-*]\s+/, ""));
-      return;
-    }
-
-    flushBullets();
-    elements.push(
-      <p key={`p-${idx}`} className="leading-relaxed text-zinc-600">
-        {renderInlineFormatting(trimmed)}
-      </p>
-    );
-  });
-
-  flushBullets();
-  return elements;
-}
-
-/**
- * Parse **bold** inline tokens.
- */
-function renderInlineFormatting(text: string): React.ReactNode {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
-      return (
-        <strong key={i} className="font-bold text-zinc-900">
-          {part.slice(2, -2)}
-        </strong>
-      );
-    }
-    return part;
-  });
 }

@@ -102,12 +102,12 @@ export async function Nav() {
         </div>
 
         {/* Mobile Navigation Bar - Horizontally Scrollable Pill Rail */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none border-t border-zinc-200/90 bg-white/95 px-3 py-2 xl:hidden">
+        <div className="flex items-center gap-1.5 overflow-x-auto overscroll-x-contain scrollbar-none border-t border-zinc-200/90 bg-white/95 px-3 py-2 [-webkit-overflow-scrolling:touch] xl:hidden">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="shrink-0 flex items-center rounded-lg px-3 py-1 text-xs font-semibold text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950 whitespace-nowrap active:bg-zinc-200"
+              className="flex shrink-0 items-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-950 active:bg-zinc-200"
             >
               <span><T>{l.label}</T></span>
             </Link>

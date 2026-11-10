@@ -21,11 +21,12 @@ export default async function ToolsPage() {
     <>
       <main className="flex min-h-[calc(100svh-4rem)] flex-1 flex-col bg-[#fafafa] relative text-zinc-900">
         <PageHeader
+          theme="tools"
           title="Trading Tools & MT5 EAs"
           subtitle="Free institutional MT5 Expert Advisors, custom TradingView indicators, and quantitative risk calculators — download directly or link via TradingView."
         />
 
-        <div className="w-full flex-1 px-4 py-8 sm:px-6 lg:px-8 xl:px-12 page-container relative z-10">
+        <div className="page-container relative z-10 w-full flex-1 py-6 sm:py-8 lg:py-10">
           <ToolsGrid tools={tools} />
         </div>
       </main>

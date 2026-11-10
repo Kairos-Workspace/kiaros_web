@@ -1,42 +1,9 @@
-import type { Metadata } from "next";
-import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
-import localFont from "next/font/local";
+import type { Metadata, Viewport } from "next";
+import { JetBrains_Mono } from "next/font/google";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 import { getTranslations } from "@/lib/i18n/server";
 
 import "./globals.css";
-
-const notoSansKhmer = localFont({
-  src: [
-    {
-      path: "../fonts/NotoSansKhmer-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/NotoSansKhmer-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../fonts/NotoSansKhmer-SemiBold.woff2",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../fonts/NotoSansKhmer-Bold.woff2",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../fonts/NotoSansKhmer-ExtraBold.woff2",
-      weight: "800",
-      style: "normal",
-    },
-  ],
-  variable: "--font-khmer",
-  display: "swap",
-});
 
 const jetbrains = JetBrains_Mono({
   variable: "--font-jetbrains",
@@ -44,11 +11,15 @@ const jetbrains = JetBrains_Mono({
   weight: ["400", "500", "600", "700"],
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+  ],
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getTranslations();
@@ -80,7 +51,7 @@ export default async function RootLayout({
       lang={locale}
       suppressHydrationWarning
       style={{ colorScheme: "light" }}
-      className={`${notoSansKhmer.variable} ${jetbrains.variable} ${plusJakarta.variable} h-full antialiased`}
+      className={`${jetbrains.variable} h-full antialiased`}
     >
       <head>
         <script

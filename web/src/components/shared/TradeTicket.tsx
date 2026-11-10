@@ -3,7 +3,8 @@
 import { T } from "@/components/i18n/T";
 import { useTranslation } from "@/components/i18n/LanguageProvider";
 import type { Signal } from "@/lib/signals";
-import { formatPrice, formatRelativeTime, formatTimeframe } from "@/lib/format";
+import { formatPrice, formatTimeframe } from "@/lib/format";
+import { RelativeTime } from "@/components/shared/RelativeTime";
 
 function DirectionBadge({ direction }: { direction: Signal["direction"] }) {
   const isLong = direction === "long";
@@ -129,7 +130,6 @@ export function TradeTicket({
   showRationale?: boolean;
   adminSlot?: React.ReactNode;
 }) {
-  const { locale } = useTranslation();
   const isLong = signal.direction === "long";
 
   return (
@@ -191,7 +191,7 @@ export function TradeTicket({
       <div className="flex items-center justify-between border-t border-zinc-100 bg-white px-4 py-2.5 font-mono text-xs text-zinc-500">
         <span className="flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
-          <span><T>{sample ? "example signal" : formatRelativeTime(signal.createdAt, undefined, locale)}</T></span>
+          <span>{sample ? <T>{"example signal"}</T> : <RelativeTime iso={signal.createdAt} />}</span>
         </span>
         <div className="flex items-center gap-3">
           {signal.newsHeadlines && signal.newsHeadlines.length > 0 ? (

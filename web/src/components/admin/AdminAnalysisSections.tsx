@@ -10,6 +10,7 @@ import { useState } from "react";
 import {
   createDailyAnalysisAction,
   deleteDailyAnalysisAction,
+  generateDailyAnalysisDraftAction,
   toggleDailyAnalysisPublishedAction,
 } from "@/app/admin/actions";
 import { Dropdown } from "@/components/shared/Dropdown";
@@ -139,26 +140,42 @@ export function AdminAnalysisSections({
         </div>
 
         {/* Quick info or Switch Button */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
           <Link
             href="/analysis"
             target="_blank"
             className="rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs font-semibold text-zinc-700 hover:bg-zinc-50 hover:text-zinc-950 transition-colors shadow-2xs"
           >
-            <T>{"Open Public Feed ↗"}</T> </Link>
+            <T>{"Open Public Feed ↗"}</T>
+          </Link>
 
           {activeTab === "list" ? (
-            <button
-              type="button"
-              onClick={() => handleTabChange("upload")}
-              className="btn-primary py-2 px-3 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
-            >
-              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              <span><T>{"Publish New Setup"}</T></span>
-            </button>
+            <>
+              <form action={generateDailyAnalysisDraftAction} className="inline-flex">
+                <input type="hidden" name="force" value="1" />
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 cursor-pointer"
+                  title={t("Generate AI draft from Myfxbook sentiment + live gold structure")}
+                >
+                  <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                  </svg>
+                  <span><T>{"Generate AI Draft"}</T></span>
+                </button>
+              </form>
+              <button
+                type="button"
+                onClick={() => handleTabChange("upload")}
+                className="btn-primary py-2 px-3 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
+              >
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                <span><T>{"Publish New Setup"}</T></span>
+              </button>
+            </>
           ) : (
             <button
               type="button"
@@ -315,6 +332,16 @@ export function AdminAnalysisSections({
                         <span className="font-mono text-[11px] font-medium text-zinc-500">
                           {a.timeframe}
                         </span>
+                        {!a.published ? (
+                          <span className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-900">
+                            <T>{"DRAFT"}</T>
+                          </span>
+                        ) : null}
+                        {a.author === "Kiaros AI Desk" ? (
+                          <span className="rounded bg-violet-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-violet-900">
+                            <T>{"AI"}</T>
+                          </span>
+                        ) : null}
                         <span className="text-[11px] font-mono text-zinc-400">
                           {a.session}
                         </span>

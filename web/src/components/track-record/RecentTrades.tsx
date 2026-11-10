@@ -9,7 +9,7 @@ import { useMemo, useState } from "react";
 import type { ClosedTrade } from "@/lib/track-record";
 import { tradeR } from "@/lib/track-record";
 import { formatPrice } from "@/lib/format";
-import { relativeTime } from "@/lib/relative-time";
+import { RelativeTime } from "@/components/shared/RelativeTime";
 
 function outcomeLabel(reached: number): string {
   if (reached >= 3) return "TP3";
@@ -19,7 +19,7 @@ function outcomeLabel(reached: number): string {
 }
 
 function ClosedTradeCard({ trade }: { trade: ClosedTrade }) {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const isLong = trade.direction === "long";
   const r = tradeR(trade);
   const win = trade.reached >= 1;
@@ -112,7 +112,7 @@ function ClosedTradeCard({ trade }: { trade: ClosedTrade }) {
       </div>
 
       <div className="relative border-t border-zinc-100 px-5 py-2.5 pl-6 flex items-center justify-between text-[11px] text-zinc-500 font-mono">
-        <span><T>{"Closed"}</T>{" "}{relativeTime(trade.closedAt, locale)}</span>
+        <span className="inline-flex items-center gap-1"><T>{"Closed"}</T> <RelativeTime iso={trade.closedAt} coarse /></span>
         <span className="text-[10px] text-zinc-400"><T>{"Bar-Close STP"}</T></span>
       </div>
     </>

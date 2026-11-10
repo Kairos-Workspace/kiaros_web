@@ -7,7 +7,8 @@ import Image from "next/image";
 import { memo, useCallback, useEffect, useState } from "react";
 
 import type { Signal } from "@/lib/signals";
-import { formatDateTime, formatPrice, formatRelativeTime, formatTimeframe } from "@/lib/format";
+import { formatDateTime, formatPrice, formatTimeframe } from "@/lib/format";
+import { RelativeTime } from "@/components/shared/RelativeTime";
 
 function riskReward(signal: Signal): string {
   const risk = Math.abs(signal.entry - signal.stopLoss);
@@ -201,7 +202,7 @@ export const SignalCard = memo(function SignalCard({
   adminSlot?: React.ReactNode;
   showLlmBadge?: boolean;
 }) {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const isLong = signal.direction === "long";
   // Pure SL only — closed TP1/TP2 wins are not losses.
   const isSlHit = signal.status === "sl_hit";
@@ -304,9 +305,9 @@ export const SignalCard = memo(function SignalCard({
       </div>
 
       <div className="relative flex items-center justify-between border-t border-zinc-200 bg-zinc-50/70 px-4 py-2.5 font-mono text-xs text-zinc-600">
-        <span className="flex items-center gap-1.5 text-[11px] text-zinc-500" suppressHydrationWarning>
+        <span className="flex items-center gap-1.5 text-[11px] text-zinc-500">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          {formatRelativeTime(signal.createdAt, undefined, locale)}
+          <RelativeTime iso={signal.createdAt} />
         </span>
         {adminSlot ? (
           <div className="z-10">{adminSlot}</div>

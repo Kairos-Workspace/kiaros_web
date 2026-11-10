@@ -27,6 +27,7 @@ import {
   toggleDailyAnalysisPublished,
   deleteDailyAnalysis,
 } from "@/lib/analysis";
+import { generateDailyAnalysisDraft } from "@/lib/daily-analysis-generate";
 import { generateGeminiPrediction } from "@/lib/gemini";
 import { savePrediction, deletePrediction } from "@/lib/economic-calendar";
 
@@ -353,6 +354,27 @@ export async function deleteDailyAnalysisAction(formData: FormData) {
   await deleteDailyAnalysis(id);
   revalidateAnalysisPaths();
   redirect("/admin/analysis?deleted=1");
+}
+
+/** Pull Myfxbook + XAU structure, ask Gemini, and publish to /analysis. */
+export async function generateDailyAnalysisDraftAction(formData: FormData) {
+  await requireAdmin();
+
+  const session = String(formData.get("session") ?? "").trim() || null;
+  const force = String(formData.get("force") ?? "") === "1";
+
+  const result = await generateDailyAnalysisDraft({ session, force });
+  revalidateAnalysisPaths();
+
+  if (!result.ok) {
+    redirect(
+      `/admin/analysis?error=${encodeURIComponent(result.error)}`,
+    );
+  }
+
+  redirect(
+    `/admin/analysis?saved=1&tab=list&generated=${encodeURIComponent(result.analysis.id)}`,
+  );
 }
 
 export async function predictEconomicEventAction(formData: FormData) {
