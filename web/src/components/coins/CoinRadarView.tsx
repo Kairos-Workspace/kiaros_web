@@ -20,19 +20,16 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
   const [sortBy, setSortBy] = useState<SortOption>("potential");
   const [selectedCoin, setSelectedCoin] = useState<CoinAnalysis | null>(null);
 
-  // Compute key KPI metrics
-  const kpis = useMemo(() => {
-    const potentialCoins = initialCoins.filter((c) => c.category === "potential");
-    const riskyCoins = initialCoins.filter((c) => c.category === "risky");
-    const topPotential = [...initialCoins].sort((a, b) => b.potentialScore - a.potentialScore)[0];
-    const topRisk = [...initialCoins].sort((a, b) => b.riskScore - a.riskScore)[0];
+  // Compute category counts for filter tabs
+  const categoryCounts = useMemo(() => {
+    const potentialCount = initialCoins.filter((c) => c.category === "potential").length;
+    const riskyCount = initialCoins.filter((c) => c.category === "risky").length;
+    const neutralCount = initialCoins.length - potentialCount - riskyCount;
 
     return {
-      potentialCount: potentialCoins.length,
-      riskyCount: riskyCoins.length,
-      neutralCount: initialCoins.length - potentialCoins.length - riskyCoins.length,
-      topPotential,
-      topRisk,
+      potentialCount,
+      riskyCount,
+      neutralCount,
     };
   }, [initialCoins]);
 
@@ -71,122 +68,6 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Top Intelligence KPI Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {/* Top Potential */}
-        <div className="rounded-2xl border border-emerald-200/80 bg-linear-to-br from-emerald-500/10 via-emerald-50/50 to-white p-4 shadow-xs">
-          <div className="flex items-center justify-between text-xs font-bold text-emerald-800 uppercase tracking-wider">
-            <span className="flex items-center gap-1.5">
-              <svg className="h-3.5 w-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                <polyline points="17 6 23 6 23 12" />
-              </svg>
-              <T>{"Top Potential Pick"}</T>
-            </span>
-            <span className="font-mono bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px]">
-              {kpis.topPotential?.potentialScore}%
-            </span>
-          </div>
-          <div className="mt-2 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {kpis.topPotential ? (
-                <CoinIcon symbol={kpis.topPotential.symbol} name={kpis.topPotential.name} size={24} />
-              ) : null}
-              <span className="font-mono text-xl font-black text-zinc-950">
-                {kpis.topPotential?.symbol}
-              </span>
-            </div>
-            <span className="text-xs font-semibold text-emerald-700">
-              {kpis.topPotential?.name}
-            </span>
-          </div>
-          <p className="mt-1 text-[11px] text-zinc-500 line-clamp-1">
-            <T>{kpis.topPotential?.primarySignal}</T>
-          </p>
-        </div>
-
-        {/* Top Risk Warning */}
-        <div className="rounded-2xl border border-rose-200/80 bg-linear-to-br from-rose-500/10 via-rose-50/50 to-white p-4 shadow-xs">
-          <div className="flex items-center justify-between text-xs font-bold text-rose-800 uppercase tracking-wider">
-            <span className="flex items-center gap-1.5">
-              <svg className="h-3.5 w-3.5 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                <line x1="12" y1="9" x2="12" y2="13" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-              <T>{"Highest Risk Watch"}</T>
-            </span>
-            <span className="font-mono bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded text-[10px]">
-              {kpis.topRisk?.riskScore}%
-            </span>
-          </div>
-          <div className="mt-2 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {kpis.topRisk ? (
-                <CoinIcon symbol={kpis.topRisk.symbol} name={kpis.topRisk.name} size={24} />
-              ) : null}
-              <span className="font-mono text-xl font-black text-zinc-950">
-                {kpis.topRisk?.symbol}
-              </span>
-            </div>
-            <span className="text-xs font-semibold text-rose-700">
-              {kpis.topRisk?.name}
-            </span>
-          </div>
-          <p className="mt-1 text-[11px] text-zinc-500 line-clamp-1">
-            <T>{kpis.topRisk?.primarySignal}</T>
-          </p>
-        </div>
-
-        {/* Market Breadth */}
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-xs">
-          <div className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-            <T>{"Quant Radar Health"}</T>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-mono text-xl font-black text-emerald-700">
-              {kpis.potentialCount}
-            </span>
-            <span className="text-xs text-zinc-400">/</span>
-            <span className="font-mono text-xl font-black text-rose-700">
-              {kpis.riskyCount}
-            </span>
-            <span className="text-xs text-zinc-500 ml-auto">
-              <T>{"Potential vs Risky"}</T>
-            </span>
-          </div>
-          <div className="mt-2 flex h-1.5 w-full overflow-hidden rounded-full bg-zinc-100">
-            <div
-              className="bg-emerald-500"
-              style={{ width: `${(kpis.potentialCount / (initialCoins.length || 1)) * 100}%` }}
-            />
-            <div
-              className="bg-rose-500"
-              style={{ width: `${(kpis.riskyCount / (initialCoins.length || 1)) * 100}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Live Feed Status */}
-        <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-xs">
-          <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-wider">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <T>{"Real-Time Feed"}</T>
-          </div>
-          <div className="mt-2 flex items-baseline justify-between">
-            <span className="font-mono text-xl font-black text-zinc-950">
-              {initialCoins.length} <span className="text-xs font-normal text-zinc-500"><T>{"Coins"}</T></span>
-            </span>
-            <span className="text-xs font-mono font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">
-              <T>{"Public Kraken L1"}</T>
-            </span>
-          </div>
-          <p className="mt-1 text-[11px] text-zinc-400">
-            <T>{"Sub-second institutional liquidity & VWAP feeds"}</T>
-          </p>
-        </div>
-      </div>
-
       {/* Filter Tabs & Search Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 border-b border-zinc-200 pb-4">
         {/* Category Filter Pills */}
@@ -215,7 +96,7 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
               <polyline points="17 6 23 6 23 12" />
             </svg>
             <span><T>{"High Potential"}</T></span>
-            <span className="opacity-80">({kpis.potentialCount})</span>
+            <span className="opacity-80">({categoryCounts.potentialCount})</span>
           </button>
 
           <button
@@ -232,7 +113,7 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
               <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
             <span><T>{"High Risk"}</T></span>
-            <span className="opacity-80">({kpis.riskyCount})</span>
+            <span className="opacity-80">({categoryCounts.riskyCount})</span>
           </button>
 
           <button
@@ -248,7 +129,7 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
               <circle cx="12" cy="12" r="3" />
             </svg>
             <span><T>{"Watchlist"}</T></span>
-            <span className="opacity-80">({kpis.neutralCount})</span>
+            <span className="opacity-80">({categoryCounts.neutralCount})</span>
           </button>
         </div>
 

@@ -40,3 +40,4 @@ export function CoinIcon({ symbol, name, size = 28, className = "" }: CoinIconPr
     </div>
   );
 }
+

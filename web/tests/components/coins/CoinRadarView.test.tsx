@@ -4,13 +4,8 @@ import { CoinRadarView } from "@/components/coins/CoinRadarView";
 import { FALLBACK_COINS } from "@/lib/coins";
 
 describe("CoinRadarView", () => {
-  it("renders the KPI strip, filter buttons, search input, and coin cards", () => {
+  it("renders the filter buttons, search input, and coin cards", () => {
     render(<CoinRadarView initialCoins={FALLBACK_COINS} />);
-
-    // KPI cards
-    expect(screen.getByText("Top Potential Pick")).toBeDefined();
-    expect(screen.getByText("Highest Risk Watch")).toBeDefined();
-    expect(screen.getByText("Quant Radar Health")).toBeDefined();
 
     // Filters
     expect(screen.getByRole("button", { name: /All Coins/i })).toBeDefined();
