@@ -121,7 +121,7 @@ function DirectionPill({ direction }: { direction: Signal["direction"] }) {
   const isLong = direction === "long";
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider border shadow-2xs ${
+      className={`inline-flex items-center gap-1 rounded-none px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider border shadow-2xs ${
         isLong
           ? "border-emerald-200/90 bg-emerald-50 text-emerald-700"
           : "border-rose-200/90 bg-rose-50 text-rose-700"
@@ -159,7 +159,7 @@ function StatusPill({
   if (status === "open") {
     return (
       <span
-        className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 font-mono text-[10px] font-bold tracking-wide border shadow-2xs ${
+        className={`inline-flex items-center gap-1.5 rounded-none px-2 py-0.5 font-mono text-[10px] font-bold tracking-wide border shadow-2xs ${
           floating
             ? "bg-zinc-950/80 backdrop-blur-md border-emerald-500/30 text-emerald-400"
             : "border-emerald-200 bg-emerald-50 text-emerald-800"
@@ -173,7 +173,7 @@ function StatusPill({
   if (status === "expired") {
     return (
       <span
-        className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide border shadow-2xs ${
+        className={`inline-flex items-center rounded-none px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide border shadow-2xs ${
           floating
             ? "bg-zinc-950/80 backdrop-blur-md border-zinc-700 text-zinc-400"
             : "border-zinc-200 bg-zinc-100 text-zinc-600"
@@ -186,7 +186,7 @@ function StatusPill({
   if ((status === "tp1_hit" || status === "tp2_hit") && !closedAt) {
     return (
       <span
-        className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide border shadow-2xs ${
+        className={`inline-flex items-center rounded-none px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide border shadow-2xs ${
           floating
             ? "bg-zinc-950/80 backdrop-blur-md border-emerald-500/30 text-emerald-400"
             : "border-emerald-300 bg-emerald-50 text-emerald-700"
@@ -209,7 +209,7 @@ function StatusPill({
   const isWin = status !== "sl_hit";
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide border shadow-2xs ${
+      className={`inline-flex items-center rounded-none px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide border shadow-2xs ${
         floating
           ? isWin
             ? "bg-zinc-950/80 backdrop-blur-md border-emerald-500/30 text-emerald-400"
@@ -227,9 +227,9 @@ function StatusPill({
 function ConfidenceBar({ value, compact = false }: { value: number; compact?: boolean }) {
   return (
     <div className={`flex items-center gap-1.5 ${compact ? "" : "w-full"}`}>
-      <div className={`h-1.5 overflow-hidden rounded-full bg-zinc-100 ${compact ? "w-14" : "flex-1"}`}>
+      <div className={`h-1.5 overflow-hidden rounded-none bg-zinc-100 ${compact ? "w-14" : "flex-1"}`}>
         <div
-          className="h-full rounded-full bg-emerald-500 transition-all duration-300"
+          className="h-full rounded-none bg-emerald-500 transition-all duration-300"
           style={{ width: `${value}%` }}
         />
       </div>
@@ -284,7 +284,7 @@ export const SignalCard = memo(function SignalCard({
             }
           : undefined
       }
-      className={`group relative flex flex-col justify-between w-full overflow-hidden rounded-2xl border border-zinc-200/90 bg-white text-left transition-all duration-200 hover:border-zinc-300 hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 ${
+      className={`group relative flex flex-col justify-between w-full overflow-hidden rounded-none border border-zinc-200/90 bg-white text-left transition-all duration-200 hover:border-zinc-300 hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 ${
         onSelect ? "cursor-pointer" : ""
       } ${isSlHit ? "opacity-60 grayscale hover:opacity-80" : ""}`}
     >
@@ -328,11 +328,11 @@ export const SignalCard = memo(function SignalCard({
 
         {/* Floating Badges on Chart */}
         <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
-          <span className="rounded-md bg-zinc-950/75 backdrop-blur-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-200 border border-white/10 shadow-2xs">
+          <span className="rounded-none bg-zinc-950/75 backdrop-blur-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-200 border border-white/10 shadow-2xs">
             {formatTimeframe(signal.timeframe)}
           </span>
           {showLlmBadge && (
-            <span className="rounded-md bg-zinc-950/75 backdrop-blur-md border border-white/10 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-amber-300 shadow-2xs">
+            <span className="rounded-none bg-zinc-950/75 backdrop-blur-md border border-white/10 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-amber-300 shadow-2xs">
               <T>{"Algo + LLM"}</T>
             </span>
           )}
@@ -419,7 +419,7 @@ export const SignalCard = memo(function SignalCard({
             </svg>
             <RelativeTime iso={signal.createdAt} />
           </span>
-          <span className="rounded bg-zinc-100 border border-zinc-200/80 px-1.5 py-0.2 text-[10px] font-bold text-zinc-700">
+          <span className="rounded-none bg-zinc-100 border border-zinc-200/80 px-1.5 py-0.2 text-[10px] font-bold text-zinc-700">
             {riskReward(signal)}
           </span>
         </div>
@@ -455,7 +455,7 @@ function DetailRow({
           : "text-zinc-900";
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-3">
+    <div className="rounded-none border border-zinc-200 bg-zinc-50/80 p-3">
       <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500"><T>{label}</T></p>
       <p className={`mt-1 font-mono text-sm font-bold ${toneClass}`}>{value}</p>
     </div>
@@ -526,7 +526,7 @@ function SignalDetailModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="signal-detail-title"
-        className={`relative z-10 flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-zinc-200/90 bg-white shadow-2xl animate-in zoom-in-95 duration-200 ${
+        className={`relative z-10 flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-none border border-zinc-200/90 bg-white shadow-2xl animate-in zoom-in-95 duration-200 ${
           isLong
             ? "border-t-4 border-t-emerald-600"
             : "border-t-4 border-t-rose-600"
@@ -542,7 +542,7 @@ function SignalDetailModal({
               </h2>
               <DirectionPill direction={signal.direction} />
             </div>
-            <span className="rounded-md border border-zinc-200 bg-white px-2 py-0.5 font-mono text-[11px] font-bold text-zinc-700 uppercase">
+            <span className="rounded-none border border-zinc-200 bg-white px-2 py-0.5 font-mono text-[11px] font-bold text-zinc-700 uppercase">
               {formatTimeframe(signal.timeframe)}
             </span>
             <StatusPill status={signal.status} closedAt={signal.closedAt} />
@@ -555,7 +555,7 @@ function SignalDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-zinc-200 bg-white p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950 transition-colors shadow-2xs cursor-pointer"
+            className="rounded-none border border-zinc-200 bg-white p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950 transition-colors shadow-2xs cursor-pointer"
             aria-label={t("Close")}
           >
             <CloseIcon />
@@ -565,7 +565,7 @@ function SignalDetailModal({
         {/* Modal Body */}
         <div className="overflow-y-auto px-5 sm:px-6 py-5 space-y-6 scrollbar-thin">
           {/* 1. Dual-Engine Confidence Metric */}
-          <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 font-mono">
+          <div className="rounded-none border border-zinc-200 bg-zinc-50/80 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 font-mono">
             <div>
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -576,9 +576,9 @@ function SignalDetailModal({
                 <T>{"Quant model validation with real-time liquidity analysis"}</T></span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="h-2 w-32 sm:w-40 overflow-hidden rounded-full bg-zinc-200">
+              <div className="h-2 w-32 sm:w-40 overflow-hidden rounded-none bg-zinc-200">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-500"
+                  className="h-full rounded-none bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-500"
                   style={{ width: `${signal.confidence}%` }}
                 />
               </div>
@@ -595,31 +595,31 @@ function SignalDetailModal({
                 <T>{"STP Level"}</T></span>
             </div>
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6 font-mono">
-              <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-3">
+              <div className="rounded-none border border-zinc-200 bg-zinc-50/80 p-3">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block"><T>{"Entry"}</T></span>
                 <span className="mt-1 text-base font-black text-zinc-950 block">{formatPrice(signal.entry)}</span>
               </div>
-              <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-3">
+              <div className="rounded-none border border-rose-200 bg-rose-50/50 p-3">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 block"><T>{"Stop Loss"}</T></span>
                 <span className="mt-1 text-base font-black text-rose-600 block">{formatPrice(signal.stopLoss)}</span>
               </div>
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
+              <div className="rounded-none border border-emerald-200 bg-emerald-50/50 p-3">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block"><T>{"Target 1"}</T></span>
                 <span className="mt-1 text-base font-black text-emerald-600 block">{formatPrice(signal.takeProfit)}</span>
               </div>
               {signal.takeProfit2 != null && (
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
+                <div className="rounded-none border border-emerald-200 bg-emerald-50/50 p-3">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block"><T>{"Target 2"}</T></span>
                   <span className="mt-1 text-base font-black text-emerald-600 block">{formatPrice(signal.takeProfit2)}</span>
                 </div>
               )}
               {signal.takeProfit3 != null && (
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-3">
+                <div className="rounded-none border border-emerald-200 bg-emerald-50/50 p-3">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block"><T>{"Target 3"}</T></span>
                   <span className="mt-1 text-base font-black text-emerald-600 block">{formatPrice(signal.takeProfit3)}</span>
                 </div>
               )}
-              <div className="rounded-xl border border-zinc-300 bg-zinc-950 p-3 text-white shadow-2xs">
+              <div className="rounded-none border border-zinc-300 bg-zinc-950 p-3 text-white shadow-2xs">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block"><T>{"Risk / Reward"}</T></span>
                 <span className="mt-1 text-base font-black text-white block">{riskReward(signal)}</span>
               </div>
@@ -634,11 +634,11 @@ function SignalDetailModal({
                   <T>{"Chart Telemetry"}</T></span>
 
                 {hasBothCharts && (
-                  <div className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-100 p-0.5 font-mono text-xs">
+                  <div className="flex items-center gap-1 rounded-none border border-zinc-200 bg-zinc-100 p-0.5 font-mono text-xs">
                     <button
                       type="button"
                       onClick={() => setActiveChartTab("setup")}
-                      className={`px-3 py-1 rounded-md font-bold transition-all cursor-pointer ${
+                      className={`px-3 py-1 rounded-none font-bold transition-all cursor-pointer ${
                         activeChartTab === "setup"
                           ? "bg-white text-zinc-950 shadow-2xs"
                           : "text-zinc-600 hover:text-zinc-950"
@@ -648,7 +648,7 @@ function SignalDetailModal({
                     <button
                       type="button"
                       onClick={() => setActiveChartTab("outcome")}
-                      className={`px-3 py-1 rounded-md font-bold transition-all cursor-pointer ${
+                      className={`px-3 py-1 rounded-none font-bold transition-all cursor-pointer ${
                         activeChartTab === "outcome"
                           ? "bg-white text-zinc-950 shadow-2xs"
                           : "text-zinc-600 hover:text-zinc-950"
@@ -659,7 +659,7 @@ function SignalDetailModal({
                 )}
               </div>
 
-              <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-950 shadow-md">
+              <div className="relative overflow-hidden rounded-none border border-zinc-200 bg-zinc-950 shadow-md">
                 {currentChartUrl && (
                   <Image
                     src={currentChartUrl}
@@ -670,7 +670,7 @@ function SignalDetailModal({
                     className="w-full h-auto object-contain max-h-[460px] bg-zinc-950"
                   />
                 )}
-                <div className="absolute bottom-2.5 right-2.5 rounded-md bg-zinc-950/80 backdrop-blur-sm px-2 py-1 font-mono text-[10px] font-bold text-zinc-300 border border-zinc-800">
+                <div className="absolute bottom-2.5 right-2.5 rounded-none bg-zinc-950/80 backdrop-blur-sm px-2 py-1 font-mono text-[10px] font-bold text-zinc-300 border border-zinc-800">
                   <T>{activeChartTab === "outcome" ? "Realized Outcome" : "Initial Order Setup"}</T>
                 </div>
               </div>
@@ -678,10 +678,10 @@ function SignalDetailModal({
           )}
 
           {/* 4. AI Rationale */}
-          <div className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-4">
+          <div className="rounded-none border border-zinc-200 bg-zinc-50/70 p-4">
             <div className="flex items-center justify-between pb-2 border-b border-zinc-200/80 mb-3">
               <div className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded bg-zinc-950 text-amber-400">
+                <span className="flex h-5 w-5 items-center justify-center rounded-none bg-zinc-950 text-amber-400">
                   <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2L14.4 8.6L21 11L14.4 13.4L12 20L9.6 13.4L3 11L9.6 8.6L12 2Z" />
                   </svg>
@@ -689,7 +689,7 @@ function SignalDetailModal({
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-950">
                   <T>{"AI Rationale"}</T></span>
               </div>
-              <span className="rounded border border-zinc-200 bg-white px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-zinc-600">
+              <span className="rounded-none border border-zinc-200 bg-white px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-zinc-600">
                 <T>{"Neural Reasoning"}</T></span>
             </div>
             <p className="text-sm leading-relaxed text-zinc-800 font-sans">
@@ -707,7 +707,7 @@ function SignalDetailModal({
               {indicatorRows(signal).map((row) => (
                 <div
                   key={row.label}
-                  className="rounded-lg border border-zinc-200 bg-zinc-50/80 p-2.5"
+                  className="rounded-none border border-zinc-200 bg-zinc-50/80 p-2.5"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
                     <T>{row.label}</T>
@@ -730,7 +730,7 @@ function SignalDetailModal({
                 {signal.newsHeadlines.map((headline) => (
                   <li
                     key={headline}
-                    className="flex items-start gap-2.5 rounded-lg border border-zinc-200 bg-zinc-50/60 p-2.5 text-xs text-zinc-700"
+                    className="flex items-start gap-2.5 rounded-none border border-zinc-200 bg-zinc-50/60 p-2.5 text-xs text-zinc-700"
                   >
                     <span className="text-zinc-400 mt-0.5">•</span>
                     <span className="leading-snug text-zinc-800"><T>{headline}</T></span>
@@ -754,7 +754,7 @@ function SignalDetailModal({
             <button
               type="button"
               onClick={copySignalParams}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-xs font-bold transition-all cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 rounded-none border px-3 py-1.5 font-mono text-xs font-bold transition-all cursor-pointer ${
                 copied
                   ? "border-emerald-300 bg-emerald-50 text-emerald-800"
                   : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950 shadow-2xs"
@@ -774,7 +774,7 @@ function SignalDetailModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-zinc-200 bg-zinc-950 px-4 py-1.5 font-mono text-xs font-bold text-white hover:bg-zinc-800 transition-colors cursor-pointer shadow-2xs"
+              className="rounded-none border border-zinc-200 bg-zinc-950 px-4 py-1.5 font-mono text-xs font-bold text-white hover:bg-zinc-800 transition-colors cursor-pointer shadow-2xs"
             >
               <T>{"Dismiss"}</T></button>
           </div>
