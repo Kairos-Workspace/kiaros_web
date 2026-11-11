@@ -1,8 +1,8 @@
 /** Khmer copy for the homepage, strategy previews, and public footer. */
 export const landingMessages: Record<string, string> = {
   "Close": "បិទ",
-  "Quant Algo Precision.": "ភាពជាក់លាក់នៃ Algo។",
-  "LLM Neural Edge.": "ឧត្តមភាពនៃ LLM។",
+  "Quant Algo Precision.": "Algo ចាប់ Signal",
+  "LLM Neural Edge.": "LLM AI បញ្ជាក់ពី ប្រូបាប និង ភាពត្រឹមត្រូវ",
   "Kiaros fuses quantitative algorithmic execution (Algo) with real-time Large Language Model (LLM) validation. We capture high-probability set up and volatility expansions across Gold (XAUUSD), Crypto, and Forex — verified by AI before reaching your terminal and Telegram.": "Kiaros រួមបញ្ចូលក្បួនដោះស្រាយជួញដូរ (Algo) ជាមួយការផ្ទៀងផ្ទាត់ពីម៉ូដែលភាសា (LLM)។ ឱកាសជួញដូរមាស (XAUUSD) គ្រីបតូ និង Forex ត្រូវបានពិនិត្យដោយ AI មុនពេលបញ្ជូនទៅផ្ទាំងជួញដូរ និង Telegram របស់អ្នក។",
   "Join Telegram Free": "ចូលរួម Telegram ឥតគិតថ្លៃ",
   "Join Telegram Community": "ចូលរួមសហគមន៍ Telegram",
@@ -46,7 +46,7 @@ export const landingMessages: Record<string, string> = {
   "Next strategy": "យុទ្ធសាស្ត្របន្ទាប់",
   "Go to slide {number}": "ទៅកាន់ផ្ទាំងទី {number}",
   "Select asset": "ជ្រើសរើសទ្រព្យសកម្ម",
-  "6-Year Monthly Performance Heatmap": "ផែនទីពណ៌លទ្ធផលប្រចាំខែរយៈពេល ៦ ឆ្នាំ",
+  "6-Year Monthly Performance Heatmap": "រយៈពេល ៦ ឆ្នាំ នៃការ Backtesting",
   "Monthly net return distribution from 2020 through 2026 across 72+ months. Validated tick data confirms edge durability, risk containment, and zero curve fitting.": "ការបែងចែកផលចំណេញសុទ្ធប្រចាំខែពីឆ្នាំ 2020 ដល់ 2026 ក្នុងរយៈពេលជាង 72 ខែ។ ទិន្នន័យ tick ដែលបានផ្ទៀងផ្ទាត់បញ្ជាក់ពីស្ថិរភាពនៃយុទ្ធសាស្ត្រ ការគ្រប់គ្រងហានិភ័យ និងការមិនកែតម្រូវម៉ូដែលឱ្យត្រូវនឹងទិន្នន័យអតីតកាល។",
   "Monthly strategy performance heatmap from 2020 to 2026 showing returns, losses, and trade frequency per month": "ផែនទីពណ៌លទ្ធផលយុទ្ធសាស្ត្រប្រចាំខែពីឆ្នាំ 2020 ដល់ 2026 បង្ហាញផលចំណេញ ការខាតបង់ និងចំនួនការជួញដូរប្រចាំខែ",
   "Elevate Your Edge With Instant Signal Dispatches": "បង្កើនឱកាសរបស់អ្នកជាមួយ Instant Signal Dispatches",
