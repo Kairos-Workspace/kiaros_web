@@ -57,7 +57,7 @@ describe("AnalysisView", () => {
     expect(screen.getAllByText("XAUUSD").length).toBeGreaterThan(0);
     expect(screen.getAllByText("H4 / H1 / M15").length).toBeGreaterThan(0);
     expect(screen.getAllByText("London Killzone").length).toBeGreaterThan(0);
-    expect(screen.getByText("BULLISH")).toBeDefined();
+    expect(screen.getAllByText("BULLISH").length).toBeGreaterThan(0);
     expect(screen.getByText(mockAnalysis.title)).toBeDefined();
   });
 

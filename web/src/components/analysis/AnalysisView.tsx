@@ -166,6 +166,16 @@ export function AnalysisView({ analyses = [], candles = [] }: AnalysisViewProps)
     (s) => s !== executionPlanSection && s !== confluenceSection
   );
 
+  // Extract primary trigger vs numeric parameters
+  const triggerItem = executionPlanSection?.items.find(
+    (item): item is ParsedKvItem =>
+      item.type === "kv" && item.key.toLowerCase().includes("trigger")
+  );
+  const parameterItems = executionPlanSection?.items.filter(
+    (item): item is ParsedKvItem =>
+      item.type === "kv" && !item.key.toLowerCase().includes("trigger")
+  );
+
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       {/* Session Switcher Pills (Only if > 1 analysis) */}
@@ -224,18 +234,15 @@ export function AnalysisView({ analyses = [], candles = [] }: AnalysisViewProps)
 
       {/* 2. Hero Visual (Interactive Chart / Annotated Blueprint) */}
       <section className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xs">
-        <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-2.5 bg-zinc-50/70">
-          <div className="flex items-center gap-2 text-xs font-semibold text-zinc-700">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            <span>{selected.symbol} · {selected.timeframe}</span>
-          </div>
-
-          <div className="flex items-center gap-1 rounded-lg bg-zinc-200/60 p-0.5">
+        {/* Top Control Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 border-b border-zinc-100 px-4 py-2.5 bg-zinc-50/70">
+          {/* Segmented Switcher */}
+          <div className="flex items-center gap-1 rounded-lg bg-zinc-200/70 p-0.5 self-start sm:self-auto">
             <button
               onClick={() => setActiveTab("chart")}
               className={`rounded-md px-3 py-1 text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === "chart"
-                  ? "bg-white text-zinc-900 shadow-2xs"
+                  ? "bg-white text-zinc-950 shadow-2xs"
                   : "text-zinc-600 hover:text-zinc-900"
               }`}
             >
@@ -246,7 +253,7 @@ export function AnalysisView({ analyses = [], candles = [] }: AnalysisViewProps)
                 onClick={() => setActiveTab("blueprint")}
                 className={`rounded-md px-3 py-1 text-xs font-semibold transition-all cursor-pointer ${
                   activeTab === "blueprint"
-                    ? "bg-white text-zinc-900 shadow-2xs"
+                    ? "bg-white text-zinc-950 shadow-2xs"
                     : "text-zinc-600 hover:text-zinc-900"
                 }`}
               >
@@ -254,20 +261,42 @@ export function AnalysisView({ analyses = [], candles = [] }: AnalysisViewProps)
               </button>
             )}
           </div>
+
+          {/* POI Overlay Legend */}
+          <div className="flex flex-wrap items-center gap-2">
+            {[
+              { type: "support", label: "Support", color: "#10b981" },
+              { type: "resistance", label: "Resistance", color: "#f43f5e" },
+              { type: "equilibrium", label: "Equilibrium", color: "#38bdf8" },
+              { type: "invalidation", label: "Invalidation", color: "#f59e0b" },
+            ].map((item) => (
+              <span
+                key={item.type}
+                className="inline-flex items-center gap-1.5 rounded-md bg-white border border-zinc-200 px-2 py-0.5 text-[10px] font-semibold text-zinc-600"
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: item.color }}
+                />
+                <T>{item.label}</T>
+              </span>
+            ))}
+          </div>
         </div>
 
-        {/* Viewport */}
-        <div className="bg-[#0c0c0e] p-2 sm:p-3">
+        {/* Viewport: Seamless Edge-to-Edge Canvas */}
+        <div className="relative h-[420px] sm:h-[480px] lg:h-[520px] w-full bg-[#0c0c0e]">
           {activeTab === "chart" ? (
             <PoiAnalysisChart
               candles={candles}
               levels={poiLevels}
               symbol={selected.symbol}
+              frameless
             />
           ) : (
             <div
               onClick={() => setIsLightboxOpen(true)}
-              className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-xl bg-zinc-950 group"
+              className="relative h-full w-full cursor-pointer overflow-hidden group flex items-center justify-center p-2"
             >
               <Image
                 src={selected.imageUrl}
@@ -277,7 +306,7 @@ export function AnalysisView({ analyses = [], candles = [] }: AnalysisViewProps)
                 className="object-contain transition-transform duration-300 group-hover:scale-[1.01]"
                 unoptimized
               />
-              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                 <span className="flex items-center gap-2 rounded-xl bg-zinc-900/90 px-4 py-2 text-xs font-bold text-white shadow-lg backdrop-blur-xs">
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <polyline points="15 3 21 3 21 9" />
@@ -293,7 +322,71 @@ export function AnalysisView({ analyses = [], candles = [] }: AnalysisViewProps)
         </div>
       </section>
 
-      {/* 3. Important POI Zones (Clean Minimalist Table) */}
+      {/* 3. Trade Setup & Execution Plan (If Available) */}
+      {executionPlanSection && (
+        <section className="rounded-2xl border border-zinc-200 bg-white p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+            <h2 className="text-sm font-bold text-zinc-900">
+              <T>{"Trade Setup & Execution Plan"}</T>
+            </h2>
+            <span
+              className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                selected.bias === "BULLISH"
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
+                  : selected.bias === "BEARISH"
+                  ? "bg-rose-50 text-rose-700 border border-rose-200/80"
+                  : "bg-zinc-50 text-zinc-700 border border-zinc-200"
+              }`}
+            >
+              <T>{selected.bias}</T>
+            </span>
+          </div>
+
+          {/* Primary Trigger Note */}
+          {triggerItem && (
+            <div className="rounded-xl border border-amber-200/80 bg-amber-50/40 p-3 sm:p-3.5 text-xs text-amber-950">
+              <span className="font-bold text-amber-900 uppercase tracking-wide text-[10px] block mb-0.5">
+                <T>{triggerItem.key}</T>
+              </span>
+              <p className="font-medium leading-relaxed">{triggerItem.value}</p>
+            </div>
+          )}
+
+          {/* Parameters Grid */}
+          {parameterItems && parameterItems.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 pt-1">
+              {parameterItems.map((item, idx) => {
+                const keyLower = item.key.toLowerCase();
+                const isStop = keyLower.includes("stop");
+                const isTarget = keyLower.includes("target");
+                return (
+                  <div
+                    key={idx}
+                    className="rounded-xl border border-zinc-100 bg-zinc-50/70 p-3 space-y-1"
+                  >
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block truncate">
+                      <T>{item.key}</T>
+                    </span>
+                    <span
+                      className={`font-mono text-xs sm:text-sm font-bold block truncate ${
+                        isStop
+                          ? "text-rose-600"
+                          : isTarget
+                          ? "text-emerald-600"
+                          : "text-zinc-900"
+                      }`}
+                    >
+                      {item.value}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* 4. Important POI Zones (Clean Minimalist Table) */}
       {poiLevels.length > 0 && (
         <section className="rounded-2xl border border-zinc-200 bg-white p-5 sm:p-6 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
@@ -319,10 +412,14 @@ export function AnalysisView({ analyses = [], candles = [] }: AnalysisViewProps)
                   <tr key={idx} className="hover:bg-zinc-50/50 transition-colors">
                     <td className="py-2.5 whitespace-nowrap">
                       <span
-                        className={`inline-flex rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${getPoiBadgeStyle(
+                        className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${getPoiBadgeStyle(
                           lvl.type
                         )}`}
                       >
+                        <span
+                          className="h-1.5 w-1.5 rounded-full"
+                          style={{ backgroundColor: poiLineColor(lvl.type) }}
+                        />
                         <T>{lvl.type}</T>
                       </span>
                     </td>
@@ -343,99 +440,70 @@ export function AnalysisView({ analyses = [], candles = [] }: AnalysisViewProps)
         </section>
       )}
 
-      {/* 4. Analysis Narrative & Trade Plan */}
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 sm:p-7 shadow-xs space-y-6">
-        {/* Market Context narrative */}
-        {parsedDesc.overview && (
-          <div className="space-y-2">
-            <h2 className="text-sm font-bold text-zinc-900">
-              <T>{"Market Context & Analysis"}</T>
-            </h2>
-            <p className="text-xs sm:text-sm leading-relaxed text-zinc-700">
-              {parsedDesc.overview}
-            </p>
-          </div>
-        )}
-
-        {/* Trade Setup Parameters */}
-        {executionPlanSection && (
-          <div className="space-y-3 pt-4 border-t border-zinc-100">
-            <h2 className="text-sm font-bold text-zinc-900">
-              <T>{"Trade Setup & Execution Plan"}</T>
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {executionPlanSection.items
-                .filter((item): item is ParsedKvItem => item.type === "kv")
-                .map((item, idx) => {
-                  const isTrigger = item.key.toLowerCase().includes("trigger");
-                  return (
-                    <div
-                      key={idx}
-                      className={`rounded-xl border border-zinc-200 bg-zinc-50/60 p-3.5 ${
-                        isTrigger ? "sm:col-span-2 lg:col-span-3 bg-amber-50/30 border-amber-200/70" : ""
-                      }`}
-                    >
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
-                        <T>{item.key}</T>
-                      </span>
-                      <span className="mt-1 block font-mono text-xs sm:text-sm font-bold text-zinc-900">
-                        {item.value}
-                      </span>
-                    </div>
-                  );
-                })}
+      {/* 5. Analysis Narrative & Confluence */}
+      {(parsedDesc.overview || confluenceSection || otherSections.length > 0) && (
+        <section className="rounded-2xl border border-zinc-200 bg-white p-5 sm:p-7 shadow-xs space-y-6">
+          {/* Market Context narrative */}
+          {parsedDesc.overview && (
+            <div className="space-y-2">
+              <h2 className="text-sm font-bold text-zinc-900">
+                <T>{"Market Context & Analysis"}</T>
+              </h2>
+              <p className="text-xs sm:text-sm leading-relaxed text-zinc-700">
+                {parsedDesc.overview}
+              </p>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Orderflow Confluence */}
-        {confluenceSection && (
-          <div className="space-y-3 pt-4 border-t border-zinc-100">
-            <h2 className="text-sm font-bold text-zinc-900">
-              <T>{"Orderflow Confluence"}</T>
-            </h2>
-            <ul className="space-y-2 text-xs sm:text-sm text-zinc-700 leading-relaxed">
-              {confluenceSection.items.map((item, idx) => (
-                <li key={idx} className="flex items-start gap-2.5">
-                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-zinc-400 shrink-0" />
-                  <span>
+          {/* Orderflow Confluence */}
+          {confluenceSection && (
+            <div className="space-y-3 pt-4 border-t border-zinc-100">
+              <h2 className="text-sm font-bold text-zinc-900">
+                <T>{"Orderflow Confluence"}</T>
+              </h2>
+              <ul className="space-y-2 text-xs sm:text-sm text-zinc-700 leading-relaxed">
+                {confluenceSection.items.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5">
+                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
+                    <span>
+                      {item.type === "bullet" || item.type === "text"
+                        ? item.text
+                        : `${item.key}: ${item.value}`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Other Sections */}
+          {otherSections.map((sec, idx) => (
+            <div key={idx} className="space-y-2 pt-4 border-t border-zinc-100">
+              <h2 className="text-sm font-bold text-zinc-900">
+                <T>{sec.title}</T>
+              </h2>
+              <div className="space-y-1.5 text-xs sm:text-sm text-zinc-700 leading-relaxed">
+                {sec.items.map((item, i) => (
+                  <p key={i}>
                     {item.type === "bullet" || item.type === "text"
                       ? item.text
                       : `${item.key}: ${item.value}`}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Other Sections */}
-        {otherSections.map((sec, idx) => (
-          <div key={idx} className="space-y-2 pt-4 border-t border-zinc-100">
-            <h2 className="text-sm font-bold text-zinc-900">
-              <T>{sec.title}</T>
-            </h2>
-            <div className="space-y-1.5 text-xs sm:text-sm text-zinc-700 leading-relaxed">
-              {sec.items.map((item, i) => (
-                <p key={i}>
-                  {item.type === "bullet" || item.type === "text"
-                    ? item.text
-                    : `${item.key}: ${item.value}`}
-                </p>
-              ))}
+                  </p>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </section>
+          ))}
+        </section>
+      )}
 
-      {/* 5. Clean Disclaimer */}
+      {/* 6. Clean Disclaimer */}
       <div className="text-center py-4 text-xs text-zinc-400">
         <T>
           {"Educational quantitative research only — not financial advice. Past performance does not guarantee future results."}
         </T>
       </div>
 
-      {/* 6. Lightbox Modal */}
+      {/* 7. Lightbox Modal */}
       {isLightboxOpen && selected.imageUrl && (
         <div
           role="dialog"

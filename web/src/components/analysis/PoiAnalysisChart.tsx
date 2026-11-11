@@ -22,6 +22,7 @@ type Props = {
   levels: KeyLevel[];
   symbol?: string;
   className?: string;
+  frameless?: boolean;
 };
 
 function sanitizeCandles(candles: MarketCandle[]) {
@@ -47,6 +48,7 @@ export function PoiAnalysisChart({
   levels,
   symbol = "XAUUSD",
   className = "",
+  frameless = false,
 }: Props) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -221,11 +223,33 @@ export function PoiAnalysisChart({
   if (error === "no-data" || cleanCandles.length < 2) {
     return (
       <div
-        className={`flex min-h-[280px] items-center justify-center rounded-2xl border border-zinc-800 bg-[#0c0c0e] px-6 text-center sm:min-h-[360px] ${className}`}
+        className={`flex h-full min-h-[320px] w-full items-center justify-center bg-[#0c0c0e] px-6 text-center ${
+          frameless ? "" : "rounded-2xl border border-zinc-800"
+        } ${className}`}
       >
-        <p className="text-sm text-zinc-500">
+        <p className="text-xs text-zinc-500">
           <T>{"Chart data unavailable right now."}</T>
         </p>
+      </div>
+    );
+  }
+
+  if (frameless) {
+    return (
+      <div className={`relative h-full w-full min-h-[360px] bg-[#0c0c0e] ${className}`}>
+        {!ready && !error ? (
+          <div className="absolute inset-0 z-10 flex items-center justify-center">
+            <div className="h-7 w-7 animate-spin rounded-full border-2 border-zinc-700 border-t-amber-500" />
+          </div>
+        ) : null}
+        {error && error !== "no-data" ? (
+          <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
+            <p className="text-xs text-zinc-500">
+              <T>{"Chart data unavailable right now."}</T>
+            </p>
+          </div>
+        ) : null}
+        <div ref={hostRef} className="absolute inset-0 h-full w-full" />
       </div>
     );
   }
