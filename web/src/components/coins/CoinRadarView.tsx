@@ -75,7 +75,13 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
         {/* Top Potential */}
         <div className="rounded-2xl border border-emerald-200/80 bg-linear-to-br from-emerald-500/10 via-emerald-50/50 to-white p-4 shadow-xs">
           <div className="flex items-center justify-between text-xs font-bold text-emerald-800 uppercase tracking-wider">
-            <span><T>{"🚀 Top Potential Pick"}</T></span>
+            <span className="flex items-center gap-1.5">
+              <svg className="h-3.5 w-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                <polyline points="17 6 23 6 23 12" />
+              </svg>
+              <T>{"Top Potential Pick"}</T>
+            </span>
             <span className="font-mono bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded text-[10px]">
               {kpis.topPotential?.potentialScore}%
             </span>
@@ -96,7 +102,14 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
         {/* Top Risk Warning */}
         <div className="rounded-2xl border border-rose-200/80 bg-linear-to-br from-rose-500/10 via-rose-50/50 to-white p-4 shadow-xs">
           <div className="flex items-center justify-between text-xs font-bold text-rose-800 uppercase tracking-wider">
-            <span><T>{"⚠️ Highest Risk Watch"}</T></span>
+            <span className="flex items-center gap-1.5">
+              <svg className="h-3.5 w-3.5 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <T>{"Highest Risk Watch"}</T>
+            </span>
             <span className="font-mono bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded text-[10px]">
               {kpis.topRisk?.riskScore}%
             </span>
@@ -180,39 +193,49 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
 
           <button
             onClick={() => setSelectedTab("potential")}
-            className={`flex items-center gap-1 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
+            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
               selectedTab === "potential"
                 ? "bg-emerald-600 text-white shadow-xs"
                 : "bg-white text-emerald-700 border border-emerald-200/80 hover:bg-emerald-50"
             }`}
           >
-            <span>🚀</span>
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              <polyline points="17 6 23 6 23 12" />
+            </svg>
             <span><T>{"High Potential"}</T></span>
             <span className="opacity-80">({kpis.potentialCount})</span>
           </button>
 
           <button
             onClick={() => setSelectedTab("risky")}
-            className={`flex items-center gap-1 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
+            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
               selectedTab === "risky"
                 ? "bg-rose-600 text-white shadow-xs"
                 : "bg-white text-rose-700 border border-rose-200/80 hover:bg-rose-50"
             }`}
           >
-            <span>⚠️</span>
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
             <span><T>{"High Risk"}</T></span>
             <span className="opacity-80">({kpis.riskyCount})</span>
           </button>
 
           <button
             onClick={() => setSelectedTab("neutral")}
-            className={`flex items-center gap-1 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
+            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
               selectedTab === "neutral"
                 ? "bg-zinc-800 text-white shadow-xs"
                 : "bg-white text-zinc-600 border border-zinc-200 hover:bg-zinc-50 hover:text-zinc-900"
             }`}
           >
-            <span>👀</span>
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
             <span><T>{"Watchlist"}</T></span>
             <span className="opacity-80">({kpis.neutralCount})</span>
           </button>
@@ -275,7 +298,10 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
         </div>
       ) : (
         <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-12 text-center">
-          <div className="text-3xl">🔍</div>
+          <svg className="h-10 w-10 text-zinc-300 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
           <h3 className="mt-3 text-sm font-bold text-zinc-900">
             <T>{"No coins matched your search"}</T>
           </h3>

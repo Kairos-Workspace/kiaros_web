@@ -55,13 +55,21 @@ export function CoinCard({ coin, onSelect }: CoinCardProps) {
             {formatCryptoPrice(coin.price)}
           </div>
           <span
-            className={`inline-flex items-center gap-0.5 font-mono text-xs font-bold px-2 py-0.5 rounded-md ${
+            className={`inline-flex items-center gap-1 font-mono text-xs font-bold px-2 py-0.5 rounded-md ${
               isPositive
                 ? "bg-emerald-50 text-emerald-700"
                 : "bg-rose-50 text-rose-700"
             }`}
           >
-            <span>{isPositive ? "▲" : "▼"}</span>
+            {isPositive ? (
+              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="18 15 12 9 6 15" />
+              </svg>
+            ) : (
+              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            )}
             <span>{isPositive ? `+${coin.change24h}%` : `${coin.change24h}%`}</span>
           </span>
         </div>

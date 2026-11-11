@@ -8,8 +8,8 @@ describe("CoinRadarView", () => {
     render(<CoinRadarView initialCoins={FALLBACK_COINS} />);
 
     // KPI cards
-    expect(screen.getByText("🚀 Top Potential Pick")).toBeDefined();
-    expect(screen.getByText("⚠️ Highest Risk Watch")).toBeDefined();
+    expect(screen.getByText("Top Potential Pick")).toBeDefined();
+    expect(screen.getByText("Highest Risk Watch")).toBeDefined();
     expect(screen.getByText("Quant Radar Health")).toBeDefined();
 
     // Filters

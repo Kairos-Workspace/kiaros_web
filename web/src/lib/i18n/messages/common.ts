@@ -21,6 +21,8 @@ export const commonMessages: Record<string, string> = {
   "Watchlist": "បញ្ជីតាមដាន",
   "Watchlist / Neutral": "បញ្ជីតាមដាន / អព្យាក្រឹត",
   "Watchlist / Range": "បញ្ជីតាមដាន / ជួរបិទ",
+  "Top Potential Pick": "កាក់មានសក្ដានុពលខ្ពស់បំផុត",
+  "Highest Risk Watch": "កាក់មានហានិភ័យខ្ពស់បំផុត",
   "🚀 Top Potential Pick": "🚀 កាក់មានសក្ដានុពលខ្ពស់បំផុត",
   "⚠️ Highest Risk Watch": "⚠️ កាក់មានហានិភ័យខ្ពស់បំផុត",
   "Quant Radar Health": "សុខភាពរ៉ាដាបរិមាណ",

@@ -211,7 +211,9 @@ export function CoinDetailModal({ coin, onClose }: CoinDetailModalProps) {
         <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="rounded-xl border border-emerald-100/80 bg-emerald-50/30 p-3.5">
             <h5 className="flex items-center gap-1.5 text-xs font-bold text-emerald-900 mb-2">
-              <span className="text-emerald-600">✓</span>
+              <svg className="h-3.5 w-3.5 text-emerald-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
               <T>{"Potential Catalysts & Drivers"}</T>
             </h5>
             <ul className="space-y-1.5">
@@ -226,7 +228,11 @@ export function CoinDetailModal({ coin, onClose }: CoinDetailModalProps) {
 
           <div className="rounded-xl border border-rose-100/80 bg-rose-50/30 p-3.5">
             <h5 className="flex items-center gap-1.5 text-xs font-bold text-rose-900 mb-2">
-              <span className="text-rose-600">⚠</span>
+              <svg className="h-3.5 w-3.5 text-rose-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
               <T>{"Risk Warnings & Caution Flags"}</T>
             </h5>
             <ul className="space-y-1.5">
