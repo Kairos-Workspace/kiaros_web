@@ -21,7 +21,7 @@ describe("site language", () => {
     render(
       <LanguageProvider initialLocale="en">
         <LanguageSwitch />
-        <span><T>Live Signals</T></span>
+        <span><T>Daily Analysis</T></span>
         <span><T>Economic Calendar</T></span>
       </LanguageProvider>
     );
@@ -31,7 +31,7 @@ describe("site language", () => {
     // Select Khmer
     fireEvent.click(screen.getByRole("option", { name: /ខ្មែរ/ }));
 
-    expect(screen.getByText("សញ្ញាជួញដូរផ្ទាល់")).toBeTruthy();
+    expect(screen.getByText("ការវិភាគប្រចាំថ្ងៃ")).toBeTruthy();
     expect(screen.getByText("ប្រតិទិនសេដ្ឋកិច្ច")).toBeTruthy();
     expect(document.cookie).toContain(`${LOCALE_COOKIE}=km`);
     expect(document.documentElement.lang).toBe("km");
@@ -41,7 +41,7 @@ describe("site language", () => {
     fireEvent.click(screen.getByRole("button", { name: "ភាសា" }));
     // Select English
     fireEvent.click(screen.getByRole("option", { name: /English/ }));
-    expect(screen.getByText("Live Signals")).toBeTruthy();
+    expect(screen.getByText("Daily Analysis")).toBeTruthy();
     expect(document.cookie).toContain(`${LOCALE_COOKIE}=en`);
     expect(document.documentElement.lang).toBe("en");
   });

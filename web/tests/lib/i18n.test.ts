@@ -12,7 +12,8 @@ describe("translations", () => {
   });
 
   it("translates across domains and preserves unknown market data and English", () => {
-    expect(translate("km", "Live Signals")).toBe("សញ្ញាជួញដូរផ្ទាល់");
+    expect(translate("km", "Daily Analysis")).toBe("ការវិភាគប្រចាំថ្ងៃ");
+    expect(translate("km", "Live Signals")).toBe("Live Signals");
     expect(translate("km", "XAUUSD 2,648.80")).toBe("XAUUSD 2,648.80");
     expect(translate("km", "constructor")).toBe("constructor");
     expect(translate("km", "__proto__")).toBe("__proto__");
