@@ -2,6 +2,7 @@
 
 import { T } from "@/components/i18n/T";
 import { CoinAnalysis, formatCompactUsd, formatCryptoPrice } from "@/lib/coins";
+import { CoinIcon } from "./CoinIcon";
 
 interface CoinCardProps {
   coin: CoinAnalysis;
@@ -21,13 +22,16 @@ export function CoinCard({ coin, onSelect }: CoinCardProps) {
       {/* Top Meta Bar */}
       <div>
         <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-lg font-black tracking-tight text-zinc-950">
-              {coin.symbol}
-            </span>
-            <span className="text-xs font-medium text-zinc-500 line-clamp-1 max-w-[100px] sm:max-w-none">
-              {coin.name}
-            </span>
+          <div className="flex items-center gap-2.5">
+            <CoinIcon symbol={coin.symbol} name={coin.name} size={30} />
+            <div className="min-w-0">
+              <span className="font-mono text-base font-black tracking-tight text-zinc-950 block leading-tight">
+                {coin.symbol}
+              </span>
+              <span className="text-[11px] font-medium text-zinc-500 line-clamp-1 block leading-tight">
+                {coin.name}
+              </span>
+            </div>
           </div>
 
           {/* Status Badge */}

@@ -5,6 +5,7 @@ import { T } from "@/components/i18n/T";
 import { CoinAnalysis } from "@/lib/coins";
 import { CoinCard } from "./CoinCard";
 import { CoinDetailModal } from "./CoinDetailModal";
+import { CoinIcon } from "./CoinIcon";
 
 interface CoinRadarViewProps {
   initialCoins: CoinAnalysis[];
@@ -86,10 +87,15 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
               {kpis.topPotential?.potentialScore}%
             </span>
           </div>
-          <div className="mt-2 flex items-baseline justify-between">
-            <span className="font-mono text-xl font-black text-zinc-950">
-              {kpis.topPotential?.symbol}
-            </span>
+          <div className="mt-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {kpis.topPotential ? (
+                <CoinIcon symbol={kpis.topPotential.symbol} name={kpis.topPotential.name} size={24} />
+              ) : null}
+              <span className="font-mono text-xl font-black text-zinc-950">
+                {kpis.topPotential?.symbol}
+              </span>
+            </div>
             <span className="text-xs font-semibold text-emerald-700">
               {kpis.topPotential?.name}
             </span>
@@ -114,10 +120,15 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
               {kpis.topRisk?.riskScore}%
             </span>
           </div>
-          <div className="mt-2 flex items-baseline justify-between">
-            <span className="font-mono text-xl font-black text-zinc-950">
-              {kpis.topRisk?.symbol}
-            </span>
+          <div className="mt-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {kpis.topRisk ? (
+                <CoinIcon symbol={kpis.topRisk.symbol} name={kpis.topRisk.name} size={24} />
+              ) : null}
+              <span className="font-mono text-xl font-black text-zinc-950">
+                {kpis.topRisk?.symbol}
+              </span>
+            </div>
             <span className="text-xs font-semibold text-rose-700">
               {kpis.topRisk?.name}
             </span>

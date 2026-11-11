@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { T } from "@/components/i18n/T";
 import { CoinAnalysis, formatCompactUsd, formatCryptoPrice } from "@/lib/coins";
+import { CoinIcon } from "./CoinIcon";
 
 interface CoinDetailModalProps {
   coin: CoinAnalysis | null;
@@ -55,27 +56,32 @@ export function CoinDetailModal({ coin, onClose }: CoinDetailModalProps) {
         {/* Header */}
         <div className="flex flex-wrap items-start justify-between gap-3 pr-8 pb-4 border-b border-zinc-100">
           <div>
-            <div className="flex items-center gap-2.5">
-              <span className="font-mono text-xl sm:text-2xl font-black tracking-tight text-zinc-950">
-                {coin.symbol}
-              </span>
-              <span className="text-sm font-medium text-zinc-500">{coin.name}</span>
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                  isPotential
-                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                    : isRisky
-                    ? "bg-rose-50 text-rose-700 border border-rose-200"
-                    : "bg-zinc-100 text-zinc-700 border border-zinc-200"
-                }`}
-              >
-                <span
-                  className={`h-1.5 w-1.5 rounded-full ${
-                    isPotential ? "bg-emerald-500 animate-pulse" : isRisky ? "bg-rose-500" : "bg-zinc-400"
-                  }`}
-                />
-                <T>{coin.statusLabel}</T>
-              </span>
+            <div className="flex items-center gap-3">
+              <CoinIcon symbol={coin.symbol} name={coin.name} size={36} />
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xl sm:text-2xl font-black tracking-tight text-zinc-950">
+                    {coin.symbol}
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                      isPotential
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        : isRisky
+                        ? "bg-rose-50 text-rose-700 border border-rose-200"
+                        : "bg-zinc-100 text-zinc-700 border border-zinc-200"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        isPotential ? "bg-emerald-500 animate-pulse" : isRisky ? "bg-rose-500" : "bg-zinc-400"
+                      }`}
+                    />
+                    <T>{coin.statusLabel}</T>
+                  </span>
+                </div>
+                <div className="text-xs font-medium text-zinc-500 mt-0.5">{coin.name}</div>
+              </div>
             </div>
 
             <div className="mt-2 flex flex-wrap gap-1.5">
