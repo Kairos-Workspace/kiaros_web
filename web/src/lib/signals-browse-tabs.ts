@@ -57,7 +57,7 @@ export function parseAiSignalStrategy(
 
 const BASE_SIGNAL_FILTER_OPTIONS: SignalFilterOption[] = [
   { id: "all", label: "All", hint: "All sessions", code: "ALL" },
-  { id: "ai", label: "AI Signal", hint: "SEA-LION Confirmed", code: "AI" },
+  { id: "ai", label: "AI Signal", hint: "AI Confirmed", code: "AI" },
   { id: "bbma", label: "BBMA", hint: "XAU Live EA", code: "BBMA" },
   { id: "ict", label: "ICT", hint: "Coming Soon", code: "ICT", comingSoon: true },
   { id: "smc", label: "SMC", hint: "XAU Live EA", code: "SMC" },
@@ -86,7 +86,7 @@ export const AI_SIGNAL_STRATEGY_OPTIONS: SignalFilterOption[] = [
 
 export const ADMIN_SIGNAL_FILTER_OPTIONS: SignalFilterOption[] = [
   { id: "all", label: "All", hint: "Every stored signal", code: "ALL" },
-  { id: "llm", label: "LLM", hint: "SEA-LION confirmed", code: "LLM" },
+  { id: "llm", label: "LLM", hint: "AI Confirmed", code: "LLM" },
   { id: "super-scalping", label: "Super scalp (5m)", hint: "ICT FVG", code: "5M" },
   { id: "scalping", label: "Scalping (15m)", hint: "Cloud + MSS", code: "15M" },
   { id: "swing", label: "Swing (1h)", hint: "AI-confirmed", code: "1H" },

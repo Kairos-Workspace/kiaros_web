@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getTranslations();
   return {
     title: t("Admin · Economic Calendar & Macro AI"),
-    description: t("Monitor scheduled economic news and generate Gemini AI predictions on demand."),
+    description: t("Monitor scheduled economic news and generate AI predictions on demand."),
   };
 }
 
@@ -49,7 +49,7 @@ export default async function AdminCalendar({
           <p className="mt-1 text-xs text-zinc-500 max-w-2xl leading-relaxed">
             <T>{isPnlTab
               ? "Verified STP/ECN algorithmic signal settlements, daily net R breakdown, and session streaks."
-              : "Institutional economic schedule, central bank rate catalysts, and automated Gemini AI projections."}</T>
+              : "Institutional economic schedule, central bank rate catalysts, and automated AI projections."}</T>
           </p>
         </div>
 

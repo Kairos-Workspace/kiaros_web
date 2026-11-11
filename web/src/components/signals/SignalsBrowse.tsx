@@ -209,7 +209,7 @@ export async function SignalsBrowse({
               <p className="text-sm font-semibold text-ink"><T>{"No AI signals yet"}</T></p>
               <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate">
                 <T>{strategy === "all"
-                  ? "New setups will display here as SEA-LION confirms valid market conditions."
+                  ? "New setups will display here as AI confirms valid market conditions."
                   : AI_STRATEGY_META[strategy].emptyHint}</T>
               </p>
             </div>

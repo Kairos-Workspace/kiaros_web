@@ -8,7 +8,7 @@ export async function generateMetadata() {
   const { t } = await getTranslations();
   return {
     title: t("Economic Calendar · Kiaros Quant"),
-    description: t("Real-time institutional economic calendar — tracking high-impact CPI, NFP, and FOMC catalysts with Gemini AI predictions and automated quant risk shields for prop firm accounts."),
+    description: t("Real-time institutional economic calendar — tracking high-impact CPI, NFP, and FOMC catalysts with AI predictions and automated quant risk shields for prop firm accounts."),
   };
 }
 
@@ -22,7 +22,7 @@ export default async function EconomicCalendarPage() {
       <PageHeader
         theme="calendar"
         title="Economic Calendar"
-        subtitle="High-impact macroeconomic releases, central bank rate decisions, and volatility catalysts monitored by Kiaros neural risk filters and Gemini AI macro projections to shield funded capital."
+        subtitle="High-impact macroeconomic releases, central bank rate decisions, and volatility catalysts monitored by Kiaros neural risk filters and AI macro projections to shield funded capital."
       />
 
       {/* Main Content Workspace */}

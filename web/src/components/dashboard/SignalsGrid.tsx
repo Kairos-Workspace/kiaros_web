@@ -690,7 +690,7 @@ function SignalDetailModal({
                   <T>{"AI Rationale"}</T></span>
               </div>
               <span className="rounded border border-zinc-200 bg-white px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-zinc-600">
-                <T>{"Gemini Reasoning"}</T></span>
+                <T>{"Neural Reasoning"}</T></span>
             </div>
             <p className="text-sm leading-relaxed text-zinc-800 font-sans">
               <T>{signal.rationale}</T>

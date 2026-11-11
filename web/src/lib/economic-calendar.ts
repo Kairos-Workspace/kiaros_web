@@ -369,7 +369,7 @@ export async function getAllPredictions(): Promise<Record<string, EconomicPredic
               summary: r.summary || "",
               macroAnalysis: r.macro_analysis || "",
               tradingPlaybook: r.trading_playbook || "",
-              modelName: r.model_name || "gemini-2.5-flash",
+              modelName: r.model_name || "Quant Neural Engine",
               createdAt: r.created_at,
               updatedAt: r.updated_at,
             };

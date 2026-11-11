@@ -426,7 +426,7 @@ export async function predictEconomicEventAction(formData: FormData) {
     });
   } catch (err) {
     console.error("Failed to generate Gemini prediction:", err);
-    redirect(`/admin/calendar?error=${encodeURIComponent("Failed to run Gemini AI prediction.")}`);
+    redirect(`/admin/calendar?error=${encodeURIComponent("Failed to run AI prediction.")}`);
   }
 
   revalidatePath("/admin/calendar");

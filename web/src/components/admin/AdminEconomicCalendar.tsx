@@ -102,7 +102,7 @@ export function AdminEconomicCalendar({
         <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-              <T>{"Gemini Projections"}</T> </span>
+              <T>{"AI Projections"}</T> </span>
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
           </div>
           <div className="mt-2">
@@ -293,7 +293,7 @@ export function AdminEconomicCalendar({
                       <div className="flex items-center gap-2">
                         <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-1 font-mono text-xs font-bold text-emerald-900 border border-emerald-200">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                          <span><T>{"Gemini Predicted"}</T></span>
+                          <span><T>{"AI Predicted"}</T></span>
                           <span className="text-[10px] text-emerald-700 uppercase">
                             (<T>{evt.prediction?.bias ?? ""}</T> {evt.currency})
                           </span>
@@ -309,7 +309,7 @@ export function AdminEconomicCalendar({
                       </div>
                     ) : null}
 
-                    {/* Gemini Predict Action Button */}
+                    {/* AI Predict Action Button */}
                     <form
                       action={(formData) => handlePredictSubmit(evt.id, formData)}
                       className="inline-flex"
@@ -338,9 +338,19 @@ export function AdminEconomicCalendar({
                             <span><T>{"Analyzing..."}</T></span>
                           </>
                         ) : hasPrediction ? (
-                          <span><T>{"🔄 Re-analyze"}</T></span>
+                          <span className="inline-flex items-center gap-1">
+                            <svg className="h-3.5 w-3.5 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            <T>{"Re-analyze"}</T>
+                          </span>
                         ) : (
-                          <span><T>{"✨ Run Gemini AI"}</T></span>
+                          <span className="inline-flex items-center gap-1.5">
+                            <svg className="h-3.5 w-3.5 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2L14.4 8.6L21 11L14.4 13.4L12 20L9.6 13.4L3 11L9.6 8.6L12 2Z" />
+                            </svg>
+                            <T>{"Run AI Forecast"}</T>
+                          </span>
                         )}
                       </button>
                     </form>
@@ -363,16 +373,16 @@ export function AdminEconomicCalendar({
                   </div>
                 </div>
 
-                {/* Expanded Gemini Prediction Details Card */}
+                {/* Expanded AI Prediction Details Card */}
                 {hasPrediction && (isExpanded || isPredictingThis) ? (
                   <div className="border-t border-zinc-100 bg-zinc-50/60 p-5 sm:p-6 rounded-b-2xl space-y-4 font-mono text-xs">
                     {/* Header Banner */}
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 pb-3">
                       <div className="flex items-center gap-2.5">
                         <span className="text-base font-black text-zinc-950">
-                          <T>{"Gemini Macro Intelligence Outlook"}</T> </span>
+                          <T>{"AI Macro Intelligence Outlook"}</T> </span>
                         <span className="rounded-md bg-white border border-zinc-200 px-2 py-0.5 text-[10px] text-zinc-700 font-bold">
-                          {evt.prediction?.modelName}
+                          <T>{"Quant Neural Engine"}</T>
                         </span>
                       </div>
                       <div className="flex items-center gap-3 text-xs">

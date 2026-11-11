@@ -59,7 +59,7 @@ export default async function AdminAiSettings({
             <section className="card-surface p-5">
               <h2 className="text-lg font-semibold"><T>{"Strategy"}</T></h2>
               <p className="mt-1 text-sm text-slate">
-                <T>{"Rules used to find candidate setups before SEA-LION confirms them."}</T> </p>
+                <T>{"Rules used to find candidate setups before AI confirms them."}</T> </p>
               <label className="mt-4 flex flex-col gap-1.5 text-sm font-medium">
                 <T>{"Signal strategy"}</T>
                 <Dropdown

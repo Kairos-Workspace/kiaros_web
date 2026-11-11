@@ -13,7 +13,7 @@ export function StatsBar({ stats }: { stats: Stats }) {
     {
       label: "Avg Confidence",
       value: stats.total > 0 ? `${stats.avgConfidence}%` : "—",
-      subtext: "AI SEA-LION model confidence",
+      subtext: "AI model confidence",
       badge: "AI SCORE",
       badgeColor: "text-zinc-800 bg-zinc-100 border-zinc-300",
     },

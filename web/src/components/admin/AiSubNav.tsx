@@ -28,7 +28,7 @@ const tabs = [
   },
   {
     href: "/admin/ai/responses",
-    label: "SEA-LION Model Log",
+    label: "AI Model Log",
     badge: "REASONING",
     icon: (
       <svg

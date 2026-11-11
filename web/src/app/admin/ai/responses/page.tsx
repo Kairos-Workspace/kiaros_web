@@ -97,7 +97,7 @@ export default async function AdminAiResponses({
         <div>
           <h2 className="text-lg font-semibold"><T>{"Recent responses"}</T></h2>
           <p className="mt-1 text-sm text-slate">
-            <T>{"Every SEA-LION reply from the engine: confirms, rejects, and no-setup explanations (newest first)."}</T> </p>
+            <T>{"Every AI reply from the engine: confirms, rejects, and no-setup explanations (newest first)."}</T> </p>
         </div>
         {total > 0 ? (
           <p className="text-sm text-slate">

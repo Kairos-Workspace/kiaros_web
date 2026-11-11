@@ -101,7 +101,7 @@ Respond strictly in valid JSON format with these exact keys:
               summary: String(parsed.summary || ""),
               macroAnalysis: String(parsed.macroAnalysis || ""),
               tradingPlaybook: String(parsed.tradingPlaybook || ""),
-              modelName: model,
+              modelName: "Quant Intelligence Engine",
             };
           }
         }
@@ -147,7 +147,7 @@ Respond strictly in valid JSON format with these exact keys:
             summary: String(parsed.summary || ""),
             macroAnalysis: String(parsed.macroAnalysis || ""),
             tradingPlaybook: String(parsed.tradingPlaybook || ""),
-            modelName: "gemini-synthesized-sea-lion",
+            modelName: "Quant Intelligence Engine",
           };
         }
       }
@@ -188,7 +188,7 @@ function simulateQuantitativeMacroPrediction(event: EventInputForPrediction): Ge
       goldImpact: "BEARISH",
       predictedOutcome: `Slight Upside Beat: Predicted 0.1% higher than consensus (${forecast}) driven by sticky services & transport costs.`,
       confidence: 82,
-      summary: `Gemini AI models project a persistent upside inflation print for ${curr}. Sticky shelter components and energy pass-through are expected to resist disinflation consensus.`,
+      summary: `Quantitative neural models project a persistent upside inflation print for ${curr}. Sticky shelter components and energy pass-through are expected to resist disinflation consensus.`,
       macroAnalysis: `### Quantitative Orderflow & Leading Indicator Breakdown:
 - **Upstream Pressures:** Sub-components from manufacturing prices-paid indices and freight shipping rates over the preceding 30 days indicate marginal upward drift.
 - **Central Bank Stance:** An above-forecast release will diminish expectations of near-term rate cuts, reinforcing real yields and attracting spot liquidity into ${curr}.
@@ -197,7 +197,7 @@ function simulateQuantitativeMacroPrediction(event: EventInputForPrediction): Ge
 - **XAUUSD (Gold):** Expect an initial sharp sell-off toward liquidity pools below previous session lows. Avoid buying the initial 5-minute candle.
 - **Protective Shield:** Algorithmic news shield engages at T-15m and remains locked until T+15m post-release.
 - **Fade Setup:** Look for liquidity sweeps at key institutional discount levels (e.g. M15 FVG) after volatility stabilizes.`,
-      modelName: "gemini-2.5-flash (quant-engine)",
+      modelName: "Quant Engine",
     };
   }
 
@@ -218,7 +218,7 @@ function simulateQuantitativeMacroPrediction(event: EventInputForPrediction): Ge
       tradingPlaybook: `### Kiaros Execution Playbook:
 - **Spread Advisory:** STP broker spreads typically widen from 1.2 to 8.5 pips across Gold and Major pairs in the first 90 seconds.
 - **Range Breakout:** Wait for the 15-minute bar close before executing trend continuation orders.`,
-      modelName: "gemini-2.5-flash (quant-engine)",
+      modelName: "Quant Engine",
     };
   }
 
@@ -236,7 +236,7 @@ function simulateQuantitativeMacroPrediction(event: EventInputForPrediction): Ge
       tradingPlaybook: `### Kiaros Execution Playbook:
 - **Chop Warning:** High frequency algorithms often execute dual-sided sweeps (wiping both buy-side and sell-side liquidity) before genuine directional trend establishes.
 - **Patience Protocol:** Allow London / NY session equilibrium to form before opening swing positions.`,
-      modelName: "gemini-2.5-flash (quant-engine)",
+      modelName: "Quant Engine",
     };
   }
 
@@ -252,6 +252,6 @@ function simulateQuantitativeMacroPrediction(event: EventInputForPrediction): Ge
 - Key trading partners show stable bilateral trade flows, limiting extreme divergence.`,
     tradingPlaybook: `### Kiaros Execution Playbook:
 - Normal quantitative execution parameters remain active. Standard stop-loss and profit target ladders apply.`,
-    modelName: "gemini-2.5-flash (quant-engine)",
+    modelName: "Quant Engine",
   };
 }

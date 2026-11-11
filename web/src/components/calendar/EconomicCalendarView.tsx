@@ -326,7 +326,7 @@ export function EconomicCalendarView({
         </div>
       </div>
 
-      {/* ── Modal: Gemini AI Prediction Report ── */}
+      {/* ── Modal: AI Prediction Report ── */}
       {selectedPrediction ? (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
@@ -339,7 +339,7 @@ export function EconomicCalendarView({
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-100 bg-white/95 backdrop-blur-sm px-6 py-4 rounded-t-2xl">
               <div>
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600">
-                  <T>{"Gemini AI Outlook"}</T></span>
+                  <T>{"AI Macro Outlook"}</T></span>
                 <h3 className="text-lg font-bold text-zinc-950 mt-0.5">
                   {selectedPrediction.currency} · <T>{selectedPrediction.eventTitle}</T>
                 </h3>

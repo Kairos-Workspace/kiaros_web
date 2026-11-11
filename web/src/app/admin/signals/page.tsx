@@ -102,7 +102,7 @@ export default async function AdminSignals({
 
   const title = isLlmTab ? "LLM Signals" : "Signals";
   const subtitle = isLlmTab
-    ? "Every signal SEA-LION confirmed and stored. Same cards as the main list, scoped to LLM-approved setups."
+    ? "Every signal AI confirmed and stored. Same cards as the main list, scoped to LLM-approved setups."
     : "Manage and view all stored signals. Export includes TP/SL hits only.";
 
   return (
@@ -132,7 +132,7 @@ export default async function AdminSignals({
               <T>{"NEURAL CONFLUENCE VALIDATION ACTIVE"}</T> </p>
           </div>
           <p className="mt-1.5 font-mono text-xs text-zinc-300">
-            {`Showing ${total} SEA-LION confirmed signal${total === 1 ? "" : "s"} across institutional timeframes.`}
+            {`Showing ${total} AI confirmed signal${total === 1 ? "" : "s"} across institutional timeframes.`}
           </p>
         </div>
       ) : null}
