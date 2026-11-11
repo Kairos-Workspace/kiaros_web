@@ -5,6 +5,8 @@ import { useTranslation } from "@/components/i18n/LanguageProvider";
 import type { Signal } from "@/lib/signals";
 import { formatPrice, formatTimeframe } from "@/lib/format";
 import { RelativeTime } from "@/components/shared/RelativeTime";
+import { CoinIcon } from "@/components/coins/CoinIcon";
+import { getCoinSymbol } from "@/components/dashboard/SignalsGrid";
 
 function DirectionBadge({ direction }: { direction: Signal["direction"] }) {
   const isLong = direction === "long";
@@ -16,7 +18,21 @@ function DirectionBadge({ direction }: { direction: Signal["direction"] }) {
           : "border-rose-300 bg-rose-50 text-rose-800"
       }`}
     >
-      <span aria-hidden>{isLong ? "▲" : "▼"}</span>
+      <svg
+        className="h-2.5 w-2.5 stroke-[2.5]"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        {isLong ? (
+          <path d="M7 17L17 7M17 7H7M17 7V17" />
+        ) : (
+          <path d="M7 7l10 10M17 7v10H7" />
+        )}
+      </svg>
       <span><T>{isLong ? "BUY" : "SELL"}</T></span>
     </span>
   );
@@ -134,19 +150,16 @@ export function TradeTicket({
 
   return (
     <article
-      className={`relative overflow-hidden border bg-white shadow-sm transition-all duration-300 hover:border-zinc-400 hover:shadow-md hover:-translate-y-0.5 ${
-        isLong
-          ? "border-l-4 border-l-emerald-600 border-zinc-200"
-          : "border-l-4 border-l-rose-600 border-zinc-200"
-      }`}
+      className="relative overflow-hidden rounded-2xl border border-zinc-200/90 bg-white shadow-xs transition-all duration-300 hover:border-zinc-300 hover:shadow-md hover:-translate-y-0.5"
     >
       {/* Ticket Header */}
-      <div className="flex items-center justify-between border-b border-zinc-100 bg-zinc-50/80 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-zinc-100 bg-zinc-50/70 px-4 py-3">
         <div className="flex flex-wrap items-center gap-2.5">
-          <DirectionBadge direction={signal.direction} />
+          <CoinIcon symbol={getCoinSymbol(signal.symbol)} size={28} />
           <span className="font-mono text-base font-black tracking-tight text-zinc-950">
             {signal.symbol}
           </span>
+          <DirectionBadge direction={signal.direction} />
           <span className="rounded bg-white border border-zinc-200 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase text-zinc-700">
             {formatTimeframe(signal.timeframe)}
           </span>

@@ -9,6 +9,13 @@ import { memo, useCallback, useEffect, useState } from "react";
 import type { Signal } from "@/lib/signals";
 import { formatDateTime, formatPrice, formatTimeframe } from "@/lib/format";
 import { RelativeTime } from "@/components/shared/RelativeTime";
+import { CoinIcon } from "@/components/coins/CoinIcon";
+
+export function getCoinSymbol(symbol: string): string {
+  const s = (symbol || "").toUpperCase();
+  if (s.startsWith("XAU") || s.includes("GOLD")) return "xau";
+  return s.replace(/USDT?$|USD$|PERP$/i, "").toLowerCase();
+}
 
 function riskReward(signal: Signal): string {
   const risk = Math.abs(signal.entry - signal.stopLoss);
@@ -114,14 +121,28 @@ function DirectionPill({ direction }: { direction: Signal["direction"] }) {
   const isLong = direction === "long";
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider border ${
+      className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider border shadow-2xs ${
         isLong
-          ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-          : "border-rose-200 bg-rose-50 text-rose-800"
+          ? "border-emerald-200/90 bg-emerald-50 text-emerald-700"
+          : "border-rose-200/90 bg-rose-50 text-rose-700"
       }`}
     >
       <span><T>{isLong ? "BUY" : "SELL"}</T></span>
-      <span className="text-[10px]">{isLong ? "↗" : "↘"}</span>
+      <svg
+        className="h-2.5 w-2.5 stroke-[2.5]"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        {isLong ? (
+          <path d="M7 17L17 7M17 7H7M17 7V17" />
+        ) : (
+          <path d="M7 7l10 10M17 7v10H7" />
+        )}
+      </svg>
     </span>
   );
 }
@@ -129,26 +150,48 @@ function DirectionPill({ direction }: { direction: Signal["direction"] }) {
 function StatusPill({
   status,
   closedAt,
+  floating = false,
 }: {
   status: Signal["status"];
   closedAt?: string | null;
+  floating?: boolean;
 }) {
   if (status === "open") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[11px] font-bold tracking-wide text-emerald-800">
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
-        <T>{"Open"}</T></span>
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 font-mono text-[10px] font-bold tracking-wide border shadow-2xs ${
+          floating
+            ? "bg-zinc-950/80 backdrop-blur-md border-emerald-500/30 text-emerald-400"
+            : "border-emerald-200 bg-emerald-50 text-emerald-800"
+        }`}
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+        <T>{"Open"}</T>
+      </span>
     );
   }
   if (status === "expired") {
     return (
-      <span className="inline-flex items-center rounded-md border border-zinc-200 bg-zinc-100 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wide text-zinc-600">
-        <T>{"Expired"}</T></span>
+      <span
+        className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide border shadow-2xs ${
+          floating
+            ? "bg-zinc-950/80 backdrop-blur-md border-zinc-700 text-zinc-400"
+            : "border-zinc-200 bg-zinc-100 text-zinc-600"
+        }`}
+      >
+        <T>{"Expired"}</T>
+      </span>
     );
   }
   if ((status === "tp1_hit" || status === "tp2_hit") && !closedAt) {
     return (
-      <span className="inline-flex items-center rounded-md border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wide text-emerald-700">
+      <span
+        className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide border shadow-2xs ${
+          floating
+            ? "bg-zinc-950/80 backdrop-blur-md border-emerald-500/30 text-emerald-400"
+            : "border-emerald-300 bg-emerald-50 text-emerald-700"
+        }`}
+      >
         <T>{status === "tp1_hit" ? "TP1 Hit" : "TP2 Hit"}</T>
       </span>
     );
@@ -166,10 +209,14 @@ function StatusPill({
   const isWin = status !== "sl_hit";
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wide border ${
-        isWin
-          ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-          : "border-rose-200 bg-rose-50 text-rose-700"
+      className={`inline-flex items-center rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wide border shadow-2xs ${
+        floating
+          ? isWin
+            ? "bg-zinc-950/80 backdrop-blur-md border-emerald-500/30 text-emerald-400"
+            : "bg-zinc-950/80 backdrop-blur-md border-rose-500/30 text-rose-400"
+          : isWin
+            ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+            : "border-rose-200 bg-rose-50 text-rose-700"
       }`}
     >
       <T>{label}</T>
@@ -179,14 +226,14 @@ function StatusPill({
 
 function ConfidenceBar({ value, compact = false }: { value: number; compact?: boolean }) {
   return (
-    <div className={`flex items-center gap-2 ${compact ? "" : "w-full"}`}>
-      <div className={`h-1.5 overflow-hidden rounded-full bg-zinc-200 ${compact ? "w-16" : "flex-1"}`}>
+    <div className={`flex items-center gap-1.5 ${compact ? "" : "w-full"}`}>
+      <div className={`h-1.5 overflow-hidden rounded-full bg-zinc-100 ${compact ? "w-14" : "flex-1"}`}>
         <div
-          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600"
+          className="h-full rounded-full bg-emerald-500 transition-all duration-300"
           style={{ width: `${value}%` }}
         />
       </div>
-      <span className="font-mono text-xs font-bold text-zinc-700">{value}%</span>
+      <span className="font-mono text-xs font-bold text-zinc-900">{value}%</span>
     </div>
   );
 }
@@ -203,8 +250,6 @@ export const SignalCard = memo(function SignalCard({
   showLlmBadge?: boolean;
 }) {
   const { t } = useTranslation();
-  const isLong = signal.direction === "long";
-  // Pure SL only — closed TP1/TP2 wins are not losses.
   const isSlHit = signal.status === "sl_hit";
   const isButton = Boolean(onSelect && !adminSlot);
   const Component = isButton ? "button" : "div";
@@ -213,107 +258,178 @@ export const SignalCard = memo(function SignalCard({
   return (
     <Component
       type={isButton ? "button" : undefined}
-      onClick={onSelect ? (e) => {
-        if (!isButton && e.target !== e.currentTarget && (e.target as HTMLElement).closest('button, a')) return;
-        onSelect(signal);
-      } : undefined}
+      onClick={
+        onSelect
+          ? (e) => {
+              if (
+                !isButton &&
+                e.target !== e.currentTarget &&
+                (e.target as HTMLElement).closest("button, a")
+              )
+                return;
+              onSelect(signal);
+            }
+          : undefined
+      }
       role={onSelect && !isButton ? "button" : undefined}
       tabIndex={onSelect && !isButton ? 0 : undefined}
-      onKeyDown={onSelect && !isButton ? (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          if ((e.target as HTMLElement).closest('button, a')) return;
-          e.preventDefault();
-          onSelect(signal);
-        }
-      } : undefined}
-      className={`group relative w-full overflow-hidden border border-zinc-200 bg-white text-left transition-all duration-200 hover:border-zinc-400 hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 ${
+      onKeyDown={
+        onSelect && !isButton
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                if ((e.target as HTMLElement).closest("button, a")) return;
+                e.preventDefault();
+                onSelect(signal);
+              }
+            }
+          : undefined
+      }
+      className={`group relative flex flex-col justify-between w-full overflow-hidden rounded-2xl border border-zinc-200/90 bg-white text-left transition-all duration-200 hover:border-zinc-300 hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 ${
         onSelect ? "cursor-pointer" : ""
       } ${isSlHit ? "opacity-60 grayscale hover:opacity-80" : ""}`}
     >
-      <div
-        className={`absolute bottom-0 left-0 top-0 w-1 ${
-          isLong
-            ? "bg-emerald-600"
-            : "bg-rose-600"
-        }`}
-      />
-
-      {chartSrc ? (
-        <div className="relative aspect-[16/9] overflow-hidden border-b border-zinc-200 bg-zinc-950">
-          <Image
-            src={chartSrc}
-            alt={t("{symbol} {timeframe} {direction} chart", { symbol: signal.symbol, timeframe: formatTimeframe(signal.timeframe), direction: t(signal.direction) })}
-            loading="lazy"
-            fill
-            sizes="(min-width: 1536px) 20vw, (min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        </div>
-      ) : (
-        <div className="flex aspect-[16/9] items-center justify-center border-b border-zinc-200 bg-zinc-100">
-          <span className="font-mono text-xs text-zinc-500"><T>{"No Chart Available"}</T></span>
-        </div>
-      )}
-
-      <div className="relative flex items-start justify-between gap-3 p-4 pl-5">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-base font-extrabold tracking-tight text-zinc-950">
-              {signal.symbol}
+      {/* 1. Top Media / Chart Section */}
+      <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-zinc-100 bg-[#0c0c0e]">
+        {chartSrc ? (
+          <>
+            <Image
+              src={chartSrc}
+              alt={t("{symbol} {timeframe} {direction} chart", {
+                symbol: signal.symbol,
+                timeframe: formatTimeframe(signal.timeframe),
+                direction: t(signal.direction),
+              })}
+              loading="lazy"
+              fill
+              sizes="(min-width: 1536px) 20vw, (min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30" />
+          </>
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center p-4 text-center bg-zinc-950">
+            <svg
+              className="h-6 w-6 stroke-[1.5] text-zinc-600 mb-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            <span className="font-mono text-xs font-medium text-zinc-400">
+              <T>{"No Chart Available"}</T>
             </span>
-            <DirectionPill direction={signal.direction} />
-            {showLlmBadge ? (
-              <span className="rounded border border-zinc-300 bg-zinc-100 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-zinc-900">
-                <T>{"Algo + LLM"}</T></span>
-            ) : null}
           </div>
-          <div className="mt-1.5 flex items-center gap-2">
-            <span className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase text-zinc-600">
-              {formatTimeframe(signal.timeframe)}
+        )}
+
+        {/* Floating Badges on Chart */}
+        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-10">
+          <span className="rounded-md bg-zinc-950/75 backdrop-blur-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-200 border border-white/10 shadow-2xs">
+            {formatTimeframe(signal.timeframe)}
+          </span>
+          {showLlmBadge && (
+            <span className="rounded-md bg-zinc-950/75 backdrop-blur-md border border-white/10 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-amber-300 shadow-2xs">
+              <T>{"Algo + LLM"}</T>
             </span>
-            <StatusPill status={signal.status} closedAt={signal.closedAt} />
+          )}
+        </div>
+
+        <div className="absolute top-2.5 right-2.5 z-10">
+          <StatusPill status={signal.status} closedAt={signal.closedAt} floating />
+        </div>
+      </div>
+
+      {/* 2. Middle: Symbol Identity & Dual-Engine Confidence */}
+      <div className="p-4 pb-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <CoinIcon symbol={getCoinSymbol(signal.symbol)} size={32} />
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-base font-black tracking-tight text-zinc-950 block leading-tight">
+                {signal.symbol}
+              </span>
+              <DirectionPill direction={signal.direction} />
+            </div>
           </div>
         </div>
-        <div className="flex flex-col items-end justify-center pt-0.5">
-          <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500 mb-1">
-            <T>{"Confidence"}</T></p>
+
+        <div className="flex flex-col items-end shrink-0">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-0.5">
+            <T>{"Confidence"}</T>
+          </span>
           <ConfidenceBar value={signal.confidence} compact />
         </div>
       </div>
 
-      <div className="relative grid grid-cols-3 gap-2 border-t border-zinc-200 bg-zinc-50/70 px-4 py-3 font-mono">
+      {/* 3. Price Matrix: Entry, Stop Loss, Take Profit */}
+      <div className="grid grid-cols-3 gap-2 border-t border-zinc-100 bg-zinc-50/60 px-4 py-3 font-mono">
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5"><T>{"Entry"}</T></p>
-          <p className="text-xs font-bold text-zinc-900">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-0.5">
+            <T>{"Entry"}</T>
+          </p>
+          <p className="text-xs sm:text-sm font-bold text-zinc-900 truncate">
             {formatPrice(signal.entry)}
           </p>
         </div>
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5"><T>{"Stop Loss"}</T></p>
-          <p className="text-xs font-bold text-rose-600">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-0.5">
+            <T>{"Stop Loss"}</T>
+          </p>
+          <p className="text-xs sm:text-sm font-bold text-rose-600 truncate">
             {formatPrice(signal.stopLoss)}
           </p>
         </div>
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500 mb-0.5"><T>{"TP1 / TP2 / TP3"}</T></p>
-          <p className="text-xs font-bold text-emerald-600">
-            {formatPrice(signal.takeProfit)}
-            {signal.takeProfit2 != null ? ` / ${formatPrice(signal.takeProfit2)}` : ""}
-            {signal.takeProfit3 != null ? ` / ${formatPrice(signal.takeProfit3)}` : ""}
+          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-0.5">
+            <T>{"TP1 / TP2 / TP3"}</T>
+          </p>
+          <p className="text-xs sm:text-sm font-bold text-emerald-600 truncate">
+            <span>{formatPrice(signal.takeProfit)}</span>
+            {signal.takeProfit2 != null ? (
+              <span className="text-zinc-400 font-normal"> / {formatPrice(signal.takeProfit2)}</span>
+            ) : null}
+            {signal.takeProfit3 != null ? (
+              <span className="text-zinc-400 font-normal"> / {formatPrice(signal.takeProfit3)}</span>
+            ) : null}
           </p>
         </div>
       </div>
 
-      <div className="relative flex items-center justify-between border-t border-zinc-200 bg-zinc-50/70 px-4 py-2.5 font-mono text-xs text-zinc-600">
-        <span className="flex items-center gap-1.5 text-[11px] text-zinc-500">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <RelativeTime iso={signal.createdAt} />
-        </span>
+      {/* 4. Card Footer: Timestamp, R:R, Action */}
+      <div className="flex items-center justify-between border-t border-zinc-100 bg-white px-4 py-2.5 font-mono text-xs text-zinc-600">
+        <div className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5 text-[11px] text-zinc-400 font-medium">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="opacity-70"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <RelativeTime iso={signal.createdAt} />
+          </span>
+          <span className="rounded bg-zinc-100 border border-zinc-200/80 px-1.5 py-0.2 text-[10px] font-bold text-zinc-700">
+            {riskReward(signal)}
+          </span>
+        </div>
+
         {adminSlot ? (
           <div className="z-10">{adminSlot}</div>
         ) : onSelect ? (
-          <span className="flex items-center gap-1 text-[11px] font-bold text-zinc-950 opacity-80 group-hover:opacity-100 transition-opacity">
-            <T>{"View Details →"}</T></span>
+          <span className="flex items-center gap-1 text-[11px] font-bold text-zinc-950 opacity-80 group-hover:opacity-100 group-hover:text-amber-600 transition-all">
+            <T>{"View Details →"}</T>
+          </span>
         ) : null}
       </div>
     </Component>
@@ -419,7 +535,8 @@ function SignalDetailModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between gap-4 border-b border-zinc-200/80 bg-zinc-50/70 px-5 sm:px-6 py-4">
           <div className="flex flex-wrap items-center gap-2.5 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
+              <CoinIcon symbol={getCoinSymbol(signal.symbol)} size={32} />
               <h2 id="signal-detail-title" className="font-mono text-xl sm:text-2xl font-black tracking-tight text-zinc-950">
                 {signal.symbol}
               </h2>
@@ -564,8 +681,10 @@ function SignalDetailModal({
           <div className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-4">
             <div className="flex items-center justify-between pb-2 border-b border-zinc-200/80 mb-3">
               <div className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded bg-zinc-950 text-white text-[11px] font-bold">
-                  ✨
+                <span className="flex h-5 w-5 items-center justify-center rounded bg-zinc-950 text-amber-400">
+                  <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L14.4 8.6L21 11L14.4 13.4L12 20L9.6 13.4L3 11L9.6 8.6L12 2Z" />
+                  </svg>
                 </span>
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-950">
                   <T>{"AI Rationale"}</T></span>
