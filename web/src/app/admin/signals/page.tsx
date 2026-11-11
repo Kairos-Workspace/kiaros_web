@@ -148,7 +148,7 @@ export default async function AdminSignals({
                 adminSlot={
                   <DeleteSignalButton
                     id={s.id}
-                    triggerClassName="text-[10px] font-bold uppercase tracking-wider text-short hover:underline bg-short/10 px-2 py-1 rounded-none z-10 relative"
+                    triggerClassName="text-[10px] font-bold uppercase tracking-wider text-short hover:underline bg-short/10 px-2 py-1 rounded z-10 relative"
                   />
                 }
               />
