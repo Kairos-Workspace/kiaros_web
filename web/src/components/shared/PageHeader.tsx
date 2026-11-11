@@ -1,10 +1,5 @@
 import { T } from "@/components/i18n/T";
-import { AnimatedHeaderBackground } from "@/components/shared/AnimatedHeaderBackground";
-import { HeaderIllustration } from "@/components/shared/HeaderIllustration";
-import {
-  PAGE_HEADER_THEMES,
-  type PageHeaderTheme,
-} from "@/components/shared/page-header-themes";
+import { type PageHeaderTheme } from "@/components/shared/page-header-themes";
 
 interface PageHeaderProps {
   theme: PageHeaderTheme;
@@ -12,44 +7,60 @@ interface PageHeaderProps {
   subtitle: string;
 }
 
+const THEME_ACCENTS: Record<
+  PageHeaderTheme,
+  { dot: string; badge: string; label: string }
+> = {
+  gold: {
+    dot: "bg-amber-500",
+    badge: "border-amber-200/90 bg-amber-50 text-amber-800",
+    label: "ANALYSIS",
+  },
+  signals: {
+    dot: "bg-emerald-500",
+    badge: "border-emerald-200/90 bg-emerald-50 text-emerald-800",
+    label: "LIVE SIGNALS",
+  },
+  calendar: {
+    dot: "bg-sky-500",
+    badge: "border-sky-200/90 bg-sky-50 text-sky-800",
+    label: "MACRO CALENDAR",
+  },
+  tools: {
+    dot: "bg-violet-500",
+    badge: "border-violet-200/90 bg-violet-50 text-violet-800",
+    label: "TOOLS & EAS",
+  },
+  radar: {
+    dot: "bg-cyan-500",
+    badge: "border-cyan-200/90 bg-cyan-50 text-cyan-800",
+    label: "CRYPTO RADAR",
+  },
+};
+
 export function PageHeader({ theme, title, subtitle }: PageHeaderProps) {
-  const config = PAGE_HEADER_THEMES[theme];
-  const isGold = theme === "gold";
+  const accent = THEME_ACCENTS[theme] || THEME_ACCENTS.signals;
 
   return (
-    <section className="relative overflow-hidden border-b border-zinc-800 bg-[#09090b] text-white py-10 sm:py-14 lg:py-16">
-      <AnimatedHeaderBackground theme={theme} />
-
-      <div className="page-container relative z-10 mx-auto">
-        <div className="grid items-center gap-6 sm:gap-8 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:gap-10 lg:gap-12">
-          <div className="flex min-w-0 flex-col items-center text-center md:items-start md:text-left">
-            <h1
-              className={`max-w-xl text-balance font-bold tracking-tight text-white ${
-                isGold
-                  ? "text-[1.65rem] leading-[1.25] sm:text-4xl lg:text-[2.65rem] lg:leading-[1.15]"
-                  : "font-mono text-[1.55rem] leading-[1.2] sm:text-4xl lg:text-5xl"
-              }`}
+    <section className="relative border-b border-zinc-200/80 bg-white/70 backdrop-blur-md pt-5 pb-5 sm:pt-6 sm:pb-6">
+      <div className="page-container mx-auto">
+        <div className="flex flex-col justify-between gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider border ${accent.badge}`}
             >
-              <T>{title}</T>
-            </h1>
-
-            <p className="mx-auto mt-3 max-w-xl text-pretty text-[13px] leading-relaxed text-zinc-400 sm:mt-4 sm:text-[15px] md:mx-0">
-              <T>{subtitle}</T>
-            </p>
-
-            <div
-              className={`mt-5 h-px w-20 bg-gradient-to-r sm:mt-7 sm:w-28 ${config.glowRing}`}
-              aria-hidden
-            />
+              <span className={`h-1.5 w-1.5 rounded-full ${accent.dot} animate-pulse`} />
+              <T>{accent.label}</T>
+            </span>
           </div>
 
-          <div className="relative mx-auto w-full max-w-[240px] sm:max-w-[300px] md:max-w-none md:justify-self-end">
-            <div
-              className={`pointer-events-none absolute inset-2 rounded-full bg-gradient-to-br blur-2xl sm:inset-4 ${config.glowRing}`}
-              aria-hidden
-            />
-            <HeaderIllustration theme={theme} />
-          </div>
+          <h1 className="font-mono text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-zinc-950">
+            <T>{title}</T>
+          </h1>
+
+          <p className="max-w-3xl text-xs sm:text-sm text-zinc-500 leading-relaxed font-sans">
+            <T>{subtitle}</T>
+          </p>
         </div>
       </div>
     </section>

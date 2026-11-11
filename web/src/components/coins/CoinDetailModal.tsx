@@ -258,3 +258,4 @@ export function CoinDetailModal({ coin, onClose }: CoinDetailModalProps) {
     </div>
   );
 }
+

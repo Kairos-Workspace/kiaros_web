@@ -302,3 +302,4 @@ export function CoinRadarView({ initialCoins }: CoinRadarViewProps) {
     </div>
   );
 }
+

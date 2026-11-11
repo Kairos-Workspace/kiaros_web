@@ -772,3 +772,4 @@ export async function fetchCoinAnalyses(): Promise<CoinAnalysis[]> {
     return FALLBACK_COINS;
   }
 }
+

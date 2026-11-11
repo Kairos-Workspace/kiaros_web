@@ -1,6 +1,11 @@
 export const commonMessages: Record<string, string> = {
   "Language": "ភាសា",
   "QUANT": "QUANT",
+  "LIVE SIGNALS": "សញ្ញាជួញដូរផ្ទាល់",
+  "CRYPTO RADAR": "រ៉ាដាគ្រីបតូ",
+  "ANALYSIS": "ការវិភាគ",
+  "MACRO CALENDAR": "ប្រតិទិនម៉ាក្រូ",
+  "TOOLS & EAS": "ឧបករណ៍ & EA",
   "admin": "គ្រប់គ្រង",
   "Live Signals": "សញ្ញាជួញដូរផ្ទាល់",
   "Coin Radar": "រ៉ាដាគ្រីបតូ",

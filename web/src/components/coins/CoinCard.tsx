@@ -139,3 +139,4 @@ export function CoinCard({ coin, onSelect }: CoinCardProps) {
     </div>
   );
 }
+

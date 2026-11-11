@@ -34,3 +34,4 @@ export default async function CoinAnalysisPage() {
     </main>
   );
 }
+
