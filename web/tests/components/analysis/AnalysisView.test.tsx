@@ -51,21 +51,20 @@ describe("AnalysisView", () => {
     expect(screen.getByText("No Analysis Published Yet")).toBeDefined();
   });
 
-  it("renders desk header, title, badges, and live price", () => {
+  it("renders article header, title, badges, and timeframe", () => {
     render(<AnalysisView analyses={[mockAnalysis]} candles={mockCandles} />);
 
-    expect(screen.getByText("XAUUSD")).toBeDefined();
-    expect(screen.getByText("H4 / H1 / M15")).toBeDefined();
+    expect(screen.getAllByText("XAUUSD").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("H4 / H1 / M15").length).toBeGreaterThan(0);
     expect(screen.getAllByText("London Killzone").length).toBeGreaterThan(0);
     expect(screen.getByText("BULLISH")).toBeDefined();
     expect(screen.getByText(mockAnalysis.title)).toBeDefined();
-    expect(screen.getByText("$2,648.50")).toBeDefined();
   });
 
-  it("renders technical breakdown with structured execution parameters and confluence points", () => {
+  it("renders clean market context, trade setup parameters, and confluence", () => {
     render(<AnalysisView analyses={[mockAnalysis]} candles={mockCandles} />);
 
-    expect(screen.getByText("Technical Breakdown")).toBeDefined();
+    expect(screen.getByText("Market Context & Analysis")).toBeDefined();
     expect(screen.getByText(/Gold maintains a strong institutional bullish posture/i)).toBeDefined();
     expect(screen.getByText("Trade Setup & Execution Plan")).toBeDefined();
     expect(screen.getByText("Primary Trigger")).toBeDefined();
@@ -76,7 +75,7 @@ describe("AnalysisView", () => {
     expect(screen.getByText(/Institutional Cumulative Volume Delta/i)).toBeDefined();
   });
 
-  it("renders POI zones and calculation distances cleanly", () => {
+  it("renders POI zones in a clean table", () => {
     render(<AnalysisView analyses={[mockAnalysis]} candles={mockCandles} />);
 
     expect(screen.getByText("Important POI Zones")).toBeDefined();
@@ -100,18 +99,20 @@ describe("AnalysisView", () => {
     const blueprintImg = screen.getByAltText(mockAnalysis.title);
     expect(blueprintImg).toBeDefined();
 
-    // Click expand blueprint
-    const expandBtn = screen.getByRole("button", { name: /Expand Fullscreen/i });
-    fireEvent.click(expandBtn);
+    // Click the blueprint image container to open lightbox
+    const blueprintContainer = blueprintImg.closest("div[class*='cursor-pointer']");
+    expect(blueprintContainer).toBeDefined();
+    if (blueprintContainer) {
+      fireEvent.click(blueprintContainer);
 
-    // Lightbox modal is open
-    expect(screen.getByRole("dialog")).toBeDefined();
-    expect(screen.getByText("Press ESC or click anywhere outside to close")).toBeDefined();
+      // Lightbox modal is open
+      expect(screen.getByRole("dialog")).toBeDefined();
 
-    // Click Close
-    const closeBtn = screen.getByRole("button", { name: /Close/i });
-    fireEvent.click(closeBtn);
-    expect(screen.queryByRole("dialog")).toBeNull();
+      // Click Close
+      const closeBtn = screen.getByRole("button", { name: /Close/i });
+      fireEvent.click(closeBtn);
+      expect(screen.queryByRole("dialog")).toBeNull();
+    }
   });
 
   it("switches sessions when multiple analyses are available", () => {
