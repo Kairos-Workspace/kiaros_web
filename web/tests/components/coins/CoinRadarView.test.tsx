@@ -75,4 +75,54 @@ describe("CoinRadarView", () => {
 
     expect(screen.getAllByText("Bitcoin").length).toBeGreaterThan(0);
   });
+
+  it("handles pagination cleanly when coin list exceeds PAGE_SIZE (12)", () => {
+    const manyCoins = Array.from({ length: 25 }, (_, i) => ({
+      ...FALLBACK_COINS[0],
+      id: `COIN_${i + 1}`,
+      symbol: `SYM${i + 1}`,
+      name: `TestCoin ${i + 1}`,
+      potentialScore: 90 - i,
+      category: (i % 2 === 0 ? "potential" : "risky") as "potential" | "risky",
+    }));
+
+    render(<CoinRadarView initialCoins={manyCoins} />);
+
+    // Page 1 should show 1–12 of 25 coins
+    expect(screen.getByText("1–12")).toBeDefined();
+    expect(screen.getByText("25")).toBeDefined();
+    expect(screen.getByText("TestCoin 1")).toBeDefined();
+    expect(screen.getByText("TestCoin 12")).toBeDefined();
+    expect(screen.queryByText("TestCoin 13")).toBeNull();
+
+    // Previous button should be disabled on page 1
+    const prevButton = screen.getByRole("button", { name: /Previous/i });
+    expect(prevButton.hasAttribute("disabled")).toBe(true);
+
+    // Click page 2 button
+    const page2Btn = screen.getByRole("button", { name: "2" });
+    fireEvent.click(page2Btn);
+
+    // Page 2 should show 13–24
+    expect(screen.getByText("13–24")).toBeDefined();
+    expect(screen.queryByText("TestCoin 1")).toBeNull();
+    expect(screen.getByText("TestCoin 13")).toBeDefined();
+    expect(screen.getByText("TestCoin 24")).toBeDefined();
+    expect(screen.queryByText("TestCoin 25")).toBeNull();
+
+    // Click Next button to advance to page 3
+    const nextButton = screen.getByRole("button", { name: /Next/i });
+    expect(nextButton.hasAttribute("disabled")).toBe(false);
+    fireEvent.click(nextButton);
+
+    // Page 3 should show 25–25, and Next button should now be disabled
+    expect(screen.getByText("25–25")).toBeDefined();
+    expect(screen.getByText("TestCoin 25")).toBeDefined();
+    expect(nextButton.hasAttribute("disabled")).toBe(true);
+
+    // Switching filter resets page back to 1
+    const potentialFilterBtn = screen.getByRole("button", { name: /High Potential/i });
+    fireEvent.click(potentialFilterBtn);
+    expect(screen.queryByText("25–25")).toBeNull();
+  });
 });
