@@ -1,4 +1,4 @@
-export type PageHeaderTheme = "gold" | "signals" | "calendar" | "tools";
+export type PageHeaderTheme = "gold" | "signals" | "calendar" | "tools" | "radar";
 
 export type ParticleTone = "white" | "primary" | "secondary";
 
@@ -63,5 +63,17 @@ export const PAGE_HEADER_THEMES: Record<PageHeaderTheme, PageHeaderThemeConfig> 
     line: "221, 214, 254",
     accentText: "text-violet-300",
     glowRing: "from-violet-400/30 via-fuchsia-500/10 to-transparent",
+  },
+  radar: {
+    badgeDotColor: "bg-cyan-400",
+    orbA: "bg-cyan-500/16",
+    orbB: "bg-emerald-500/14",
+    orbC: "bg-rose-500/10",
+    particlePrimary: "34, 211, 238",
+    particleSecondary: "52, 211, 153",
+    ripple: "34, 211, 238",
+    line: "165, 243, 252",
+    accentText: "text-cyan-300",
+    glowRing: "from-cyan-400/30 via-emerald-500/10 to-transparent",
   },
 };

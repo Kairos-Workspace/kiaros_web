@@ -12,6 +12,7 @@ import { isAdminEmail } from "@/lib/supabase/admin";
 
 const links = [
   { href: "/signals", label: "Live Signals" },
+  { href: "/coins", label: "Coin Radar" },
   { href: "/analysis", label: "Daily Analysis" },
   { href: "/calendar", label: "Economic Calendar" },
   { href: "/track-record", label: "Performance" },
