@@ -43,6 +43,7 @@ class Config:
     # Optional: alerts are skipped when either is empty.
     telegram_bot_token: str = ""
     telegram_channel_id: str = ""
+    telegram_topic_id: int | None = None
     # Separate ops chat for session-healthcheck alerts — deliberately not the
     # public signals channel, so "a session went silent" doesn't show up
     # next to trade calls. Healthcheck alerts are skipped when unset.
@@ -74,6 +75,8 @@ def load_config() -> Config:
         raise SystemExit(
             "SUPABASE_SERVICE_ROLE_KEY is not set (copy .env.example to .env)"
         )
+    topic_raw = os.environ.get("TELEGRAM_TOPIC_ID", "").strip()
+    topic_id = int(topic_raw) if topic_raw.isdigit() else None
     return Config(
         sealion_api_key=keys[0] if keys else "",
         sealion_api_keys=keys,
@@ -85,6 +88,7 @@ def load_config() -> Config:
             os.environ.get("TELEGRAM_CHANNEL_ID", "").strip()
             or os.environ.get("TELEGRAM_CHAT_ID", "").strip()
         ),
+        telegram_topic_id=topic_id,
         telegram_alerts_chat_id=os.environ.get("TELEGRAM_ALERTS_CHAT_ID", "").strip(),
         market_scanner_enabled=market_scanner_enabled,
     )

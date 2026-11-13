@@ -1,6 +1,6 @@
 # MT5 deployment setup
 
-The EAs connect to `https://kairos-web-sandy.vercel.app`:
+The EAs connect to `https://kairos-fx-ai.vercel.app`:
 
 | EA | Version | Default endpoints |
 | --- | --- | --- |
@@ -9,7 +9,7 @@ The EAs connect to `https://kairos-web-sandy.vercel.app`:
 | KiarosSMC | 1.01 | `/api/mt5/signal`, `/api/mt5/chart` |
 
 1. Copy the updated `.mq5` files into the terminal's `MQL5/Experts` folder and compile them in MetaEditor.
-2. In **Tools → Options → Expert Advisors**, enable **Allow WebRequest for listed URL** and add `https://kairos-web-sandy.vercel.app`.
+2. In **Tools → Options → Expert Advisors**, enable **Allow WebRequest for listed URL** and add `https://kairos-fx-ai.vercel.app`.
 3. Reattach each EA or open its inputs. Existing chart settings and saved `.set` presets can retain the old URLs, so reset the inputs to the new defaults or update every API URL manually.
 4. Set `WebhookSecret` to the `MT5_WEBHOOK_SECRET` configured in the Vercel production project. This value is intentionally absent from the distributed source. An EA with a missing or too-short key stops initialization before making requests.
 5. Keep KiarosTickPush attached to the broker's gold chart for tick and candle delivery. Run BBMA and SMC on their own charts as before.

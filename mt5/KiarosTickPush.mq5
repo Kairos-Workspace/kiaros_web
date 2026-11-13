@@ -10,16 +10,16 @@
 //|                                                                    |
 //| Allow WebRequest for ApiUrl / CandleApiUrl / Chart* origin:        |
 //| Tools → Options → Expert Advisors                                  |
-//| WebRequest origin: https://kairos-web-sandy.vercel.app         |
+//| WebRequest origin: https://kairos-fx-ai.vercel.app         |
 //+------------------------------------------------------------------+
 #property strict
 #property version   "1.30"
 
 input string AppSymbol         = "XAUUSD";
-input string ApiUrl            = "https://kairos-web-sandy.vercel.app/api/mt5/tick";
-input string CandleApiUrl      = "https://kairos-web-sandy.vercel.app/api/mt5/candles";
-input string ChartPendingUrl   = "https://kairos-web-sandy.vercel.app/api/mt5/charts/pending";
-input string ChartUploadUrl    = "https://kairos-web-sandy.vercel.app/api/mt5/chart";
+input string ApiUrl            = "https://kairos-fx-ai.vercel.app/api/mt5/tick";
+input string CandleApiUrl      = "https://kairos-fx-ai.vercel.app/api/mt5/candles";
+input string ChartPendingUrl   = "https://kairos-fx-ai.vercel.app/api/mt5/charts/pending";
+input string ChartUploadUrl    = "https://kairos-fx-ai.vercel.app/api/mt5/chart";
 input string WebhookSecret     = ""; // Set MT5_WEBHOOK_SECRET from Vercel in EA inputs.
 // 500ms keeps SL/TP responsive on gold while cutting Vercel tick flood ~3×.
 // MinPriceMove stays 0 so any move in the window still posts (no missed levels).

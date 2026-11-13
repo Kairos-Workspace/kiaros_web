@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from signals.chart.pipeline import attach_chart
 from signals.clients.market import is_gold_symbol, setup_stop_risk_ok
 from signals.persistence.events import save_ai_event
-from signals.persistence.mt5 import fetch_mt5_last_tick
+from signals.persistence.mt5 import fetch_mt5_last_tick, mt5_tick_is_fresh
 from signals.persistence.signals import save_signal
 from signals.pipeline.composer import confirm_setup, no_setup_rationale
 from signals.pipeline.dedup import _recently_evaluated, already_signaled, with_retry
@@ -417,12 +417,16 @@ def scan_symbol(symbol, cfg, llm, *, strategy=DEFAULT_SIGNAL_STRATEGY,
     if is_gold_symbol(symbol):
         try:
             live, live_source = resolve_gold_live_price(
-                cfg, session=session, require_mt5=True,
+                cfg, session=session, require_mt5=False,
             )
-            tick = fetch_mt5_last_tick(
-                "XAUUSD", cfg.supabase_url, cfg.supabase_service_key,
-                session=session,
-            )
+            tick = None
+            try:
+                tick = fetch_mt5_last_tick(
+                    "XAUUSD", cfg.supabase_url, cfg.supabase_service_key,
+                    session=session,
+                )
+            except Exception:
+                tick = None
             pre_live_setup = setup
             setup, _live_note = _snap_gold_setup_to_live(
                 setup, live, timeframe, source=live_source,
@@ -435,7 +439,7 @@ def scan_symbol(symbol, cfg, llm, *, strategy=DEFAULT_SIGNAL_STRATEGY,
                     indicators=pre_live_setup.indicators,
                     candles=candles, setup=pre_live_setup, session=session,
                 )
-            if tick:
+            if tick and mt5_tick_is_fresh(tick):
                 ind = dict(setup.indicators)
                 ind["mt5_bid"] = tick.get("bid")
                 ind["mt5_ask"] = tick.get("ask")

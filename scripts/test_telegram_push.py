@@ -40,6 +40,8 @@ def main() -> int:
 
     token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     channel_id = os.getenv("TELEGRAM_CHANNEL_ID", "").strip()
+    topic_raw = os.getenv("TELEGRAM_TOPIC_ID", "").strip()
+    topic_id = int(topic_raw) if topic_raw.isdigit() else None
     if not token:
         print("TELEGRAM_BOT_TOKEN is not set", file=sys.stderr)
         return 2
@@ -48,12 +50,13 @@ def main() -> int:
         return 2
 
     try:
-        send_message(args.message, token, channel_id)
+        send_message(args.message, token, channel_id, topic_id=topic_id)
     except Exception as exc:
         print(f"Failed: {type(exc).__name__}: {exc}", file=sys.stderr)
         return 1
 
-    print(f"Sent. Check the Telegram chat/channel for {channel_id}.")
+    topic_note = f" (topic {topic_id})" if topic_id is not None else ""
+    print(f"Sent. Check the Telegram chat/channel for {channel_id}{topic_note}.")
     return 0
 
 

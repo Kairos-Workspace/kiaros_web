@@ -566,3 +566,14 @@ def test_signal_message_tells_the_follower_to_trail_to_breakeven():
     has to travel with the signal."""
     assert "move your stop to entry" in format_alert(_signal())
     assert "move SL to entry" in format_caption(_signal())
+
+
+def test_telegram_send_includes_message_thread_id_when_topic_set():
+    session = FakeSession()
+    send_alert(_signal(), "bot-token", "chat-42", session=session, topic_id=3)
+    assert session.last_json["message_thread_id"] == 3
+
+    from signals.clients.telegram import send_outcome_alert
+    rec = _ChartRec()
+    send_outcome_alert(_outcome_row(None), "sl_hit", "tok", "chat", session=rec, topic_id=7)
+    assert rec.calls[0]["json"]["message_thread_id"] == 7

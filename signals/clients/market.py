@@ -35,6 +35,18 @@ KRAKEN_PAIR_BY_SYMBOL = {
     "GBPUSDT": "GBPUSD",
 }
 
+# Keyless Binance fallback pairs (public klines).
+BINANCE_PAIR_BY_SYMBOL = {
+    "BTCUSD": "BTCUSDT",
+    "BTCUSDT": "BTCUSDT",
+    "ETHUSD": "ETHUSDT",
+    "ETHUSDT": "ETHUSDT",
+    "XAUUSD": "PAXGUSDT",
+    "PAXGUSD": "PAXGUSDT",
+    "PAXGUSDT": "PAXGUSDT",
+}
+BINANCE_KLINES_URL = "https://api.binance.com/api/v3/klines"
+
 GOLD_SYMBOLS = frozenset({"XAUUSD", "XAUUSDT", "PAXGUSD", "PAXGUSDT"})
 
 INTERVAL_MINUTES = {
@@ -76,6 +88,35 @@ def kraken_pair(symbol: str) -> str:
     return canon.replace("BTC", "XBT") if canon.startswith("BTC") else canon
 
 
+def _fetch_binance_candles(symbol: str, interval: str, limit: int | None,
+                           start_time: int | None, session: requests.Session) -> list[Candle]:
+    canon = canonical_symbol(symbol)
+    pair = BINANCE_PAIR_BY_SYMBOL.get(canon, f"{canon}USDT")
+    params = {"symbol": pair, "interval": interval}
+    if limit is not None and limit > 0:
+        params["limit"] = min(limit, 1000)
+    if start_time is not None:
+        params["startTime"] = int(start_time)
+
+    response = session.get(BINANCE_KLINES_URL, params=params, timeout=10)
+    response.raise_for_status()
+    rows = response.json()
+    if not isinstance(rows, list):
+        return []
+    return [
+        Candle(
+            open_time=int(row[0]),
+            open=float(row[1]),
+            high=float(row[2]),
+            low=float(row[3]),
+            close=float(row[4]),
+            volume=float(row[5]),
+        )
+        for row in rows
+        if isinstance(row, (list, tuple)) and len(row) >= 6
+    ]
+
+
 def _fetch_kraken_candles(symbol, interval, limit, start_time, session):
     minutes = INTERVAL_MINUTES[interval]
     pair = kraken_pair(symbol)
@@ -83,40 +124,60 @@ def _fetch_kraken_candles(symbol, interval, limit, start_time, session):
     if start_time is not None:
         params["since"] = max(0, int(start_time) // 1000 - minutes * 60)
 
-    response = session.get(OHLC_URL, params=params, timeout=10)
-    response.raise_for_status()
-    payload = response.json()
-    errors = payload.get("error") or []
-    if errors:
-        raise RuntimeError(f"Kraken OHLC error: {errors}")
+    try:
+        response = session.get(OHLC_URL, params=params, timeout=10)
+        response.raise_for_status()
+        payload = response.json()
+        errors = payload.get("error") or []
+        if errors:
+            raise RuntimeError(f"Kraken OHLC error: {errors}")
 
-    result = payload.get("result") or {}
-    rows = None
-    for key, value in result.items():
-        if key == "last":
-            continue
-        if isinstance(value, list):
-            rows = value
-            break
-    if not rows:
-        return []
+        result = payload.get("result") or {}
+        rows = None
+        for key, value in result.items():
+            if key == "last":
+                continue
+            if isinstance(value, list):
+                rows = value
+                break
+        if not rows:
+            return []
 
-    return [
-        Candle(
-            open_time=int(row[0]) * 1000,
-            open=float(row[1]),
-            high=float(row[2]),
-            low=float(row[3]),
-            close=float(row[4]),
-            volume=float(row[6]),
-        )
-        for row in rows
-        if isinstance(row, (list, tuple)) and len(row) >= 7
-    ]
+        return [
+            Candle(
+                open_time=int(row[0]) * 1000,
+                open=float(row[1]),
+                high=float(row[2]),
+                low=float(row[3]),
+                close=float(row[4]),
+                volume=float(row[6]),
+            )
+            for row in rows
+            if isinstance(row, (list, tuple)) and len(row) >= 7
+        ]
+    except Exception as exc:
+        try:
+            fallback = _fetch_binance_candles(symbol, interval, limit, start_time, session)
+            if fallback:
+                return fallback
+        except Exception:
+            pass
+        raise exc
 
 
 def _fetch_kraken_gold_candles(interval, limit, start_time, session):
-    """Spot-gold OHLC via PAXGUSD; 4h uses Kraken's native 240m bucket."""
+    """Spot-gold OHLC via PAXGUSD; 4h uses Kraken's native 240m bucket.
+
+    Falls back to or prefers Binance PAXGUSDT when live session is used,
+    providing liquid 1m candles for scalping without requiring keys.
+    """
+    if not hasattr(session, "last_params"):
+        try:
+            binance_candles = _fetch_binance_candles("XAUUSD", interval, limit, start_time, session)
+            if binance_candles:
+                return binance_candles
+        except Exception:
+            pass
     return _fetch_kraken_candles(
         KRAKEN_GOLD_PAIR, interval, limit, start_time, session,
     )
@@ -154,7 +215,20 @@ def fetch_kraken_last_price(pair: str, session=None) -> float:
 
 
 def fetch_gold_last_price(session=None) -> float:
-    return fetch_kraken_last_price(KRAKEN_GOLD_PAIR, session=session)
+    try:
+        return fetch_kraken_last_price(KRAKEN_GOLD_PAIR, session=session)
+    except Exception as exc:
+        try:
+            session = session or requests.Session()
+            res = session.get(
+                "https://api.binance.com/api/v3/ticker/price",
+                params={"symbol": "PAXGUSDT"},
+                timeout=10,
+            )
+            res.raise_for_status()
+            return float(res.json()["price"])
+        except Exception:
+            raise exc
 
 
 def max_gold_entry_drift(timeframe: str, atr: float | None) -> float:

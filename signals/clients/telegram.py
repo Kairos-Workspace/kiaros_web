@@ -169,17 +169,20 @@ def format_caption(signal: Signal) -> str:
 
 
 def send_photo(photo_url: str, caption: str, bot_token: str, chat_id: str,
-               session=None) -> None:
+               session=None, topic_id: int | None = None) -> None:
     """Send one photo message; raises on failure so the caller can retry."""
     session = session or requests.Session()
+    payload = {
+        "chat_id": chat_id,
+        "photo": photo_url,
+        "caption": caption,
+        "parse_mode": "HTML",
+    }
+    if topic_id is not None:
+        payload["message_thread_id"] = topic_id
     response = session.post(
         f"https://api.telegram.org/bot{bot_token}/sendPhoto",
-        json={
-            "chat_id": chat_id,
-            "photo": photo_url,
-            "caption": caption,
-            "parse_mode": "HTML",
-        },
+        json=payload,
         timeout=20,
     )
     if response.status_code >= 400:
@@ -289,16 +292,19 @@ def format_no_signal_alert(report: NoSignalReport) -> str:
 
 
 def send_message(text: str, bot_token: str, chat_id: str,
-                 session=None) -> None:
+                 session=None, topic_id: int | None = None) -> None:
     """Send one HTML message; raises on any failure so the caller can retry."""
     session = session or requests.Session()
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML",
+    }
+    if topic_id is not None:
+        payload["message_thread_id"] = topic_id
     response = session.post(
         f"https://api.telegram.org/bot{bot_token}/sendMessage",
-        json={
-            "chat_id": chat_id,
-            "text": text,
-            "parse_mode": "HTML",
-        },
+        json=payload,
         timeout=15,
     )
     if response.status_code >= 400:
@@ -325,31 +331,31 @@ def _analysis_text(signal: Signal) -> str:
 
 
 def send_alert(signal: Signal, bot_token: str, chat_id: str,
-               session=None) -> None:
+               session=None, topic_id: int | None = None) -> None:
     """Send one confirmed-signal alert. With a chart: a photo whose caption is
     the setup essentials plus the AI analysis (or, if that overflows the caption
     limit, the essentials as the caption and the analysis as a follow-up
     message). Without a chart: the full text alert."""
     if not getattr(signal, "chart_url", None):
-        send_message(format_alert(signal), bot_token, chat_id, session=session)
+        send_message(format_alert(signal), bot_token, chat_id, session=session, topic_id=topic_id)
         return
 
     caption = format_caption(signal)
     analysis = _analysis_text(signal) if signal.rationale else ""
     if analysis and len(caption) + len(analysis) + 2 <= _CAPTION_LIMIT:
         send_photo(signal.chart_url, f"{caption}\n\n{analysis}", bot_token,
-                   chat_id, session=session)
+                   chat_id, session=session, topic_id=topic_id)
     else:
-        send_photo(signal.chart_url, caption, bot_token, chat_id, session=session)
+        send_photo(signal.chart_url, caption, bot_token, chat_id, session=session, topic_id=topic_id)
         if analysis:
-            send_message(analysis, bot_token, chat_id, session=session)
+            send_message(analysis, bot_token, chat_id, session=session, topic_id=topic_id)
 
 
 def send_no_signal_alert(report: NoSignalReport, bot_token: str, chat_id: str,
-                         session=None) -> None:
+                         session=None, topic_id: int | None = None) -> None:
     """Send one no-signal explanation alert."""
     send_message(format_no_signal_alert(report), bot_token, chat_id,
-                  session=session)
+                 session=session, topic_id=topic_id)
 
 
 # emoji + title + optional "what's next" line, per outcome.
@@ -407,15 +413,16 @@ def format_outcome_alert(signal_row: dict, outcome: str) -> str:
 
 
 def send_outcome_alert(signal_row: dict, outcome: str, bot_token: str,
-                       chat_id: str, session=None) -> None:
+                       chat_id: str, session=None,
+                       topic_id: int | None = None) -> None:
     """Send one TP/SL-hit alert — a photo when an outcome chart exists,
     otherwise the text message."""
     text = format_outcome_alert(signal_row, outcome)
     url = signal_row.get("outcome_chart_url")
     if url:
-        send_photo(url, text, bot_token, chat_id, session=session)
+        send_photo(url, text, bot_token, chat_id, session=session, topic_id=topic_id)
     else:
-        send_message(text, bot_token, chat_id, session=session)
+        send_message(text, bot_token, chat_id, session=session, topic_id=topic_id)
 
 
 def format_run_summary(run_id: str, timeframe: str, outcomes: list[dict]) -> str:
@@ -446,11 +453,13 @@ def format_run_summary(run_id: str, timeframe: str, outcomes: list[dict]) -> str
 
 
 def send_run_summary(run_id: str, timeframe: str, outcomes: list[dict],
-                     bot_token: str, chat_id: str, session=None) -> None:
+                     bot_token: str, chat_id: str, session=None,
+                     topic_id: int | None = None) -> None:
     """Send the per-run summary (always)."""
     send_message(
         format_run_summary(run_id, timeframe, outcomes),
         bot_token,
         chat_id,
         session=session,
+        topic_id=topic_id,
     )

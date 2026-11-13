@@ -8,6 +8,7 @@ table. One invocation = one scan; the per-minute loop lives in
 
 Usage: python -m signals.xau_scan
 """
+import os
 import uuid
 from datetime import datetime, timezone
 
@@ -34,7 +35,7 @@ XAU_MIN_STORE_CONFIDENCE = 65
 # only); see docs/ict-fvg-backtest-results.md. super_scalp (5m, same
 # strategy) was pulled the same way in signals/models.py. Flip to False once
 # a replacement 1m strategy is designed, backtested, and XAU_STRATEGY above
-# is updated to it.
+# is updated to it. Can be overridden via XAU_SCALPER_PAUSED=false env var.
 XAU_SCALPER_PAUSED = True
 # Reserve keys from this index on (KEY5, KEY6, KEY7) for the scalper.
 SCALPER_KEY_START = 4
@@ -60,7 +61,8 @@ def scan_once(cfg, settings, session=None) -> "object":
         print("[XAUUSD] Market scanner disabled (MARKET_SCANNER_ENABLED=false)")
         return ScanResult()
 
-    if XAU_SCALPER_PAUSED:
+    paused = XAU_SCALPER_PAUSED and os.environ.get("XAU_SCALPER_PAUSED", "true").lower() in ("true", "1")
+    if paused:
         print("[XAUUSD] 1m scalp paused -- ict_fvg has no measured edge "
               "(docs/ict-fvg-backtest-results.md)")
         return ScanResult()

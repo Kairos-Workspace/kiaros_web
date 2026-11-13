@@ -22,9 +22,16 @@ def maybe_send_alert(signal, settings, cfg):
               f"threshold {settings.min_alert_confidence}, no alert")
         return
     try:
-        with_retry(lambda: send_alert(
-            signal, cfg.telegram_bot_token, cfg.telegram_channel_id,
-        ))
+        topic_id = getattr(cfg, "telegram_topic_id", None)
+        if topic_id is not None:
+            with_retry(lambda: send_alert(
+                signal, cfg.telegram_bot_token, cfg.telegram_channel_id,
+                topic_id=topic_id,
+            ))
+        else:
+            with_retry(lambda: send_alert(
+                signal, cfg.telegram_bot_token, cfg.telegram_channel_id,
+            ))
         print(f"[{signal.symbol}] Telegram alert sent")
     except Exception as exc:
         print(f"[{signal.symbol}] Telegram alert failed "

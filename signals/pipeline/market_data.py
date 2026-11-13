@@ -119,6 +119,7 @@ def _load_market_data(symbol, timeframe, strategy, cfg, *,
                     symbol, fetch_tf, candle_limit, session=session,
                     supabase_url=cfg.supabase_url,
                     service_key=cfg.supabase_service_key,
+                    require_mt5_1m=False,
                 )
             )
         except Exception as exc:
@@ -208,19 +209,20 @@ def _snap_gold_setup_to_live(setup: CandidateSetup, live: float,
     ), ""
 
 
-def resolve_gold_live_price(cfg, session=None, *, require_mt5: bool = True
+def resolve_gold_live_price(cfg, session=None, *, require_mt5: bool = False
                             ) -> tuple[float, str]:
-    """Return (mid, source). Gold publish requires a fresh MT5 quote.
-
-    When `require_mt5` is False (e.g. drift-expire housekeeping), falls back
-    to Kraken PAXG if the EA tick is stale.
+    """Return (mid, source). Prefers fresh MT5 quote if available, falls back
+    to Kraken PAXG spot gold without requiring MT5.
     """
-    tick = fetch_mt5_last_tick(
-        "XAUUSD", cfg.supabase_url, cfg.supabase_service_key, session=session,
-    )
-    if mt5_tick_is_fresh(tick):
-        mid = float(tick.get("mid") or tick["price"])
-        return mid, "mt5"
+    try:
+        tick = fetch_mt5_last_tick(
+            "XAUUSD", cfg.supabase_url, cfg.supabase_service_key, session=session,
+        )
+        if mt5_tick_is_fresh(tick):
+            mid = float(tick.get("mid") or tick["price"])
+            return mid, "mt5"
+    except Exception:
+        pass
     if require_mt5:
         raise RuntimeError(
             "MT5 tick missing or stale — refusing gold publish "

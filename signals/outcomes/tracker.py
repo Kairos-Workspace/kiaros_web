@@ -321,8 +321,14 @@ def apply_events(row: dict, events: list[tuple[str, str]], window: list,
                                 "sl_hit")
                 and cfg.telegram_bot_token and cfg.telegram_channel_id):
             try:
-                send_outcome_alert(row, outcome, cfg.telegram_bot_token,
-                                   cfg.telegram_channel_id)
+                topic_id = getattr(cfg, "telegram_topic_id", None)
+                if topic_id is not None:
+                    send_outcome_alert(row, outcome, cfg.telegram_bot_token,
+                                       cfg.telegram_channel_id,
+                                       topic_id=topic_id)
+                else:
+                    send_outcome_alert(row, outcome, cfg.telegram_bot_token,
+                                       cfg.telegram_channel_id)
                 print(f"[{symbol}] Telegram outcome alert sent ({outcome})")
             except Exception as exc:
                 print(f"[{symbol}] Telegram outcome alert failed "

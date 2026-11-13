@@ -6,7 +6,7 @@ import requests
 DEFAULT_BASE_URL = "https://api.sea-lion.ai/v1"
 DEFAULT_MODEL = "aisingapore/Qwen-SEA-LION-v4.5-27B-IT"
 DEFAULT_EMBED_MODEL = "aisingapore/SEA-LION-ModernBERT-Embedding-600M"
-DEFAULT_TIMEOUT = 60
+DEFAULT_TIMEOUT = 120
 # Total attempts (1 original + retries) for a single request.
 DEFAULT_MAX_ATTEMPTS = 3
 # Seconds to wait before retry N (linear: backoff, 2*backoff, ...).

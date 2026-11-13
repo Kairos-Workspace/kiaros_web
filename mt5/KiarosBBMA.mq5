@@ -10,15 +10,15 @@
 //| Keep KiarosTickPush.mq5 attached for ticks/candles + outcomes.  |
 //| Allow WebRequest for SignalApiUrl + ChartApiUrl origin:            |
 //| Tools → Options → Expert Advisors                                  |
-//| WebRequest origin: https://kairos-web-sandy.vercel.app         |
+//| WebRequest origin: https://kairos-fx-ai.vercel.app         |
 //+------------------------------------------------------------------+
 #property strict
 #property copyright "Kiaros"
 #property version   "1.06"
 
 input string AppSymbol       = "XAUUSD";
-input string SignalApiUrl    = "https://kairos-web-sandy.vercel.app/api/mt5/signal";
-input string ChartApiUrl     = "https://kairos-web-sandy.vercel.app/api/mt5/chart";
+input string SignalApiUrl    = "https://kairos-fx-ai.vercel.app/api/mt5/signal";
+input string ChartApiUrl     = "https://kairos-fx-ai.vercel.app/api/mt5/chart";
 input string WebhookSecret   = ""; // Set MT5_WEBHOOK_SECRET from Vercel in EA inputs.
 input bool   UploadChartShot = true;  // ChartScreenShot → site chart_url after publish
 input int    ChartWidth      = 1280;
