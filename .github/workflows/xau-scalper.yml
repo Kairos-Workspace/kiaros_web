@@ -35,7 +35,9 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          TELEGRAM_TOPIC_ID: ${{ secrets.TELEGRAM_TOPIC_ID || '3' }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          XAU_SCALPER_PAUSED: "false"
           # LLM confirmation-gate A/B, same experiment as the main engine
           # (signals-engine.yml) — see docs/superpowers/specs/2026-07-26-ai-gate-ab-design.md.
           # This workflow was missed when the experiment was switched on: 96%

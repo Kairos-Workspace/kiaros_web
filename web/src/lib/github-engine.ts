@@ -1,6 +1,6 @@
 import type { EngineHtf } from "@/lib/bar-close";
 
-const DEFAULT_REPO = "Qauntify/qauntify_webV1";
+const DEFAULT_REPO = "Kairos-Workspace/kiaros_web";
 const ENGINE_WORKFLOW_FILE = "engine.yml";
 
 export const REPO_EVENTS = {

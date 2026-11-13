@@ -1,5 +1,6 @@
 requests>=2.31
 python-dotenv>=1.0
 pytest>=8.0
+six>=1.16
 mplfinance==0.12.10b0
 websockets>=12.0

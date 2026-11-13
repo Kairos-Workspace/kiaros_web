@@ -9,7 +9,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "NODE_OPTIONS='--max-http-header-size=65536' next dev --webpack",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "NODE_OPTIONS='--max-http-header-size=65536' next start",
     "lint": "eslint",
     "test": "vitest run"
